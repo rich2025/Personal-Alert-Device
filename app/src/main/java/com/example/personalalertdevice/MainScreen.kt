@@ -33,20 +33,20 @@ fun MainScreen(navController: NavController) {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = "Welcome, *NAME*",
+            text = "Hello, *NAME*",
             style = MaterialTheme.typography.headlineLarge.copy(
-                fontSize = 42.sp,
+                fontSize = 45.sp,
                 fontWeight = FontWeight.Bold
             ),
             color = Color(0xFF333333),
-            modifier = Modifier.padding(vertical = 100.dp)
+            modifier = Modifier.padding(vertical = 70.dp)
         )
 
         // Navigation Button Group
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp),
+                .padding(bottom = 50.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -122,11 +122,11 @@ fun MainScreen(navController: NavController) {
                 }
             }
             HoldButtonWithProgress(
-                onCompleted = { },
+                onCompleted = {  },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
-                    .padding(20.dp)
+                    .height(80.dp)
+                    .padding(horizontal = 20.dp)
             )
         }
     }
@@ -143,6 +143,7 @@ fun HoldButtonWithProgress(
     var progress by remember { mutableFloatStateOf(0f) }
     val animatedProgress by animateFloatAsState(targetValue = progress, label = "")
     var isPressed by remember { mutableStateOf(false) }
+    var helpCalled by remember { mutableStateOf(false) } // Track if help was called
     val scope = rememberCoroutineScope()
 
     Surface(
@@ -154,20 +155,23 @@ fun HoldButtonWithProgress(
                     onPress = {
                         isPressed = true
                         scope.launch {
-                            while (isPressed && progress < 1f) {
+                            while (isPressed && progress < 1f && !helpCalled) {
                                 delay(10)
                                 progress += 0.01f * (10f / holdDuration * 1000f)
                             }
                             if (progress >= 1f) {
+                                helpCalled = true // Mark as help called
                                 onCompleted()
                             }
                         }
                         tryAwaitRelease()
                         isPressed = false
                         scope.launch {
-                            while (!isPressed && progress > 0f) {
-                                delay(10)
-                                progress -= 0.05f * (10f / holdDuration * 1000f)
+                            if (!helpCalled) {
+                                while (!isPressed && progress > 0f) {
+                                    delay(10)
+                                    progress -= 0.05f * (10f / holdDuration * 1000f)
+                                }
                             }
                         }
                     }
@@ -182,14 +186,17 @@ fun HoldButtonWithProgress(
                 .background(backgroundColor),
             contentAlignment = Alignment.Center
         ) {
+            // Progress bar box
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(animatedProgress)
                     .background(progressColor) // Dark red progress bar
             )
+
+            // Change text based on whether help has been called
             Text(
-                text = "HOLD FOR HELP",
+                text = if (helpCalled) "HELP CALLED" else "HOLD FOR HELP",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontSize = 31.sp,
                     fontWeight = FontWeight.Bold
@@ -199,3 +206,4 @@ fun HoldButtonWithProgress(
         }
     }
 }
+
