@@ -29,7 +29,7 @@ fun MainScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFAFAFA)),
+            .background(Color(0xFFf5f4e4)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -56,7 +56,9 @@ fun MainScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
-                    onClick = { },
+                    onClick = {
+                        navController.navigate("ProfileScreen")
+                    },
                     modifier = Modifier.size(175.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF64B5F6))
@@ -79,7 +81,9 @@ fun MainScreen(navController: NavController) {
                     }
                 }
                 Button(
-                    onClick = { },
+                    onClick = {
+                        navController.navigate("HealthScreen")
+                    },
                     modifier = Modifier.size(175.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
@@ -108,7 +112,9 @@ fun MainScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
-                    onClick = {},
+                    onClick = {
+                        navController.navigate("ContactsScreen")
+                    },
                     modifier = Modifier.size(175.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF66BB6A))
@@ -131,16 +137,18 @@ fun MainScreen(navController: NavController) {
                     }
                 }
                 Button(
-                    onClick = { },
+                    onClick = {
+                        navController.navigate("HowToScreen")
+                    },
                     modifier = Modifier.size(175.dp),
                     shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFe9e332))
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFd7c0ed))
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             painter = painterResource(id = R.drawable.how_to_icon),
                             contentDescription = "How To Icon",
-                            modifier = Modifier.size(60.dp),
+                            modifier = Modifier.size(63.dp),
                             tint = Color.White
                         )
                         Text(

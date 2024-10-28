@@ -30,19 +30,19 @@ class MainActivity : ComponentActivity() {
                     MainScreen(navController)
                 }
                 composable(route = "ProfileScreen") {
-                    MainScreen(navController)
+                    ProfileScreen(navController)
                 }
                 composable(route = "HealthScreen") {
-                    MainScreen(navController)
+                    HealthScreen(navController)
                 }
                 composable(route = "ContactsScreen") {
-                    MainScreen(navController)
+                    ContactsScreen(navController)
                 }
                 composable(route = "HowToScreen") {
-                    MainScreen(navController)
+                    HowToScreen(navController)
                 }
                 composable(route = "HelpScreen") {
-                    MainScreen(navController)
+                    HelpScreen(navController)
                 }
             })
         }

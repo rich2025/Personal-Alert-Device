@@ -12,7 +12,7 @@ import androidx.navigation.NavController
 
 
 @Composable
-fun HelpScreen(navController: NavController) {
+fun HowToScreen(navController: NavController) {
 
     Column(
         Modifier.fillMaxSize(),

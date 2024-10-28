@@ -1,5 +1,4 @@
 package com.example.personalalertdevice
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
@@ -12,17 +11,6 @@ import androidx.navigation.NavController
 
 
 @Composable
-fun HelpScreen(navController: NavController) {
+fun ContactsListScreen(navController: NavController) {
 
-    Column(
-        Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Button(onClick = {
-            navController.navigate("ContactsListScreen")
-        }) {
-            Text(text = "Add Contacts")
-        }
     }
-}
