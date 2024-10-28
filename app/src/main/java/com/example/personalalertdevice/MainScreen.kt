@@ -21,7 +21,8 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.animation.core.animateFloatAsState
-
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun MainScreen(navController: NavController) {
@@ -60,14 +61,22 @@ fun MainScreen(navController: NavController) {
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF64B5F6))
                 ) {
-                    Text(
-                        text = "Profile",
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontSize = 31.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = Color(0xFF333333)
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.profile_icon),
+                            contentDescription = "Profile Icon",
+                            modifier = Modifier.size(50.dp),
+                            tint = Color.White
+                        )
+                        Text(
+                            text = "Profile",
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontSize = 31.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = Color(0xFF333333)
+                        )
+                    }
                 }
                 Button(
                     onClick = { },
@@ -75,14 +84,22 @@ fun MainScreen(navController: NavController) {
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
                 ) {
-                    Text(
-                        text = "Health",
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontSize = 31.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = Color(0xFF333333)
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.health_icon),
+                            contentDescription = "Health Icon",
+                            modifier = Modifier.size(55.dp),
+                            tint = Color.White
+                        )
+                        Text(
+                            text = "Health",
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontSize = 31.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = Color(0xFF333333)
+                        )
+                    }
                 }
             }
 
@@ -91,19 +108,27 @@ fun MainScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
-                    onClick = { },
+                    onClick = {},
                     modifier = Modifier.size(175.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF66BB6A))
                 ) {
-                    Text(
-                        text = "Contacts",
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontSize = 31.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = Color(0xFF333333)
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.contacts_icon),
+                            contentDescription = "Contacts Icon",
+                            modifier = Modifier.size(60.dp),
+                            tint = Color.White
+                        )
+                        Text(
+                            text = "Contacts",
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontSize = 31.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = Color(0xFF333333)
+                        )
+                    }
                 }
                 Button(
                     onClick = { },
@@ -111,14 +136,22 @@ fun MainScreen(navController: NavController) {
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFe9e332))
                 ) {
-                    Text(
-                        text = "History",
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontSize = 31.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = Color(0xFF333333)
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.how_to_icon),
+                            contentDescription = "How To Icon",
+                            modifier = Modifier.size(60.dp),
+                            tint = Color.White
+                        )
+                        Text(
+                            text = "How To",
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontSize = 31.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = Color(0xFF333333)
+                        )
+                    }
                 }
             }
             HoldButtonWithProgress(
@@ -191,10 +224,9 @@ fun HoldButtonWithProgress(
                 modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(animatedProgress)
-                    .background(progressColor) // Dark red progress bar
+                    .background(progressColor)
             )
 
-            // Change text based on whether help has been called
             Text(
                 text = if (helpCalled) "HELP CALLED" else "HOLD FOR HELP",
                 style = MaterialTheme.typography.headlineLarge.copy(
