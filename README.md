@@ -11,4 +11,4 @@ Goals for the upcoming week:
 Notes:
 1. Must set up Firebase before implementing any user specific actions (e.g., Profile Picture, Name, Age, Contacts, etc.)
 2. Authentication should be done using single-click sign on
-
+3. Migrate History into Health and change button to Chat/How to use
