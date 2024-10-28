@@ -9,6 +9,6 @@ Goals for the upcoming week:
 3. Have the front end of the home page done. This will be a rough draft.
 
 Notes:
-1. Must set up Firebase before implementing any user specific actions (e.g., Profile Picture, Name, Age, etc.)
+1. Must set up Firebase before implementing any user specific actions (e.g., Profile Picture, Name, Age, Contacts, etc.)
 2. Authentication should be done using single-click sign on
 
