@@ -60,6 +60,7 @@ fun RequestContactPermission(onPermissionGranted: () -> Unit) {
 
                 )
 
+                // Hide the button if the contacts permission is denied
                 if (contactPermissionState.status.shouldShowRationale) {
                     Button(
                         onClick = { contactPermissionState.launchPermissionRequest() },
