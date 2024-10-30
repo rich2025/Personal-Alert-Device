@@ -1,5 +1,6 @@
 package com.example.personalalertdevice
 
+import ContactsListScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,6 +44,9 @@ class MainActivity : ComponentActivity() {
                 }
                 composable(route = "HelpScreen") {
                     HelpScreen(navController)
+                }
+                composable(route = "ContactsListScreen") {
+                    ContactsListScreen(navController)
                 }
             })
         }

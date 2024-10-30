@@ -39,7 +39,7 @@ fun MainScreen(navController: NavController) {
                 fontSize = 45.sp,
                 fontWeight = FontWeight.Bold
             ),
-            color = Color(0xFF333333),
+            color = Color.Black, // Changed to black
             modifier = Modifier.padding(vertical = 70.dp)
         )
 
@@ -76,7 +76,7 @@ fun MainScreen(navController: NavController) {
                                 fontSize = 31.sp,
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = Color(0xFF333333)
+                            color = Color.Black // Changed to black
                         )
                     }
                 }
@@ -101,7 +101,7 @@ fun MainScreen(navController: NavController) {
                                 fontSize = 31.sp,
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = Color(0xFF333333)
+                            color = Color.Black // Changed to black
                         )
                     }
                 }
@@ -132,7 +132,7 @@ fun MainScreen(navController: NavController) {
                                 fontSize = 31.sp,
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = Color(0xFF333333)
+                            color = Color.Black // Changed to black
                         )
                     }
                 }
@@ -157,13 +157,13 @@ fun MainScreen(navController: NavController) {
                                 fontSize = 31.sp,
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = Color(0xFF333333)
+                            color = Color.Black // Changed to black
                         )
                     }
                 }
             }
             HoldButtonWithProgress(
-                onCompleted = {  },
+                onCompleted = { },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(80.dp)
@@ -246,4 +246,3 @@ fun HoldButtonWithProgress(
         }
     }
 }
-
