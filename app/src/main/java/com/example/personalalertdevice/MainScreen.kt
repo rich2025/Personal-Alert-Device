@@ -24,6 +24,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.material3.Icon
 import androidx.compose.ui.res.painterResource
 
+// Composable for main screen
 @Composable
 fun MainScreen(navController: NavController) {
     Column(
@@ -32,14 +33,14 @@ fun MainScreen(navController: NavController) {
             .background(Color(0xFFf5f4e4)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
-    ) {
+    ) { // Main Column, retrieve name from user info and insert
         Text(
             text = "Hello, *NAME*",
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontSize = 45.sp,
                 fontWeight = FontWeight.Bold
             ),
-            color = Color.Black, // Changed to black
+            color = Color.Black,
             modifier = Modifier.padding(vertical = 70.dp)
         )
 
@@ -76,7 +77,7 @@ fun MainScreen(navController: NavController) {
                                 fontSize = 31.sp,
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = Color.Black // Changed to black
+                            color = Color.Black
                         )
                     }
                 }
@@ -101,7 +102,7 @@ fun MainScreen(navController: NavController) {
                                 fontSize = 31.sp,
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = Color.Black // Changed to black
+                            color = Color.Black
                         )
                     }
                 }
@@ -132,7 +133,7 @@ fun MainScreen(navController: NavController) {
                                 fontSize = 31.sp,
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = Color.Black // Changed to black
+                            color = Color.Black
                         )
                     }
                 }
@@ -157,7 +158,7 @@ fun MainScreen(navController: NavController) {
                                 fontSize = 31.sp,
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = Color.Black // Changed to black
+                            color = Color.Black
                         )
                     }
                 }
@@ -173,12 +174,13 @@ fun MainScreen(navController: NavController) {
     }
 }
 
+// Composable for holdable button
 @Composable
 fun HoldButtonWithProgress(
     onCompleted: () -> Unit,
     modifier: Modifier = Modifier,
     holdDuration: Long = 20000L,
-    progressColor: Color = Color(0xFF8B0000), // Darker red
+    progressColor: Color = Color(0xFF8B0000),
     backgroundColor: Color = Color.Red
 ) {
     var progress by remember { mutableFloatStateOf(0f) }

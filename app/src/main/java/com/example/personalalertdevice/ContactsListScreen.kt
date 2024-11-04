@@ -1,13 +1,15 @@
+package com.example.personalalertdevice
+
 import android.Manifest
 import android.content.Context
 import android.provider.ContactsContract
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,18 +23,22 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 
+// Holds details associated with each contact
 data class Contact(val id: String, val name: String, val phoneNumber: String)
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequestContactPermission(onPermissionGranted: () -> Unit) {
     val context = LocalContext.current
+    // Permission state, enable read contacts
     val contactPermissionState = rememberPermissionState(permission = Manifest.permission.READ_CONTACTS)
-
     if (contactPermissionState.status.isGranted) {
         onPermissionGranted()
     } else {
+        // If the permission is not granted, display permission request UI
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -48,7 +54,6 @@ fun RequestContactPermission(onPermissionGranted: () -> Unit) {
                 } else {
                     "You have denied contact permission. Please enable it from Settings > Security & Privacy > Privacy Control > Permission Manager > Contacts > Personal Alert Device."
                 }
-
                 Text(
                     text = textToShow,
                     fontSize = 30.sp,
@@ -57,7 +62,6 @@ fun RequestContactPermission(onPermissionGranted: () -> Unit) {
                     modifier = Modifier
                         .padding(horizontal = 50.dp, vertical = 16.dp)
                         .wrapContentWidth(Alignment.CenterHorizontally)
-
                 )
 
                 // Hide the button if the contacts permission is denied
@@ -82,6 +86,7 @@ fun RequestContactPermission(onPermissionGranted: () -> Unit) {
     }
 }
 
+// Retrieve contacts from device contact list
 fun getContacts(context: Context): List<Contact> {
     val contactsList = mutableListOf<Contact>()
     val contentResolver = context.contentResolver
@@ -94,6 +99,7 @@ fun getContacts(context: Context): List<Contact> {
     )
 
     cursor?.use {
+        // Retrieve contact ID and name
         while (it.moveToNext()) {
             val id = it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
             val name = it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME)) ?: "Unknown"
@@ -105,7 +111,7 @@ fun getContacts(context: Context): List<Contact> {
                 arrayOf(id),
                 null
             )
-
+            // Query for phone number using contact ID
             var phoneNumber = "No Phone Number"
             phoneCursor?.use { pc ->
                 if (pc.moveToFirst()) {
@@ -115,7 +121,7 @@ fun getContacts(context: Context): List<Contact> {
             contactsList.add(Contact(id, name, phoneNumber))
         }
     }
-
+    // Sort alphabetically by name
     return contactsList.sortedBy { it.name }
 }
 
@@ -131,13 +137,47 @@ fun ContactsListScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
+            .padding(16.dp)
     ) {
+        // Back button
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(top = 24.dp, bottom = 16.dp)
+        ) {
+            Button(
+                onClick = { navController.popBackStack() },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.padding(0.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.Black,
+                        modifier = Modifier.size(45.dp)
+                    )
+                    Text(
+                        text = "RETURN",
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
+        }
+
+        // Contact list display
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth(0.8f)
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .align(Alignment.Center)
         ) {
             items(contacts) { contact ->
                 ContactItem(contact)
@@ -146,6 +186,7 @@ fun ContactsListScreen(navController: NavController) {
     }
 }
 
+// Composable for individual contact item
 @Composable
 fun ContactItem(contact: Contact) {
     Column(
