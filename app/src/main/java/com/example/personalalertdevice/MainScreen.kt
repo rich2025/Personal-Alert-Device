@@ -29,8 +29,7 @@ import androidx.compose.ui.res.painterResource
 fun MainScreen(navController: NavController) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFf5f4e4)),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) { // Main Column, retrieve name from user info and insert

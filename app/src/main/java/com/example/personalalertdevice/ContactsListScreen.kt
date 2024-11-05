@@ -43,8 +43,7 @@ fun RequestContactPermission(onPermissionGranted: () -> Unit) {
         // Display UI for requesting permission
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFf5f4e4)),
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -180,7 +179,6 @@ fun ContactsListScreen(navController: NavController) {
         }
     }
 
-
 @Composable
 fun ContactItem(contact: Contact, isSelected: Boolean, onClick: (Contact) -> Unit) {
     Row(
@@ -193,7 +191,7 @@ fun ContactItem(contact: Contact, isSelected: Boolean, onClick: (Contact) -> Uni
     ) {
         Text(
             text = contact.name,
-            fontSize = 20.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = if (isSelected) Color.White else Color.Black,
             modifier = Modifier
@@ -203,6 +201,7 @@ fun ContactItem(contact: Contact, isSelected: Boolean, onClick: (Contact) -> Uni
         Text(
             text = contact.phoneNumber,
             fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
             color = if (isSelected) Color.White else Color.DarkGray,
             modifier = Modifier.padding(8.dp)
         )
