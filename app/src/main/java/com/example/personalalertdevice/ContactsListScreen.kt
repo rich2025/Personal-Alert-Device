@@ -137,7 +137,8 @@ fun ContactsListScreen(navController: NavController) {
     val context = LocalContext.current
     var contacts by remember { mutableStateOf<List<Contact>>(emptyList()) }
     var groupedContacts by remember { mutableStateOf<Map<Char, List<Contact>>>(emptyMap()) }
-
+    val designatedContacts = remember { mutableStateListOf<Contact>() } // List to store selected contacts
+    // need to store designated contacts in firebase under user id
     RequestContactPermission(onPermissionGranted = {
         contacts = getContacts(context)
         groupedContacts = groupContactsByLetter(contacts)
@@ -196,28 +197,39 @@ fun ContactsListScreen(navController: NavController) {
                             .background(Color(0xFFE0E0E0), RoundedCornerShape(4.dp))
                     )
                 }
-                // List contacts under each letter
                 items(contactsList) { contact ->
-                    ContactItem(contact)
+                    ContactItem(
+                        contact = contact,
+                        isSelected = designatedContacts.contains(contact),
+                        onClick = { selectedContact ->  // change contact color to green if designated
+                            if (designatedContacts.contains(selectedContact)) {
+                                designatedContacts.remove(selectedContact)
+                            } else {
+                                designatedContacts.add(selectedContact)
+                            }
+                        }
+                    )
                 }
             }
         }
     }
 }
 
-// Composable for individual contact item
 @Composable
-fun ContactItem(contact: Contact) {
+fun ContactItem(contact: Contact, isSelected: Boolean, onClick: (Contact) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
+            .clickable { onClick(contact) }
+            .background(if (isSelected) Color(0xFF32a852) else Color.Transparent)
     ) {
         Text(
             text = contact.name,
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
+            color = if (isSelected) Color.White else Color.Black,
             modifier = Modifier
                 .weight(1f)
                 .padding(8.dp)
@@ -226,7 +238,7 @@ fun ContactItem(contact: Contact) {
             text = contact.phoneNumber,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.DarkGray,
+            color = if (isSelected) Color.White else Color.DarkGray,
             modifier = Modifier.padding(8.dp)
         )
     }
