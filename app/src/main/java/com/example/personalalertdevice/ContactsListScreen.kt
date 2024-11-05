@@ -178,8 +178,7 @@ fun ContactsListScreen(navController: NavController) {
 
             // Contact list display
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(0.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f) // Allows the list to fill remaining space
@@ -195,16 +194,25 @@ fun ContactsListScreen(navController: NavController) {
 // Composable for individual contact item
 @Composable
 fun ContactItem(contact: Contact) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(vertical = 6.dp)
     ) {
         Text(
-            text = "${contact.name}: ${contact.phoneNumber}",
+            text = contact.name,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .weight(1f)
+                .padding(8.dp)
+        )
+        Text(
+            text = contact.phoneNumber,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
+            color = Color.DarkGray,
             modifier = Modifier.padding(8.dp)
         )
     }
