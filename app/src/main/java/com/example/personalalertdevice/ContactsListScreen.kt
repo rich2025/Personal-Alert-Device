@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.provider.ContactsContract
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,12 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.text.style.TextAlign
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.shouldShowRationale
 
 // Holds details associated with each contact
 data class Contact(val id: String, val name: String, val phoneNumber: String)
@@ -34,13 +33,14 @@ data class Contact(val id: String, val name: String, val phoneNumber: String)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequestContactPermission(onPermissionGranted: () -> Unit) {
-    val context = LocalContext.current
-    // Permission state, enable read contacts
     val contactPermissionState = rememberPermissionState(permission = Manifest.permission.READ_CONTACTS)
+    val updatedOnPermissionGranted by rememberUpdatedState(onPermissionGranted)
+
+    // Trigger `onPermissionGranted` when permission is granted
     if (contactPermissionState.status.isGranted) {
-        onPermissionGranted()
+        updatedOnPermissionGranted()
     } else {
-        // If the permission is not granted, display permission request UI
+        // Display UI for requesting permission
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -49,37 +49,38 @@ fun RequestContactPermission(onPermissionGranted: () -> Unit) {
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(16.dp)
             ) {
                 val textToShow = if (contactPermissionState.status.shouldShowRationale) {
-                    "The app needs access to your contacts to display them. Please grant permission by pressing the button below and then Allow."
+                    "The app needs access to your contacts to display them. Please grant permission by pressing the button below."
                 } else {
                     "You have denied contact permission. Please enable it from Settings > Security & Privacy > Privacy Control > Permission Manager > Contacts > Personal Alert Device."
                 }
+
                 Text(
                     text = textToShow,
                     fontSize = 30.sp,
-                    color = Color(0xFF242424),
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(horizontal = 50.dp, vertical = 16.dp)
-                        .wrapContentWidth(Alignment.CenterHorizontally)
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
-
                 // Hide the button if the contacts permission is denied
                 if (contactPermissionState.status.shouldShowRationale) {
                     Button(
                         onClick = { contactPermissionState.launchPermissionRequest() },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF32a852)),
+                        shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
-                            .padding(top = 24.dp)
-                            .size(300.dp, 100.dp)
+                            .padding(top = 16.dp)
+                            .size(width = 250.dp, height = 80.dp)
                     ) {
                         Text(
                             text = "Request Permission",
-                            fontSize = 25.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.wrapContentWidth(Alignment.CenterHorizontally)
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -120,10 +121,10 @@ fun getContacts(context: Context): List<Contact> {
                     phoneNumber = pc.getString(pc.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
                 }
             }
+            // Sort alphabetically by name
             contactsList.add(Contact(id, name, phoneNumber))
         }
     }
-    // Sort alphabetically by name
     return contactsList.sortedBy { it.name }
 }
 
@@ -137,47 +138,12 @@ fun ContactsListScreen(navController: NavController) {
     val context = LocalContext.current
     var contacts by remember { mutableStateOf<List<Contact>>(emptyList()) }
     var groupedContacts by remember { mutableStateOf<Map<Char, List<Contact>>>(emptyMap()) }
-    val designatedContacts = remember { mutableStateListOf<Contact>() } // List to store selected contacts
-    // need to store designated contacts in firebase under user id
+    val designatedContacts = remember { mutableStateListOf<Contact>() }
+
     RequestContactPermission(onPermissionGranted = {
         contacts = getContacts(context)
         groupedContacts = groupContactsByLetter(contacts)
     })
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFf5f4e4)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        // Return Button
-        Button(
-            onClick = { navController.popBackStack() },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(top = 40.dp, bottom = 16.dp, start = 16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back",
-                tint = Color.Black,
-                modifier = Modifier.size(45.dp)
-            )
-            Text(
-                text = "RETURN",
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                modifier = Modifier.padding(start = 8.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Contact list with headers for each letter
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(0.dp),
             modifier = Modifier
@@ -201,7 +167,7 @@ fun ContactsListScreen(navController: NavController) {
                     ContactItem(
                         contact = contact,
                         isSelected = designatedContacts.contains(contact),
-                        onClick = { selectedContact ->  // change contact color to green if designated
+                        onClick = { selectedContact ->
                             if (designatedContacts.contains(selectedContact)) {
                                 designatedContacts.remove(selectedContact)
                             } else {
@@ -213,7 +179,7 @@ fun ContactsListScreen(navController: NavController) {
             }
         }
     }
-}
+
 
 @Composable
 fun ContactItem(contact: Contact, isSelected: Boolean, onClick: (Contact) -> Unit) {
@@ -227,7 +193,7 @@ fun ContactItem(contact: Contact, isSelected: Boolean, onClick: (Contact) -> Uni
     ) {
         Text(
             text = contact.name,
-            fontSize = 25.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = if (isSelected) Color.White else Color.Black,
             modifier = Modifier
@@ -236,8 +202,7 @@ fun ContactItem(contact: Contact, isSelected: Boolean, onClick: (Contact) -> Uni
         )
         Text(
             text = contact.phoneNumber,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
             color = if (isSelected) Color.White else Color.DarkGray,
             modifier = Modifier.padding(8.dp)
         )
