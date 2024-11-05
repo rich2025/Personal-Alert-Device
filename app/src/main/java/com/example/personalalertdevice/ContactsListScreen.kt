@@ -5,6 +5,7 @@ import android.content.Context
 import android.provider.ContactsContract
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,6 +26,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.text.style.TextAlign
 
 // Holds details associated with each contact
 data class Contact(val id: String, val name: String, val phoneNumber: String)
@@ -125,65 +127,77 @@ fun getContacts(context: Context): List<Contact> {
     return contactsList.sortedBy { it.name }
 }
 
+// Group contacts by the first letter of their name
+fun groupContactsByLetter(contacts: List<Contact>): Map<Char, List<Contact>> {
+    return contacts.groupBy { it.name.firstOrNull() ?: '#' }
+}
+
 @Composable
 fun ContactsListScreen(navController: NavController) {
     val context = LocalContext.current
     var contacts by remember { mutableStateOf<List<Contact>>(emptyList()) }
+    var groupedContacts by remember { mutableStateOf<Map<Char, List<Contact>>>(emptyMap()) }
 
     RequestContactPermission(onPermissionGranted = {
         contacts = getContacts(context)
+        groupedContacts = groupContactsByLetter(contacts)
     })
 
-    // Use a Box as the root container and set the background color for the entire screen
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFf5f4e4)) // Ensures background color covers entire screen
-            .padding(16.dp)
+            .background(Color(0xFFf5f4e4)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
     ) {
-        Column {
-            // Return Navigation Button
-            Box(
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(top = 24.dp, bottom = 16.dp)
-            ) {
-                Button(
-                    onClick = { navController.popBackStack() },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.padding(0.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.Black,
-                            modifier = Modifier.size(45.dp)
-                        )
-                        Text(
-                            text = "RETURN",
-                            fontSize = 30.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
+        // Return Button
+        Button(
+            onClick = { navController.popBackStack() },
+            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(top = 40.dp, bottom = 16.dp, start = 16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.Black,
+                modifier = Modifier.size(45.dp)
+            )
+            Text(
+                text = "RETURN",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Contact list with headers for each letter
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(0.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            groupedContacts.forEach { (letter, contactsList) ->
+                item {
+                    Text(
+                        text = letter.toString(),
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.DarkGray,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp, horizontal = 8.dp)
+                            .background(Color(0xFFE0E0E0), RoundedCornerShape(4.dp))
+                    )
                 }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Contact list display
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(0.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f) // Allows the list to fill remaining space
-            ) {
-                items(contacts) { contact ->
+                // List contacts under each letter
+                items(contactsList) { contact ->
                     ContactItem(contact)
                 }
             }
