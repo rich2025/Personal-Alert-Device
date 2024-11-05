@@ -134,53 +134,59 @@ fun ContactsListScreen(navController: NavController) {
         contacts = getContacts(context)
     })
 
+    // Use a Box as the root container and set the background color for the entire screen
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFf5f4e4)) // Ensures background color covers entire screen
             .padding(16.dp)
     ) {
-        // Back button
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(top = 24.dp, bottom = 16.dp)
-        ) {
-            Button(
-                onClick = { navController.popBackStack() },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.padding(0.dp)
+        Column {
+            // Return Navigation Button
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(top = 24.dp, bottom = 16.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Button(
+                    onClick = { navController.popBackStack() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.padding(0.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.Black,
-                        modifier = Modifier.size(45.dp)
-                    )
-                    Text(
-                        text = "RETURN",
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.Black,
+                            modifier = Modifier.size(45.dp)
+                        )
+                        Text(
+                            text = "RETURN",
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
                 }
             }
-        }
 
-        // Contact list display
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .align(Alignment.Center)
-        ) {
-            items(contacts) { contact ->
-                ContactItem(contact)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Contact list display
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f) // Allows the list to fill remaining space
+            ) {
+                items(contacts) { contact ->
+                    ContactItem(contact)
+                }
             }
         }
     }
