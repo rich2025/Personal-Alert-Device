@@ -73,7 +73,7 @@ fun MainScreen(navController: NavController) {
                         Text(
                             text = "Profile",
                             style = MaterialTheme.typography.headlineLarge.copy(
-                                fontSize = 31.sp,
+                                fontSize = 43.sp,
                                 fontWeight = FontWeight.Bold
                             ),
                             color = Color.Black
@@ -92,13 +92,13 @@ fun MainScreen(navController: NavController) {
                         Icon(
                             painter = painterResource(id = R.drawable.health_icon),
                             contentDescription = "Health Icon",
-                            modifier = Modifier.size(55.dp),
+                            modifier = Modifier.size(57.dp),
                             tint = Color.White
                         )
                         Text(
                             text = "Health",
                             style = MaterialTheme.typography.headlineLarge.copy(
-                                fontSize = 31.sp,
+                                fontSize = 43.sp,
                                 fontWeight = FontWeight.Bold
                             ),
                             color = Color.Black
@@ -127,12 +127,13 @@ fun MainScreen(navController: NavController) {
                             tint = Color.White
                         )
                         Text(
-                            text = "Contacts",
+                            text = "Contact",
                             style = MaterialTheme.typography.headlineLarge.copy(
-                                fontSize = 31.sp,
+                                fontSize = 36.sp,
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = Color.Black
+                            color = Color.Black,
+                            maxLines = 1
                         )
                     }
                 }
@@ -154,7 +155,7 @@ fun MainScreen(navController: NavController) {
                         Text(
                             text = "How To",
                             style = MaterialTheme.typography.headlineLarge.copy(
-                                fontSize = 31.sp,
+                                fontSize = 37.sp,
                                 fontWeight = FontWeight.Bold
                             ),
                             color = Color.Black

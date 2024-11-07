@@ -24,6 +24,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.text.style.TextAlign
+import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 
@@ -153,7 +154,7 @@ fun ContactsListScreen(navController: NavController) {
     ) {
         // Return Navigation Button Group
         Button(
-            onClick = { navController.popBackStack() },
+            onClick = { navController.navigate("ContactsScreen") },
             colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier

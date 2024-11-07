@@ -38,7 +38,7 @@ fun ContactsScreen(navController: NavController) {
         verticalArrangement = Arrangement.Top
     ) {
         Button(
-            onClick = { navController.popBackStack() },
+            onClick = { navController.navigate("MainScreen") },
             colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
@@ -66,7 +66,7 @@ fun ContactsScreen(navController: NavController) {
     Column(
         Modifier
             .fillMaxSize()
-            .padding(start = 10.dp, end = 10.dp, bottom = 60.dp),
+            .padding(start = 10.dp, end = 10.dp, bottom = 100.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
@@ -81,7 +81,7 @@ fun ContactsScreen(navController: NavController) {
                 .height(150.dp)
         ) {
             Text(
-                text = "Add Designated Contacts",
+                text = "My Designated Contacts",
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
