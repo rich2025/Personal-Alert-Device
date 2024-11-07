@@ -26,16 +26,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 
 // Holds details associated with each contact
 data class Contact(val id: String, val name: String, val phoneNumber: String)
-
-class ContactsViewModel : ViewModel() {
-    val designatedContacts = mutableStateListOf<String>()
-}
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -146,11 +143,10 @@ fun groupContactsByLetter(contacts: List<Contact>): Map<Char, List<Contact>> {
 }
 
 @Composable
-fun ContactsListScreen(navController: NavHostController) {
+fun ContactsListScreen(navController: NavController, viewModel: ContactsViewModel) {
     val context = LocalContext.current
     var contacts by remember { mutableStateOf<List<Contact>>(emptyList()) }
     var groupedContacts by remember { mutableStateOf<Map<Char, List<Contact>>>(emptyMap()) }
-    val designatedContacts = remember { mutableStateListOf<String>() } // Store only names
 
     Column(
         modifier = Modifier
@@ -161,7 +157,7 @@ fun ContactsListScreen(navController: NavHostController) {
     ) {
         // Return Navigation Button Group
         Button(
-            onClick = { navController.navigate("ContactsScreen") },
+            onClick = { navController.popBackStack() },
             colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
@@ -208,17 +204,17 @@ fun ContactsListScreen(navController: NavHostController) {
                             .background(Color(0xFFE0E0E0), RoundedCornerShape(4.dp))
                     )
                 }
+                // Store contact names in shared view model to persist across screens
                 items(contactsList) { contact ->
                     ContactItem(
                         contact = contact,
-                        isSelected = designatedContacts.contains(contact.name),
+                        isSelected = viewModel.designatedContacts.contains(contact.name),
                         onClick = { selectedContact ->
-                            if (designatedContacts.contains(selectedContact.name)) {
-                                designatedContacts.remove(selectedContact.name)
+                            if (viewModel.designatedContacts.contains(selectedContact.name)) {
+                                viewModel.designatedContacts.remove(selectedContact.name)
                             } else {
-                                designatedContacts.add(selectedContact.name)
+                                viewModel.designatedContacts.add(selectedContact.name)
                             }
-                            Log.d("DesignatedContacts", "Designated Contacts: $designatedContacts")
                         }
                     )
                 }
@@ -227,6 +223,7 @@ fun ContactsListScreen(navController: NavHostController) {
     }
 }
 
+// Composable for each contact
 @Composable
 fun ContactItem(contact: Contact, isSelected: Boolean, onClick: (Contact) -> Unit) {
     Row(
