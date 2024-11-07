@@ -3,6 +3,7 @@ package com.example.personalalertdevice
 import android.Manifest
 import android.content.Context
 import android.provider.ContactsContract
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,12 +25,17 @@ import com.google.accompanist.permissions.rememberPermissionState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 
 // Holds details associated with each contact
 data class Contact(val id: String, val name: String, val phoneNumber: String)
+
+class ContactsViewModel : ViewModel() {
+    val designatedContacts = mutableStateListOf<String>()
+}
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -140,17 +146,18 @@ fun groupContactsByLetter(contacts: List<Contact>): Map<Char, List<Contact>> {
 }
 
 @Composable
-fun ContactsListScreen(navController: NavController) {
+fun ContactsListScreen(navController: NavHostController) {
     val context = LocalContext.current
     var contacts by remember { mutableStateOf<List<Contact>>(emptyList()) }
     var groupedContacts by remember { mutableStateOf<Map<Char, List<Contact>>>(emptyMap()) }
-    val designatedContacts = remember { mutableStateListOf<Contact>() }
+    val designatedContacts = remember { mutableStateListOf<String>() } // Store only names
 
     Column(
         modifier = Modifier
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
+
     ) {
         // Return Navigation Button Group
         Button(
@@ -175,6 +182,7 @@ fun ContactsListScreen(navController: NavController) {
                 modifier = Modifier.padding(start = 8.dp)
             )
         }
+
         RequestContactPermission(navController = navController, onPermissionGranted = {
             contacts = getContacts(context)
             groupedContacts = groupContactsByLetter(contacts)
@@ -184,6 +192,7 @@ fun ContactsListScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(0.dp),
             modifier = Modifier
                 .fillMaxWidth()
+                .weight(1f) // This will allow the LazyColumn to take up the available space
                 .padding(horizontal = 16.dp)
         ) {
             groupedContacts.forEach { (letter, contactsList) ->
@@ -202,13 +211,14 @@ fun ContactsListScreen(navController: NavController) {
                 items(contactsList) { contact ->
                     ContactItem(
                         contact = contact,
-                        isSelected = designatedContacts.contains(contact),
+                        isSelected = designatedContacts.contains(contact.name),
                         onClick = { selectedContact ->
-                            if (designatedContacts.contains(selectedContact)) {
-                                designatedContacts.remove(selectedContact)
+                            if (designatedContacts.contains(selectedContact.name)) {
+                                designatedContacts.remove(selectedContact.name)
                             } else {
-                                designatedContacts.add(selectedContact)
+                                designatedContacts.add(selectedContact.name)
                             }
+                            Log.d("DesignatedContacts", "Designated Contacts: $designatedContacts")
                         }
                     )
                 }
