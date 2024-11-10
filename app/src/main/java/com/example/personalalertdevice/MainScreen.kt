@@ -21,27 +21,34 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import com.example.personalalertdevice.sign_in.UserData
 
 // Composable for main screen
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(
+    navController: NavController,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) { // Main Column, retrieve name from user info and insert
-        Text(
-            text = "Hello, *NAME*",
-            style = MaterialTheme.typography.headlineLarge.copy(
-                fontSize = 45.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            color = Color.Black,
-            modifier = Modifier.padding(vertical = 70.dp)
-        )
+            Text(
+                text = "Hello, *NAME*",
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontSize = 45.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                color = Color.Black,
+                modifier = Modifier.padding(vertical = 70.dp)
+            )
 
         // Navigation Button Group
         Column(

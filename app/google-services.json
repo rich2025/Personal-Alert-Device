@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "98550135545",
+    "project_id": "personal-alert-device",
+    "storage_bucket": "personal-alert-device.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98550135545:android:297601487605f613548028",
+        "android_client_info": {
+          "package_name": "com.example.personalalertdevice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98550135545-toomjs0gbho5hnvin5hphfum00828j37.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.personalalertdevice",
+            "certificate_hash": "c88daa23ac788120011ff025845e8f3a4ad7a196"
+          }
+        },
+        {
+          "client_id": "98550135545-28hgrj03746246160esk80mttsj849r2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZJ_fwXoSPwE-r7pL_E_Rcd7iopFfe6Xc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98550135545-28hgrj03746246160esk80mttsj849r2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
