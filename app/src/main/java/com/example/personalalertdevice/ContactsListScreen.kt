@@ -3,6 +3,7 @@ package com.example.personalalertdevice
 import android.Manifest
 import android.content.Context
 import android.provider.ContactsContract
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,6 +25,9 @@ import com.google.accompanist.permissions.rememberPermissionState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 
@@ -32,55 +36,61 @@ data class Contact(val id: String, val name: String, val phoneNumber: String)
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun RequestContactPermission(onPermissionGranted: () -> Unit) {
+fun RequestContactPermission(navController: NavController, onPermissionGranted: () -> Unit) {
     val contactPermissionState = rememberPermissionState(permission = Manifest.permission.READ_CONTACTS)
     val updatedOnPermissionGranted by rememberUpdatedState(onPermissionGranted)
 
-    // Trigger `onPermissionGranted` when permission is granted
     if (contactPermissionState.status.isGranted) {
         updatedOnPermissionGranted()
     } else {
-        // Display UI for requesting permission
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize(),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(16.dp)
+            // Display UI for requesting permission
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                val textToShow = if (contactPermissionState.status.shouldShowRationale) {
-                    "The app needs access to your contacts to display them. Please grant permission by pressing the button below."
-                } else {
-                    "You have denied contact permission. Please enable it from Settings > Security & Privacy > Privacy Control > Permission Manager > Contacts > Personal Alert Device."
-                }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(30.dp)
+                ) {
+                    val textToShow = if (contactPermissionState.status.shouldShowRationale) {
+                        "The app needs access to your contacts. Please request and allow permission."
+                    } else {
+                        "You have denied contact permission. Please enable it from Settings > Security & Privacy > Privacy Control > Permission Manager > Contacts > Personal Alert Device."
+                    }
 
-                Text(
-                    text = textToShow,
-                    fontSize = 30.sp,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                // Hide the button if the contacts permission is denied
-                if (contactPermissionState.status.shouldShowRationale) {
-                    Button(
-                        onClick = { contactPermissionState.launchPermissionRequest() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF32a852)),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .padding(top = 16.dp)
-                            .size(width = 250.dp, height = 80.dp)
-                    ) {
-                        Text(
-                            text = "Request Permission",
-                            fontSize = 20.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )
+                    Text(
+                        text = textToShow,
+                        fontSize = 33.sp,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 90.dp)
+                    )
+
+                    if (contactPermissionState.status.shouldShowRationale) {
+                        Button(
+                            onClick = { contactPermissionState.launchPermissionRequest() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF32a852)),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .padding(top = 0.dp, bottom = 100.dp)
+                                .size(width = 250.dp, height = 80.dp)
+                        ) {
+                            Text(
+                                text = "Request Permission",
+                                fontSize = 22.sp,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }
@@ -133,20 +143,52 @@ fun groupContactsByLetter(contacts: List<Contact>): Map<Char, List<Contact>> {
 }
 
 @Composable
-fun ContactsListScreen(navController: NavController) {
+fun ContactsListScreen(navController: NavController, viewModel: ContactsViewModel) {
     val context = LocalContext.current
     var contacts by remember { mutableStateOf<List<Contact>>(emptyList()) }
     var groupedContacts by remember { mutableStateOf<Map<Char, List<Contact>>>(emptyMap()) }
-    val designatedContacts = remember { mutableStateListOf<Contact>() }
 
-    RequestContactPermission(onPermissionGranted = {
-        contacts = getContacts(context)
-        groupedContacts = groupContactsByLetter(contacts)
-    })
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+
+    ) {
+        // Return Navigation Button Group
+        Button(
+            onClick = { navController.popBackStack() },
+            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(top = 40.dp, bottom = 16.dp, start = 16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.Black,
+                modifier = Modifier.size(45.dp)
+            )
+            Text(
+                text = "RETURN",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+
+        RequestContactPermission(navController = navController, onPermissionGranted = {
+            contacts = getContacts(context)
+            groupedContacts = groupContactsByLetter(contacts)
+        })
+
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(0.dp),
             modifier = Modifier
                 .fillMaxWidth()
+                .weight(1f) // This will allow the LazyColumn to take up the available space
                 .padding(horizontal = 16.dp)
         ) {
             groupedContacts.forEach { (letter, contactsList) ->
@@ -162,15 +204,16 @@ fun ContactsListScreen(navController: NavController) {
                             .background(Color(0xFFE0E0E0), RoundedCornerShape(4.dp))
                     )
                 }
+                // Store contact names in shared view model to persist across screens
                 items(contactsList) { contact ->
                     ContactItem(
                         contact = contact,
-                        isSelected = designatedContacts.contains(contact),
+                        isSelected = viewModel.designatedContacts.contains(contact.name),
                         onClick = { selectedContact ->
-                            if (designatedContacts.contains(selectedContact)) {
-                                designatedContacts.remove(selectedContact)
+                            if (viewModel.designatedContacts.contains(selectedContact.name)) {
+                                viewModel.designatedContacts.remove(selectedContact.name)
                             } else {
-                                designatedContacts.add(selectedContact)
+                                viewModel.designatedContacts.add(selectedContact.name)
                             }
                         }
                     )
@@ -178,7 +221,9 @@ fun ContactsListScreen(navController: NavController) {
             }
         }
     }
+}
 
+// Composable for each contact
 @Composable
 fun ContactItem(contact: Contact, isSelected: Boolean, onClick: (Contact) -> Unit) {
     Row(
