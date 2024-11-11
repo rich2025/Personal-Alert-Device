@@ -14,3 +14,7 @@ Notes:
 2. Authentication should be done using single-click sign on
 3. Migrate History into Health and change button to Chat/How to use
 4. How to use screen should note that hold for help is only for grave emergencies, all contacts/emergency services will be contacted.
+
+Helpful Links:
+Link to firebase: https://console.firebase.google.com/u/0/project/personal-alert-device/overview?utm_source=studio
+Link to Google Auth: https://console.cloud.google.com/auth/clients/510745568169-40bbkufo4phkvjj3d9bd5acebu0uk2tb.apps.googleusercontent.com?project=robotic-almanac-440820-g2
