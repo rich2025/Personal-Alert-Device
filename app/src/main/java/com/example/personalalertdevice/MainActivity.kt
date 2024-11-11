@@ -43,6 +43,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+            val contactsViewModel = viewModel<ContactsViewModel>()
+
             NavHost(navController = navController, startDestination = "sign_in") {
                 composable(route = "sign_in") {
                     val viewModel: SignInViewModel = viewModel()
@@ -129,7 +131,10 @@ class MainActivity : ComponentActivity() {
                 composable(route = "ContactsScreen") { ContactsScreen(navController) }
                 composable(route = "HowToScreen") { HowToScreen(navController) }
                 composable(route = "HelpScreen") { HelpScreen(navController) }
-                composable(route = "ContactsListScreen") { ContactsListScreen(navController) }
+
+                composable(route = "ContactsListScreen") {
+                    ContactsListScreen(navController, contactsViewModel)
+                }
             }
         }
     }
