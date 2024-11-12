@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,15 +49,14 @@ fun LoginScreen(
                 contentDescription = "Logo Icon",
                 modifier = Modifier
                     .size(500.dp)
-                    .offset(x = 10.dp, y = 125.dp),
+                    .offset(x = 10.dp, y = (-10).dp),
                 tint = Color.Unspecified
             )
-            Spacer(modifier = Modifier.height(200.dp))
+            Spacer(modifier = Modifier.height((0).dp))
             val coroutineScope = rememberCoroutineScope()
 
-            Box(
-                modifier = Modifier.offset(y = (-275).dp)
-            ) {
+            // Button Box
+            Box() {
                 Button(
                     onClick = {
                         isLoading = true
@@ -67,32 +67,36 @@ fun LoginScreen(
                             if (isSignedIn) {
                                 onLoginSuccess()
                             } else {
-                                loginError = "Login failed. Please try again."
+                                loginError = "     LOGIN FAILED\nPLEASE TRY AGAIN"
                             }
                         }
                     },
                     enabled = !isLoading,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 10.dp, vertical = 20.dp)
-                        .height(200.dp),
+                        .padding(horizontal = 10.dp, vertical = 10.dp)
+                        .offset(y = (-100).dp)
+                        .height(100.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF32a852)),
                 ) {
                     Text(
                         text = if (isLoading) "Signing in..." else "Sign in with Google",
-                        fontSize = 30.sp,
+                        fontSize = 35.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                 }
             }
 
+            // Spacer to move the error message below the button
+            Spacer(modifier = Modifier.offset(y = (300).dp)) // Adjust to control spacing below the button
+
+            // Error message displayed below the button
             loginError?.let { error ->
-                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = error,
-                    fontSize = 30.sp,
+                    fontSize = 35.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Red
                 )
