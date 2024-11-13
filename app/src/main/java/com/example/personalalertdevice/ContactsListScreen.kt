@@ -63,7 +63,7 @@ fun RequestContactPermission(navController: NavController, onPermissionGranted: 
                     val textToShow = if (contactPermissionState.status.shouldShowRationale) {
                         "The app needs access to your contacts. Please request and allow permission."
                     } else {
-                        "You have denied contact permission. Please enable it from Settings > Security & Privacy > Privacy Control > Permission Manager > Contacts > Personal Alert Device."
+                        "You have denied contact permission. Please enable it from Settings."
                     }
 
                     Text(
@@ -81,12 +81,12 @@ fun RequestContactPermission(navController: NavController, onPermissionGranted: 
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF32a852)),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier
-                                .padding(top = 0.dp, bottom = 100.dp)
-                                .size(width = 250.dp, height = 80.dp)
+                                .padding(top = 0.dp, bottom = 150.dp)
+                                .size(width = 300.dp, height = 120.dp)
                         ) {
                             Text(
                                 text = "Request Permission",
-                                fontSize = 22.sp,
+                                fontSize = 27.sp,
                                 color = Color.White,
                                 fontWeight = FontWeight.Bold
                             )

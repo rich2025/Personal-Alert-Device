@@ -40,7 +40,8 @@ fun MainScreen(
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
-    ) { // Main Column, retrieve name from user info and insert
+    ) {
+        // Retrieve user name and profile picture
             Text(
                 text = "Hello, $userName",
                 style = MaterialTheme.typography.headlineLarge.copy(
