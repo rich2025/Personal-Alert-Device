@@ -26,12 +26,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
+import coil.compose.AsyncImage
 
 // Composable for main screen
 @Composable
 fun MainScreen(
     navController: NavController,
+    userName: String,
+    profilePictureUrl: String?
 ) {
     Column(
         modifier = Modifier
@@ -40,7 +42,7 @@ fun MainScreen(
         verticalArrangement = Arrangement.SpaceBetween
     ) { // Main Column, retrieve name from user info and insert
             Text(
-                text = "Hello, *NAME*",
+                text = "Hello, $userName",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontSize = 45.sp,
                     fontWeight = FontWeight.Bold
@@ -48,6 +50,19 @@ fun MainScreen(
                 color = Color.Black,
                 modifier = Modifier.padding(vertical = 70.dp)
             )
+
+        if (profilePictureUrl != null) {
+            AsyncImage(
+                model = profilePictureUrl,
+                contentDescription = "Profile picture",
+                modifier = Modifier
+                    .size(170.dp)
+                    .offset(y = (-20).dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.height(40.dp))
+        }
 
         // Navigation Button Group
         Column(

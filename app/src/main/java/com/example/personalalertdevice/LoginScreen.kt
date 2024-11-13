@@ -44,14 +44,14 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Logo Icon",
-                modifier = Modifier
-                    .size(500.dp)
-                    .offset(x = 10.dp, y = (-10).dp),
-                tint = Color.Unspecified
-            )
+//            Icon(
+//                painter = painterResource(id = R.drawable.health_icon),
+//                contentDescription = "Logo Icon",
+//                modifier = Modifier
+//                    .size(400.dp)
+//                    .offset(x = 5.dp, y = (-10).dp),
+//                tint = Color.Unspecified
+//            )
             Spacer(modifier = Modifier.height((0).dp))
             val coroutineScope = rememberCoroutineScope()
 

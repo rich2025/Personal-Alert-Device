@@ -21,12 +21,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+
         googleAuthClient = GoogleAuthClient(this)
 
         setContent {
             val navController = rememberNavController()
             val contactsViewModel = viewModel<ContactsViewModel>()
 
+        // GOOGLE AUTH CLIENT
             // Check if user previously signed in
             val startDestination = if (googleAuthClient.isSignedIn()) {
                 "MainScreen"  // If user already logged in, go to MainScreen
@@ -34,9 +36,18 @@ class MainActivity : ComponentActivity() {
                 "LoginScreen" // Else go to LoginScreen
             }
 
+            val firebaseUser = FirebaseAuth.getInstance().currentUser
+            val fullName = firebaseUser?.displayName ?: "User"
+            val userName = fullName.split(" ").firstOrNull() ?: "User"
+            val profilePictureUrl = firebaseUser?.photoUrl?.toString()
+
             NavHost(navController = navController, startDestination = startDestination) {
                 composable("MainScreen") {
-                    MainScreen(navController)
+                    MainScreen(
+                        navController = navController,
+                        userName = userName,
+                        profilePictureUrl = profilePictureUrl
+                    )
                 }
                 composable("LoginScreen") {
                     LoginScreen(
@@ -46,6 +57,8 @@ class MainActivity : ComponentActivity() {
                         googleAuthClient = googleAuthClient
                     )
                 }
+        // GOOGLE AUTH CLIENT
+
                 composable("ProfileScreen") { ProfileScreen(navController) }
                 composable("HealthScreen") { HealthScreen(navController) }
                 composable("ContactsScreen") { ContactsScreen(navController) }
