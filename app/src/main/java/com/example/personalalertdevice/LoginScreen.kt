@@ -44,15 +44,15 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-//            Icon(
-//                painter = painterResource(id = R.drawable.health_icon),
-//                contentDescription = "Logo Icon",
-//                modifier = Modifier
-//                    .size(400.dp)
-//                    .offset(x = 5.dp, y = (-10).dp),
-//                tint = Color.Unspecified
-//            )
-            Spacer(modifier = Modifier.height((0).dp))
+            Icon(
+                painter = painterResource(id = R.drawable.pad_logo),
+                contentDescription = "Logo Icon",
+                modifier = Modifier
+                    .size(400.dp)
+                    .offset(x = 4.dp, y = (-20).dp),
+                tint = Color.Unspecified
+            )
+            Spacer(modifier = Modifier.height((40).dp))
             val coroutineScope = rememberCoroutineScope()
 
             // Button Box
@@ -67,7 +67,7 @@ fun LoginScreen(
                             if (isSignedIn) {
                                 onLoginSuccess()
                             } else {
-                                loginError = "     Login Failed\nPlease Try Again"
+                                loginError = "    Login Failed\nPlease Try Again"
                             }
                         }
                     },
