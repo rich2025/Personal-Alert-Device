@@ -67,7 +67,7 @@ fun LoginScreen(
                             if (isSignedIn) {
                                 onLoginSuccess()
                             } else {
-                                loginError = "     LOGIN FAILED\nPLEASE TRY AGAIN"
+                                loginError = "     Login Failed\nPlease Try Again"
                             }
                         }
                     },

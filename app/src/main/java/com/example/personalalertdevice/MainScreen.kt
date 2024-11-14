@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
+import android.content.SharedPreferences
 
 // Composable for main screen
 @Composable
@@ -149,7 +150,7 @@ fun MainScreen(
                             tint = Color.White
                         )
                         Text(
-                            text = "Contact",
+                            text = "Contacts",
                             style = MaterialTheme.typography.headlineLarge.copy(
                                 fontSize = 36.sp,
                                 fontWeight = FontWeight.Bold

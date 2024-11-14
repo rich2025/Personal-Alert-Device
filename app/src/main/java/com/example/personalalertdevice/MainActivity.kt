@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -15,11 +17,17 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
+import com.example.personalalertdevice.saveUserData
+import com.example.personalalertdevice.loadUserData
+
 class MainActivity : ComponentActivity() {
 
     private lateinit var googleAuthClient: GoogleAuthClient
     private val userRepository = UserRepository()
     private val firebaseAuth: FirebaseAuth by lazy { Firebase.auth }
+
+    private var userName: String = "User"
+    private var profilePictureUrl: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,27 +35,31 @@ class MainActivity : ComponentActivity() {
 
         googleAuthClient = GoogleAuthClient(this)
 
+        // Load user data from UserDataDetails shared preference
+        val (savedUserName, savedProfilePictureUrl) = loadUserData(this)
+        userName = savedUserName
+        profilePictureUrl = savedProfilePictureUrl
+
         setContent {
             val navController = rememberNavController()
             val contactsViewModel = viewModel<ContactsViewModel>()
 
-            // GOOGLE AUTH CLIENT
-            // Check if user previously signed in
             val startDestination = if (googleAuthClient.isSignedIn()) {
-                "MainScreen"  // If user already logged in, go to MainScreen
+                "MainScreen"
             } else {
-                "LoginScreen" // Else go to LoginScreen
+                "LoginScreen"
             }
 
-            var userName = "User"
-            var profilePictureUrl: String? = null
-
+            // Listen for authentication state changes
             firebaseAuth.addAuthStateListener { auth ->
                 val firebaseUser = auth.currentUser
                 if (firebaseUser != null) {
                     val fullName = firebaseUser.displayName ?: "User"
                     userName = fullName.split(" ").firstOrNull() ?: "User"
                     profilePictureUrl = firebaseUser.photoUrl?.toString()
+
+                    // save user data to the shared preference
+                    saveUserData(this@MainActivity, userName, profilePictureUrl)
 
                     // Save user data to Firestore after login, if not already saved
                     lifecycleScope.launch {
@@ -70,14 +82,11 @@ class MainActivity : ComponentActivity() {
                 composable("LoginScreen") {
                     LoginScreen(
                         onLoginSuccess = {
-                            // Redirect to MainScreen after login success
                             navController.navigate("MainScreen")
                         },
                         googleAuthClient = googleAuthClient
                     )
                 }
-                // GOOGLE AUTH CLIENT
-
                 composable("ProfileScreen") { ProfileScreen(navController) }
                 composable("HealthScreen") { HealthScreen(navController) }
                 composable("ContactsScreen") { ContactsScreen(navController) }
