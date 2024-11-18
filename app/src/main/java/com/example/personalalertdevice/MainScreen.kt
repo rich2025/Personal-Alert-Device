@@ -150,7 +150,7 @@ fun MainScreen(
                             tint = Color.White
                         )
                         Text(
-                            text = "Contacts",
+                            text = "Contact",
                             style = MaterialTheme.typography.headlineLarge.copy(
                                 fontSize = 36.sp,
                                 fontWeight = FontWeight.Bold

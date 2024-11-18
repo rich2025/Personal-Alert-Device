@@ -1,5 +1,6 @@
 package com.example.personalalertdevice
 
+import ContactsViewModel
 import android.Manifest
 import android.content.Context
 import android.provider.ContactsContract
@@ -30,6 +31,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 
 // Holds details associated with each contact
 data class Contact(val id: String, val name: String, val phoneNumber: String)
@@ -143,7 +147,7 @@ fun groupContactsByLetter(contacts: List<Contact>): Map<Char, List<Contact>> {
 }
 
 @Composable
-fun ContactsListScreen(navController: NavController, viewModel: ContactsViewModel) {
+fun ContactsListScreen(navController: NavController, viewModel: ContactsViewModel = viewModel()) {
     val context = LocalContext.current
     var contacts by remember { mutableStateOf<List<Contact>>(emptyList()) }
     var groupedContacts by remember { mutableStateOf<Map<Char, List<Contact>>>(emptyMap()) }
@@ -153,9 +157,8 @@ fun ContactsListScreen(navController: NavController, viewModel: ContactsViewMode
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
-
     ) {
-        // Return Navigation Button Group
+        // Back button
         Button(
             onClick = { navController.popBackStack() },
             colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
@@ -179,16 +182,18 @@ fun ContactsListScreen(navController: NavController, viewModel: ContactsViewMode
             )
         }
 
+        // Request permission and load contacts
         RequestContactPermission(navController = navController, onPermissionGranted = {
             contacts = getContacts(context)
             groupedContacts = groupContactsByLetter(contacts)
         })
 
+        // Contact list
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(0.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f) // This will allow the LazyColumn to take up the available space
+                .weight(1f) // Make LazyColumn take up remaining space
                 .padding(horizontal = 16.dp)
         ) {
             groupedContacts.forEach { (letter, contactsList) ->
@@ -204,17 +209,20 @@ fun ContactsListScreen(navController: NavController, viewModel: ContactsViewMode
                             .background(Color(0xFFE0E0E0), RoundedCornerShape(4.dp))
                     )
                 }
-                // Store contact names in shared view model to persist across screens
+
                 items(contactsList) { contact ->
                     ContactItem(
                         contact = contact,
                         isSelected = viewModel.designatedContacts.contains(contact.name),
                         onClick = { selectedContact ->
                             if (viewModel.designatedContacts.contains(selectedContact.name)) {
-                                viewModel.designatedContacts.remove(selectedContact.name)
+                                // Remove contact using ViewModel
+                                viewModel.removeContact(selectedContact.name)
                             } else {
-                                viewModel.designatedContacts.add(selectedContact.name)
+                                // Add contact using ViewModel
+                                viewModel.addContact(selectedContact.name)
                             }
+                            Log.d("ContactsListScreen", "Designated Contacts List: ${viewModel.designatedContacts}")
                         }
                     )
                 }
