@@ -4,10 +4,9 @@ EC463 2024-2025\
 Team 19
 
 Upcoming Goals:
-1. Finish Contacts and ContactsList
-2. Upload Designated Contacts to Firestore
+1. Finish Contacts screen UI
 3. Upload Hardware data to Firestore
-4. Setup Profile Screen frontend
+4. Reload preexisting Profile screen data, update UI
 
 Notes:
 1. Additional data should be a sub collection of the overarching Users/uid document
