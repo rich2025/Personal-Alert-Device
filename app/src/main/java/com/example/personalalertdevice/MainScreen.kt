@@ -58,7 +58,7 @@ fun MainScreen(
             Text(
                 text = "Sign Out",
                 style = MaterialTheme.typography.headlineLarge.copy(
-                    fontSize = 20.sp,
+                    fontSize = 22.sp,
                     fontWeight = FontWeight.Bold
                 ),
                 color = Color.White

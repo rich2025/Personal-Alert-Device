@@ -3,6 +3,7 @@ package com.example.personalalertdevice
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 
 class ProfileViewModel(private val firestore: FirebaseFirestore) : ViewModel() {
     fun saveProfileData(userId: String, age: String, gender: String, weight: String, height: String) {
@@ -15,7 +16,7 @@ class ProfileViewModel(private val firestore: FirebaseFirestore) : ViewModel() {
 
         firestore.collection("Users")
             .document(userId)
-            .set(profileData)
+            .set(profileData, SetOptions.merge())
             .addOnSuccessListener {
                 Log.d("Firestore", "Profile data successfully written!")
             }
