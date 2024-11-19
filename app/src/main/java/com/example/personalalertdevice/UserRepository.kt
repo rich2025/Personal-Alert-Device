@@ -1,6 +1,7 @@
 package com.example.personalalertdevice
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -21,14 +22,18 @@ class UserRepository {
 
         return try {
             if (firebaseUser != null) {
-                val user = User(
-                    name = firebaseUser.displayName ?: "User",
-                    email = firebaseUser.email ?: "No Email",
-                    uid = firebaseUser.uid
+                val user = mapOf(
+                    "name" to (firebaseUser.displayName ?: "User"),
+                    "email" to (firebaseUser.email ?: "No Email"),
+                    "uid" to firebaseUser.uid
                 )
 
-                // Save the user data in Firestore
-                db.collection("Users").document(firebaseUser.uid).set(user).await()
+                // Merge the user data in Firestore to preserve existing fields
+                db.collection("Users")
+                    .document(firebaseUser.uid)
+                    .set(user, SetOptions.merge())
+                    .await()
+
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("No authenticated user"))

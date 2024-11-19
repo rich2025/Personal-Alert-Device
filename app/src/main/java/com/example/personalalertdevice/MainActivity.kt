@@ -1,5 +1,6 @@
 package com.example.personalalertdevice
 
+import ContactsViewModel
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity

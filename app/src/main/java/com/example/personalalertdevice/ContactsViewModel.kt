@@ -9,7 +9,7 @@ class ContactsViewModel : ViewModel() {
     val designatedContacts = mutableStateListOf<String>() // Mutable state for UI updates
     private val firestore = FirebaseFirestore.getInstance()
     private var userId: String? = null
-    private var userDocRef = firestore.collection("Users").document("default") // Temporary placeholder
+    private var userDocRef = firestore.collection("Users").document("default")
 
     init {
         fetchUserIdAndLoadContacts()
@@ -41,21 +41,24 @@ class ContactsViewModel : ViewModel() {
     }
 
     private fun loadDesignatedContacts() {
+
         if (userId == null) {
             Log.e("ContactsViewModel", "Unable to load contacts.")
             return
         }
-
         userDocRef.get()
             .addOnSuccessListener { document ->
+
+                //reuploadDesignatedContacts()
+                Log.d("ContactsViewModel", "Designated contacts on app initialization: $designatedContacts")
+
                 if (document != null && document.contains("Designated Contacts")) {
                     val contacts = document["Designated Contacts"] as? List<String> ?: emptyList()
+
+                    // Update the designatedContacts list and log the current contacts
                     designatedContacts.clear()
                     designatedContacts.addAll(contacts)
                     Log.d("Firestore", "Loaded designated contacts: $designatedContacts")
-
-                    // Check Firestore is updated with contacts again
-                    updateFirestoreContacts(designatedContacts)
                 } else {
                     Log.d("Firestore", "No designated contacts found.")
                 }
@@ -64,6 +67,17 @@ class ContactsViewModel : ViewModel() {
                 Log.e("Firestore", "Failed to load designated contacts: $e")
             }
     }
+
+//    private fun reuploadDesignatedContacts() {
+//        userDocRef.update("Designated Contacts", FieldValue.arrayUnion(*designatedContacts.toTypedArray()))
+//            .addOnSuccessListener {
+//                Log.d("Firestore", "Re-uploaded designated contacts to Firestore: $designatedContacts")
+//            }
+//            .addOnFailureListener { e ->
+//                Log.e("Firestore", "Failed to re-upload designated contacts: $e")
+//            }
+//    }
+
 
     // Update Firestore with the latest list of designated contacts
     private fun updateFirestoreContacts(contacts: List<String>) {
