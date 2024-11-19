@@ -17,12 +17,15 @@ import kotlinx.coroutines.launch
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import androidx.lifecycle.ViewModelProvider
 
 import com.example.personalalertdevice.saveUserData
 import com.example.personalalertdevice.loadUserData
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : ComponentActivity() {
 
+    private lateinit var profileViewModel: ProfileViewModel
     private lateinit var googleAuthClient: GoogleAuthClient
     private val userRepository = UserRepository()
     private val firebaseAuth: FirebaseAuth by lazy { Firebase.auth }
@@ -33,6 +36,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // initialize FirebaseFirestore
+        val firestore = FirebaseFirestore.getInstance()
+
+        //use custom factory to create ProfileViewModel
+        val factory = ProfileViewModelFactory(firestore)
+        profileViewModel = ViewModelProvider(this, factory).get(ProfileViewModel::class.java)
 
         googleAuthClient = GoogleAuthClient(this)
 
@@ -88,7 +98,10 @@ class MainActivity : ComponentActivity() {
                         googleAuthClient = googleAuthClient
                     )
                 }
-                composable("ProfileScreen") { ProfileScreen(navController) }
+                composable("ProfileScreen") {
+                    val userId = firebaseAuth.currentUser?.uid ?: ""
+                    ProfileScreen(navController = navController, userId = userId)
+                }
                 composable("HealthScreen") { HealthScreen(navController) }
                 composable("ContactsScreen") { ContactsScreen(navController) }
                 composable("HowToScreen") { HowToScreen(navController) }
