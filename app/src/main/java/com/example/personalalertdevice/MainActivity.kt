@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity() {
                     ProfileScreen(navController = navController, userId = userId)
                 }
                 composable("HealthScreen") { HealthScreen(navController) }
-                composable("ContactsScreen") { ContactsScreen(navController) }
+                composable("ContactsScreen") { ContactsScreen(navController, contactsViewModel) }
                 composable("HowToScreen") { HowToScreen(navController) }
                 composable("HelpScreen") { HelpScreen(navController) }
                 composable("ContactsListScreen") {
