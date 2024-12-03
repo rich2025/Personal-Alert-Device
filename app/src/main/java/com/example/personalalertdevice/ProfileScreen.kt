@@ -50,11 +50,36 @@ fun ProfileScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        // Return Button
+        Button(
+            onClick = { navController.navigate("MainScreen") },
+            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(top = 40.dp, bottom = 16.dp, start = 16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.Black,
+                modifier = Modifier.size(45.dp)
+            )
+            Text(
+                text = "RETURN",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Age Input
         TextField(
             value = age,
@@ -121,26 +146,5 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Return Button
-        Button(
-            onClick = { navController.navigate("MainScreen") },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.align(Alignment.Start)
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back",
-                tint = Color.Black,
-                modifier = Modifier.size(45.dp)
-            )
-            Text(
-                text = "RETURN",
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                modifier = Modifier.padding(start = 8.dp)
-            )
-        }
     }
 }

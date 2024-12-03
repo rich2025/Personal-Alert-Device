@@ -82,7 +82,7 @@ fun ContactsScreen(navController: NavController, viewModel: ContactsViewModel) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Color.LightGray, RoundedCornerShape(8.dp))
-                            .padding(16.dp)
+                            .padding(20.dp)
                     )
                 }
             }
@@ -97,7 +97,7 @@ fun ContactsScreen(navController: NavController, viewModel: ContactsViewModel) {
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp)
+                .height(200.dp)
                 .padding(horizontal = 10.dp, vertical = 20.dp)
         ) {
             Text(
