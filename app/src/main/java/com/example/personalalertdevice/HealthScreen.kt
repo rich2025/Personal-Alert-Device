@@ -22,7 +22,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun HealthScreen(navController: NavController) {
-    val coordinate = LatLng(37.7749, -122.4194) // PLACEHOLDER COORDINATES
+    val coordinate = LatLng(42.34926382071209, -71.10649196894487) // PLACEHOLDER COORDINATES, DYNAMIC
     val cameraPositionState = rememberCameraPositionState {
         position = com.google.android.gms.maps.model.CameraPosition.Builder()
             .target(coordinate)
@@ -81,7 +81,47 @@ fun HealthScreen(navController: NavController) {
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Vitals Button
+            Button(
+                onClick = {  },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFd93c1c)),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = "Vitals",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
+
+            // History Button
+            Button(
+                onClick = { },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFd9b61c)),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = "History",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
+        }
     }
 }
 
