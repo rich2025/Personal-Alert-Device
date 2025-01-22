@@ -90,7 +90,7 @@ fun HealthScreen(navController: NavController) {
         ) {
             // Vitals Button
             Button(
-                onClick = {  },
+                onClick = { navController.navigate("VitalsScreen") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(80.dp),

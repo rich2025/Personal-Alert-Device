@@ -106,6 +106,7 @@ class MainActivity : ComponentActivity() {
                 composable("ContactsScreen") { ContactsScreen(navController, contactsViewModel) }
                 composable("HowToScreen") { HowToScreen(navController) }
                 composable("HelpScreen") { HelpScreen(navController) }
+                composable("VitalsScreen") { VitalsScreen(navController) }
                 composable("ContactsListScreen") {
                     ContactsListScreen(navController, contactsViewModel)
                 }
