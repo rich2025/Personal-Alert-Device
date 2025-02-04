@@ -127,11 +127,11 @@ fun ProfileScreenMain(
         // Profile Picture
         Box(
             modifier = Modifier
-                .size(200.dp)
+                .size(250.dp)
                 .padding(top = 30.dp)
                 .clickable { showDialog = true }
-                .background(Color.LightGray, CircleShape)
-                .clip(CircleShape),
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.LightGray),
             contentAlignment = Alignment.Center
         ) {
             if (profileImageUri != null) {
