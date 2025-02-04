@@ -96,6 +96,7 @@ dependencies {
     //
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("io.coil-kt:coil-compose:2.0.0")
+    implementation ("com.github.yalantis:ucrop:2.2.6")
 }
 
 // Apply Google services plugin for Firebase

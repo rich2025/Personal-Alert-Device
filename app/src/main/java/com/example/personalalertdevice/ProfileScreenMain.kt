@@ -5,26 +5,23 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -36,9 +33,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,9 +48,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import coil.compose.rememberImagePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
+import com.yalantis.ucrop.UCrop
 import java.io.File
+import java.util.*
+
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -67,30 +62,41 @@ fun ProfileScreenMain(
     firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) {
     val context = LocalContext.current
-
     var profileImageUri by remember { mutableStateOf<Uri?>(null) }
     var showDialog by remember { mutableStateOf(false) }
 
     val photoFile = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "profile_photo.jpg")
     val tempUri = FileProvider.getUriForFile(context, "${context.packageName}.provider", photoFile)
 
+    // Crop launcher
+    val cropLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            result.data?.let { data ->
+                val outputUri = UCrop.getOutput(data)
+                if (outputUri != null) {
+                    profileImageUri = outputUri
+                } else {
+                    Toast.makeText(context, "crop error", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     // Image picker launcher
     val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let { profileImageUri = it }
+        uri?.let {
+            startCrop(context, it, cropLauncher)
+        }
     }
 
     // Camera launcher
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success) profileImageUri = tempUri
+        if (success) startCrop(context, tempUri, cropLauncher)
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
         val cameraGranted = permissions[android.Manifest.permission.CAMERA] ?: false
-        val storageGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissions[android.Manifest.permission.READ_MEDIA_IMAGES] ?: false
-        } else {
-            permissions[android.Manifest.permission.READ_EXTERNAL_STORAGE] ?: false
-        }
+        val storageGranted = permissions[android.Manifest.permission.READ_MEDIA_IMAGES] ?: false
 
         if (cameraGranted) cameraLauncher.launch(tempUri)
         if (storageGranted) galleryLauncher.launch("image/*")
@@ -119,6 +125,7 @@ fun ProfileScreenMain(
             Text(
                 text = "RETURN",
                 fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 modifier = Modifier.padding(start = 8.dp)
             )
@@ -152,7 +159,7 @@ fun ProfileScreenMain(
         }
     }
 
-    // image picker
+    // Image Picker Dialog
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -195,3 +202,24 @@ fun ProfileScreenMain(
         )
     }
 }
+
+fun startCrop(context: Context, sourceUri: Uri, cropLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
+    val destinationUri = Uri.fromFile(File(context.cacheDir, "cropped_${UUID.randomUUID()}.jpg"))
+    val options = UCrop.Options().apply {
+        setCompressionQuality(80)
+        setFreeStyleCropEnabled(true)
+        setCircleDimmedLayer(true)
+    }
+
+    // temp perms
+    context.grantUriPermission(context.packageName, sourceUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+    val cropIntent = UCrop.of(sourceUri, destinationUri)
+        .withAspectRatio(1f, 1f)
+        .withMaxResultSize(500, 500)
+        .withOptions(options)
+        .getIntent(context)
+
+    cropLauncher.launch(cropIntent)
+}
+
