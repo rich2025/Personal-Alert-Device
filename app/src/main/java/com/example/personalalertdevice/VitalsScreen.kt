@@ -1,7 +1,10 @@
 package com.example.personalalertdevice
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.Column
@@ -36,7 +39,7 @@ fun VitalsScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -47,7 +50,7 @@ fun VitalsScreen(navController: NavController) {
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(top = 40.dp, bottom = 16.dp)
+                .padding(top = 32.dp, bottom = 16.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -60,7 +63,7 @@ fun VitalsScreen(navController: NavController) {
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier.padding(start = 10.dp)
             )
         }
 
@@ -68,7 +71,7 @@ fun VitalsScreen(navController: NavController) {
 
         Column(
             modifier = Modifier.fillMaxSize()
-                .padding(start = 20.dp),
+                .padding(start = 0.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(40.dp)
         ) {
@@ -76,7 +79,7 @@ fun VitalsScreen(navController: NavController) {
             VitalsSection(
                 title = "Heart Rate",
                 icon = painterResource(id = R.drawable.heart),  // need to update icons
-                current = "80 bpm",     // placeholder variables, get from firestore later
+                current = "85 bpm",     // placeholder variables, get from firestore later
                 avg = "75 bpm",
                 highLow = "95 bpm / 60 bpm"
             )
@@ -84,7 +87,7 @@ fun VitalsScreen(navController: NavController) {
             // Body Temperature
             VitalsSection(
                 title = "Body Temperature",
-                icon = painterResource(id = R.drawable.heart),
+                icon = painterResource(id = R.drawable.temp),
                 current = "98.6°F",
                 avg = "98.4°F",
                 highLow = "99.1°F / 97.8°F"
@@ -93,7 +96,7 @@ fun VitalsScreen(navController: NavController) {
             // Blood Oxygen
             VitalsSection(
                 title = "Blood Oxygen",
-                icon = painterResource(id = R.drawable.heart),
+                icon = painterResource(id = R.drawable.bo2),
                 current = "98%",
                 avg = "97%",
                 highLow = "99% / 95%"
@@ -111,78 +114,94 @@ fun VitalsSection(
     avg: String,
     highLow: String
 ) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text(
-            text = title,
-            fontSize = 35.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Image(
-                painter = icon,
-                contentDescription = "$title Icon",
-                modifier = Modifier
-                    .size(50.dp)
-                    .padding(end = 16.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .background(
+                color = Color(0xFFffd9d4),
+                shape = RoundedCornerShape(4.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            .border(
+                width = 3.dp,
+                color = Color.Gray,
+                shape = RoundedCornerShape(4.dp)
+            )
+            .padding(10.dp)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = title,
+                fontSize = 35.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
             ) {
-                Row {
-                    Text(
-                        text = "Current: ",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF1d2026)
-                    )
-                    Text(
-                        text = current,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.DarkGray
-                    )
-                }
-                Row {
-                    Text(
-                        text = "24-HR Avg: ",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF1d2026)
-                    )
-                    Text(
-                        text = avg,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.DarkGray
-                    )
-                }
-                Row {
-                    Text(
-                        text = "24-HR Hi/Lo: ",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF1d2026)
-                    )
-                    Text(
-                        text = highLow,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.DarkGray
-                    )
+                Image(
+                    painter = icon,
+                    contentDescription = "$title Icon",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(end = 0.dp, bottom = 10.dp)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row {
+                        Text(
+                            text = "Current: ",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF1d2026)
+                        )
+                        Text(
+                            text = current,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.DarkGray
+                        )
+                    }
+                    Row {
+                        Text(
+                            text = "24-HR Avg: ",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF1d2026)
+                        )
+                        Text(
+                            text = avg,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.DarkGray
+                        )
+                    }
+                    Row {
+                        Text(
+                            text = "24-HR Hi/Lo: ",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF1d2026)
+                        )
+                        Text(
+                            text = highLow,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.DarkGray
+                        )
+                    }
                 }
             }
         }
     }
 }
+
 
 
 

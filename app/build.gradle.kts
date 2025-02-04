@@ -81,7 +81,6 @@ dependencies {
     // Google dependencies
     implementation("com.google.accompanist:accompanist-permissions:0.36.0")
     implementation("com.google.accompanist:accompanist-coil:0.15.0")
-    implementation("io.coil-kt:coil-compose:2.0.0")
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation ("com.google.maps.android:maps-compose:2.9.1")
 
@@ -93,6 +92,10 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("io.coil-kt:coil-compose:2.0.0")
 }
 
 // Apply Google services plugin for Firebase

@@ -109,7 +109,7 @@ fun MainScreen(
                 ) {
                     Button(
                         onClick = {
-                            navController.navigate("ProfileScreen")
+                            navController.navigate("ProfileScreenMain")
                         },
                         modifier = Modifier.size(175.dp),
                         shape = RoundedCornerShape(20.dp),

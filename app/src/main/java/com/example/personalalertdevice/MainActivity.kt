@@ -98,9 +98,9 @@ class MainActivity : ComponentActivity() {
                         googleAuthClient = googleAuthClient
                     )
                 }
-                composable("ProfileScreen") {
+                composable("ProfileScreenMain") {
                     val userId = firebaseAuth.currentUser?.uid ?: ""
-                    ProfileScreen(navController = navController, userId = userId)
+                    ProfileScreenMain(navController = navController, userId = userId)
                 }
                 composable("HealthScreen") { HealthScreen(navController) }
                 composable("ContactsScreen") { ContactsScreen(navController, contactsViewModel) }
