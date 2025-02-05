@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -92,7 +93,6 @@ fun ProfileScreenMain(
                 val outputUri = UCrop.getOutput(data)
                 if (outputUri != null) {
                     profileImageUri = outputUri
-                    // Save the profile image URL to Firestore
                     viewModel.saveProfileImage(userId, outputUri.toString())
                 } else {
                     Toast.makeText(context, "Crop error", Toast.LENGTH_SHORT).show()
@@ -158,30 +158,33 @@ fun ProfileScreenMain(
 
         // Profile Picture
         Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(250.dp)
                 .padding(top = 30.dp)
+                .size(250.dp)
+                .clip(CircleShape)
+                .background(Color.LightGray)
                 .clickable { showDialog = true }
-                .clip(RoundedCornerShape(100.dp))
-                .background(Color.LightGray),
-            contentAlignment = Alignment.Center
         ) {
             if (profileImageUri != null) {
                 Image(
                     painter = rememberImagePainter(profileImageUri),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier.fillMaxSize(),
+                    contentDescription = "Picture of Yourself",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             } else {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = "Upload Profile Picture",
+                    contentDescription = "Upload a Picture of Yourself",
                     modifier = Modifier.size(80.dp),
                     tint = Color.DarkGray
                 )
             }
         }
+
     }
 
     // Image Picker Dialog
