@@ -18,11 +18,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -31,6 +36,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -44,14 +50,18 @@ import com.google.firebase.firestore.FirebaseFirestore
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
+import com.example.personalalertdevice.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.yalantis.ucrop.UCrop
 import java.io.File
@@ -126,6 +136,13 @@ fun ProfileScreenMain(
         }
     }
 
+    val name = "Richard Yang"
+    val age = "21"
+    val gender = "Male"
+    val weight = "150 lb"
+    val height = "5'7"
+    val address = "22 Euston St 1"
+
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -167,7 +184,7 @@ fun ProfileScreenMain(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .padding(top = 30.dp)
+                .padding(top = 20.dp)
                 .size(250.dp)
                 .clip(CircleShape)
                 .background(Color.LightGray)
@@ -192,7 +209,65 @@ fun ProfileScreenMain(
             }
         }
 
+        // profile data display
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 15.dp)
+                .heightIn(min = 180.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 10.dp)
+                    .background(Color(0xffebeced), RoundedCornerShape(8.dp))
+            ) {
+                Column(
+                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
+                ) {
+                    ProfileLabelValue(label = "Name", value = name)
+                    ProfileLabelValue(label = "Age", value = age)
+                    ProfileLabelValue(label = "Gender", value = gender)
+                    ProfileLabelValue(label = "Weight", value = weight)
+                    ProfileLabelValue(label = "Height", value = height)
+                    ProfileLabelValue(label = "Address", value = address)
+                }
+            }
+
+            Button(
+                onClick = {  },
+                modifier = Modifier
+                    .height(203.dp)
+                    .width(50.dp),
+                shape = RoundedCornerShape(4.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF558f4f)),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .size(100.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.pencil),
+                        contentDescription = "Edit",
+                        modifier = Modifier.size(20.dp),
+                        tint = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Edit",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                        color = Color.White
+                    )
+                }
+            }
+        }
     }
+
 
     // Image Picker Dialog
     if (showDialog) {
@@ -259,9 +334,30 @@ fun ProfileScreenMain(
             confirmButton = {}
         )
     }
-
 }
 
+@Composable
+fun ProfileLabelValue(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 5.dp, end = 15.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            color = Color.Black
+        )
+        Text(
+            text = value,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.DarkGray
+        )
+    }
+}
 
 
 fun startCrop(context: Context, sourceUri: Uri, cropLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>) {

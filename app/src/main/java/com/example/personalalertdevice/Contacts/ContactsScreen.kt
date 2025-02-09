@@ -1,6 +1,7 @@
 package com.example.personalalertdevice.Contacts
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -75,7 +76,9 @@ fun ContactsScreen(navController: NavController, viewModel: ContactsViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .border(2.dp, Color.DarkGray, RoundedCornerShape(8.dp))
+                    .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(contacts) { contact ->
