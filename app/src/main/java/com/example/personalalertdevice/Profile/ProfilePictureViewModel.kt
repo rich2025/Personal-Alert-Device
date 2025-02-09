@@ -16,8 +16,8 @@ class ProfilePictureViewModel(private val firestore: FirebaseFirestore) : ViewMo
             .document(userId)
             .get()
             .addOnSuccessListener { document ->
-                if (document != null && document.contains("profileImageUrl")) {
-                    _profileImageUrl.value = document.getString("profileImageUrl")
+                if (document != null && document.contains("profile image")) {
+                    _profileImageUrl.value = document.getString("profile image")
                 }
             }
             .addOnFailureListener { e ->
@@ -26,7 +26,7 @@ class ProfilePictureViewModel(private val firestore: FirebaseFirestore) : ViewMo
     }
 
     fun saveProfileImage(userId: String, imageUrl: String) {
-        val profileData = hashMapOf("profileImageUrl" to imageUrl)
+        val profileData = hashMapOf("profile image" to imageUrl)
 
         firestore.collection("Users")
             .document(userId)

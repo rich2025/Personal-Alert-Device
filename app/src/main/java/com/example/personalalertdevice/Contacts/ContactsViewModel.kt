@@ -54,8 +54,8 @@ class ContactsViewModel : ViewModel() {
                 //reuploadDesignatedContacts()
                 Log.d("ContactsViewModel", "Designated contacts on app initialization: $designatedContacts")
 
-                if (document != null && document.contains("Designated Contacts")) {
-                    val contacts = document["Designated Contacts"] as? List<String> ?: emptyList()
+                if (document != null && document.contains("designated contacts")) {
+                    val contacts = document["designated contacts"] as? List<String> ?: emptyList()
 
                     // Update the designatedContacts list and log the current contacts
                     designatedContacts.clear()
@@ -71,7 +71,7 @@ class ContactsViewModel : ViewModel() {
     }
 
 //    private fun reuploadDesignatedContacts() {
-//        userDocRef.update("Designated Contacts", FieldValue.arrayUnion(*designatedContacts.toTypedArray()))
+//        userDocRef.update("designated contacts", FieldValue.arrayUnion(*designatedContacts.toTypedArray()))
 //            .addOnSuccessListener {
 //                Log.d("Firestore", "Re-uploaded designated contacts to Firestore: $designatedContacts")
 //            }
@@ -83,7 +83,7 @@ class ContactsViewModel : ViewModel() {
 
     // Update Firestore with the latest list of designated contacts
     private fun updateFirestoreContacts(contacts: List<String>) {
-        userDocRef.update("Designated Contacts", FieldValue.arrayUnion(*contacts.toTypedArray()))
+        userDocRef.update("designated contacts", FieldValue.arrayUnion(*contacts.toTypedArray()))
             .addOnSuccessListener {
                 Log.d("Firestore", "Successfully updated Firestore with designated contacts: $contacts")
             }
@@ -96,7 +96,7 @@ class ContactsViewModel : ViewModel() {
     fun addContact(contact: String) {
         if (!designatedContacts.contains(contact)) {
             designatedContacts.add(contact)
-            userDocRef.update("Designated Contacts", FieldValue.arrayUnion(contact))
+            userDocRef.update("designated contacts", FieldValue.arrayUnion(contact))
                 .addOnSuccessListener {
                     Log.d("Firestore", "Added contact: $contact")
                 }
@@ -110,7 +110,7 @@ class ContactsViewModel : ViewModel() {
     fun removeContact(contact: String) {
         if (designatedContacts.contains(contact)) {
             designatedContacts.remove(contact)
-            userDocRef.update("Designated Contacts", FieldValue.arrayRemove(contact))
+            userDocRef.update("designated contacts", FieldValue.arrayRemove(contact))
                 .addOnSuccessListener {
                     Log.d("Firestore", "Removed contact: $contact")
                 }

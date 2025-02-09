@@ -43,13 +43,20 @@ fun ContactsScreen(navController: NavController, viewModel: ContactsViewModel) {
                 tint = Color.Black,
                 modifier = Modifier.size(45.dp)
             )
-            Text(
-                text = "RETURN",
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                modifier = Modifier.padding(start = 8.dp)
-            )
+            Column(modifier = Modifier.padding(start = 8.dp)) {
+                Text(
+                    text = "RETURN",
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+                Text(
+                    text = "Main Screen",
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
