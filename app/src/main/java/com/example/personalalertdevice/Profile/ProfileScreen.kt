@@ -1,4 +1,4 @@
-package com.example.personalalertdevice
+package com.example.personalalertdevice.Profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Text

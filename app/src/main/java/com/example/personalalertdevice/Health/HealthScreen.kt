@@ -1,4 +1,4 @@
-package com.example.personalalertdevice
+package com.example.personalalertdevice.Health
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*

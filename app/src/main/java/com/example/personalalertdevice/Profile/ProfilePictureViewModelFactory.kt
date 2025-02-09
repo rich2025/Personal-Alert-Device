@@ -1,4 +1,4 @@
-package com.example.personalalertdevice
+package com.example.personalalertdevice.Profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

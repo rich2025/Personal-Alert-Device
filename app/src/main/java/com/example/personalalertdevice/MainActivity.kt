@@ -1,14 +1,12 @@
 package com.example.personalalertdevice
 
-import ContactsViewModel
+import com.example.personalalertdevice.Contacts.ContactsViewModel
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -19,9 +17,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import androidx.lifecycle.ViewModelProvider
+import com.example.personalalertdevice.Contacts.ContactsListScreen
+import com.example.personalalertdevice.Contacts.ContactsScreen
+import com.example.personalalertdevice.Health.HealthScreen
+import com.example.personalalertdevice.Health.VitalsScreen
+import com.example.personalalertdevice.Profile.ProfilePictureViewModel
+import com.example.personalalertdevice.Profile.ProfilePictureViewModelFactory
+import com.example.personalalertdevice.Profile.ProfileScreenMain
+import com.example.personalalertdevice.Profile.ProfileViewModel
+import com.example.personalalertdevice.Profile.ProfileViewModelFactory
 
-import com.example.personalalertdevice.saveUserData
-import com.example.personalalertdevice.loadUserData
 import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : ComponentActivity() {

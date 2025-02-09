@@ -1,4 +1,4 @@
-package com.example.personalalertdevice
+package com.example.personalalertdevice.Profile
 
 import android.content.Context
 import android.content.Intent

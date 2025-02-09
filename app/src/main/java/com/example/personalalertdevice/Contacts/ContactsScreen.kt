@@ -1,6 +1,5 @@
-package com.example.personalalertdevice
+package com.example.personalalertdevice.Contacts
 
-import ContactsViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun ContactsScreen(navController: NavController, viewModel: ContactsViewModel) {

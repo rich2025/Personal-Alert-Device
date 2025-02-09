@@ -1,6 +1,5 @@
-package com.example.personalalertdevice
+package com.example.personalalertdevice.Contacts
 
-import ContactsViewModel
 import android.Manifest
 import android.content.Context
 import android.provider.ContactsContract
@@ -26,14 +25,9 @@ import com.google.accompanist.permissions.rememberPermissionState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.text.style.TextAlign
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
 
 // Holds details associated with each contact
 data class Contact(val id: String, val name: String, val phoneNumber: String)

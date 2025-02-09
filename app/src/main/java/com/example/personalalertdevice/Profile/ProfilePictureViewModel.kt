@@ -1,4 +1,4 @@
-package com.example.personalalertdevice
+package com.example.personalalertdevice.Profile
 
 import android.util.Log
 import androidx.compose.runtime.State

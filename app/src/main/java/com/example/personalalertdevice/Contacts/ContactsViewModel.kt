@@ -1,3 +1,5 @@
+package com.example.personalalertdevice.Contacts
+
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel

@@ -27,8 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
-import android.content.SharedPreferences
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.personalalertdevice.Profile.ProfilePictureViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
