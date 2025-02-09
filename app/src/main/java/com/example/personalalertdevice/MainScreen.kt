@@ -41,7 +41,7 @@ fun MainScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Sign Out button in the top-left corner
+        // Sign Out button
         Button(
             onClick = {
                 Firebase.auth.signOut()
@@ -50,20 +50,37 @@ fun MainScreen(
                 }
             },
             modifier = Modifier
-                .align(Alignment.TopStart) // Position in the top-left
-                .padding(14.dp), // Add some padding from the edges, changed from 16 to 14
-            shape = RoundedCornerShape(10.dp), //changed this from 12 to 10
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                .align(Alignment.TopStart)
+                .padding(10.dp)
+                .width(200.dp)
+                .height(55.dp),
+            shape = RoundedCornerShape(7.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xffde4526))
         ) {
-            Text(
-                text = "Sign Out",
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                color = Color.White
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "Sign Out",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.White
+                )
+
+                if (profilePictureUrl != null) {
+                    Spacer(modifier = Modifier.width(12.dp))
+                    AsyncImage(
+                        model = profilePictureUrl,
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .size(35.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
         }
+
 
         Column(
             modifier = Modifier
@@ -80,6 +97,7 @@ fun MainScreen(
                 ),
                 color = Color.Black,
                 modifier = Modifier.padding(vertical = 70.dp)
+                    .offset(y = 17.dp)
             )
 
             if (profilePictureUrl != null) {
@@ -99,7 +117,8 @@ fun MainScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 50.dp),
+                    .padding(bottom = 50.dp)
+                    .offset(y = -15.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
