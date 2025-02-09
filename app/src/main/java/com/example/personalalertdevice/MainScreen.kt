@@ -28,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import android.content.SharedPreferences
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -36,8 +37,16 @@ import com.google.firebase.ktx.Firebase
 fun MainScreen(
     navController: NavController,
     userName: String,
-    profilePictureUrl: String?
+    profilePictureUrl: String?,
+    viewModel: ProfilePictureViewModel,
+    userId: String
 ) {
+    LaunchedEffect(userId) {
+        viewModel.loadProfileImage(userId)
+    }
+
+    val uploadedProfilePictureUrl = viewModel.profileImageUrl.value
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -100,10 +109,21 @@ fun MainScreen(
                     .offset(y = 17.dp)
             )
 
-            if (profilePictureUrl != null) {
+            if (uploadedProfilePictureUrl != null) {
+                AsyncImage(
+                    model = uploadedProfilePictureUrl,
+                    contentDescription = "Profile picture",
+                    modifier = Modifier
+                        .size(170.dp)
+                        .offset(y = (-20).dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.height(40.dp))
+            } else {
                 AsyncImage(
                     model = profilePictureUrl,
-                    contentDescription = "Profile picture",
+                    contentDescription = "Profile Picture",
                     modifier = Modifier
                         .size(170.dp)
                         .offset(y = (-20).dp)

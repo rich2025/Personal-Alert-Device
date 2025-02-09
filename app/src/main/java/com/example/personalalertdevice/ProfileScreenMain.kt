@@ -175,7 +175,7 @@ fun ProfileScreenMain(
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
-            } else {
+            } else if (profileImageUri == null){
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Upload a Picture of Yourself",

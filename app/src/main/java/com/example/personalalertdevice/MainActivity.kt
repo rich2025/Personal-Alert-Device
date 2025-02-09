@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.lifecycleScope
@@ -51,14 +52,23 @@ class MainActivity : ComponentActivity() {
         userName = savedUserName
         profilePictureUrl = savedProfilePictureUrl
 
+
+
         setContent {
             val navController = rememberNavController()
             val contactsViewModel = viewModel<ContactsViewModel>()
-
+            val profilePictureViewModel: ProfilePictureViewModel = viewModel(factory = ProfilePictureViewModelFactory(firestore))
+            val profileImageUrl = profilePictureViewModel.profileImageUrl.value
             val startDestination = if (googleAuthClient.isSignedIn()) {
                 "MainScreen"
             } else {
                 "LoginScreen"
+            }
+            val userId = firebaseAuth.currentUser?.uid ?: ""
+            LaunchedEffect(userId) {
+                if (userId.isNotEmpty()) {
+                    profilePictureViewModel.loadProfileImage(userId)
+                }
             }
 
             // Listen for authentication state changes
@@ -82,12 +92,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+
             NavHost(navController = navController, startDestination = startDestination) {
+                val userId = firebaseAuth.currentUser?.uid ?: ""
+
                 composable("MainScreen") {
                     MainScreen(
                         navController = navController,
                         userName = userName,
-                        profilePictureUrl = profilePictureUrl
+                        profilePictureUrl = profilePictureUrl,
+                        viewModel = profilePictureViewModel,
+                        userId = userId
                     )
                 }
                 composable("LoginScreen") {
