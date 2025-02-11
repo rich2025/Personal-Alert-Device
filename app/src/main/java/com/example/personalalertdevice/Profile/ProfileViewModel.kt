@@ -6,12 +6,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 
 class ProfileViewModel(private val firestore: FirebaseFirestore) : ViewModel() {
-    fun saveProfileData(userId: String, age: String, gender: String, weight: String, height: String) {
+    fun saveProfileData(userId: String, name: String, birthday: String, age: String, gender: String, weight: String, height: String, address: String) {
         val profileData = hashMapOf(
+            "full name" to name,
+            "birthday" to birthday,
             "age" to age,
             "gender" to gender,
             "weight" to weight,
-            "height" to height
+            "height" to height,
+            "address" to address
         )
 
         firestore.collection("Users")

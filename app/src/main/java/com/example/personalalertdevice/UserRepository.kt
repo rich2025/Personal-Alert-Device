@@ -23,7 +23,7 @@ class UserRepository {
         return try {
             if (firebaseUser != null) {
                 val user = mapOf(
-                    "name" to (firebaseUser.displayName ?: "User"),
+                    "google name" to (firebaseUser.displayName ?: "User"),
                     "email" to (firebaseUser.email ?: "No Email"),
                     "uid" to firebaseUser.uid
                 )

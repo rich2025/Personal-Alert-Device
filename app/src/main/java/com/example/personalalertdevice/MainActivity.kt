@@ -24,6 +24,7 @@ import com.example.personalalertdevice.Health.VitalsScreen
 import com.example.personalalertdevice.Profile.ProfilePictureViewModel
 import com.example.personalalertdevice.Profile.ProfilePictureViewModelFactory
 import com.example.personalalertdevice.Profile.ProfileScreenMain
+import com.example.personalalertdevice.Profile.ProfileScreen
 import com.example.personalalertdevice.Profile.ProfileViewModel
 import com.example.personalalertdevice.Profile.ProfileViewModelFactory
 
@@ -121,6 +122,10 @@ class MainActivity : ComponentActivity() {
                 composable("ProfileScreenMain") {
                     val userId = firebaseAuth.currentUser?.uid ?: ""
                     ProfileScreenMain(navController = navController, userId = userId)
+                }
+                composable("ProfileScreen") {
+                    val userId = firebaseAuth.currentUser?.uid ?: ""
+                    ProfileScreen(navController = navController, userId = userId)
                 }
                 composable("HealthScreen") { HealthScreen(navController) }
                 composable("ContactsScreen") { ContactsScreen(navController, contactsViewModel) }

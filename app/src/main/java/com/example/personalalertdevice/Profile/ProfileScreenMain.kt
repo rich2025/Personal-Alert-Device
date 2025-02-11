@@ -235,7 +235,7 @@ fun ProfileScreenMain(
             }
 
             Button(
-                onClick = {  },
+                onClick = { navController.navigate("ProfileScreen") },
                 modifier = Modifier
                     .height(203.dp)
                     .width(50.dp),
