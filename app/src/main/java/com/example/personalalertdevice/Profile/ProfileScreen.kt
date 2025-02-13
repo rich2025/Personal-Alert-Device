@@ -1,5 +1,6 @@
 package com.example.personalalertdevice.Profile
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
@@ -34,6 +35,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.TextFieldDefaults
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
@@ -45,15 +47,6 @@ fun ProfileScreen(
     val factory = ProfileViewModelFactory(firestore)
     val viewModel: ProfileViewModel = viewModel(factory = factory)
 
-    // UI remains the same
-//    val (firstName, setFirstName) = remember { mutableStateOf("") }
-//    val (middleInitial, setMiddleInitial) = remember { mutableStateOf("") }
-//    val (lastName, setLastName) = remember { mutableStateOf("") }
-//
-//    val name = listOf(firstName, middleInitial, lastName)
-//        .filter { it.isNotBlank() }
-//        .joinToString(" ")
-
     val (name, setName) = remember { mutableStateOf("") }
     val (birthday, setBirthday) = remember { mutableStateOf("") }
     val (age, setAge) = remember { mutableStateOf("") }
@@ -64,7 +57,21 @@ fun ProfileScreen(
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
     val (address, setAddress) = remember { mutableStateOf("") }
 
+    val (selectedMonth, setSelectedMonth) = remember { mutableStateOf("") }
+    val (expandedMonth, setExpandedMonth) = remember { mutableStateOf(false) }
 
+    val (selectedDay, setSelectedDay) = remember { mutableStateOf("") }
+    val (expandedDay, setExpandedDay) = remember { mutableStateOf(false) }
+
+    val (selectedYear, setSelectedYear) = remember { mutableStateOf("") }
+    val (expandedYear, setExpandedYear) = remember { mutableStateOf(false) }
+
+    val months = listOf(
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    )
+    val days = (1..31).map { it.toString() }
+    val years = (1900..2025).map { it.toString() }
 
     Column(
         modifier = Modifier
@@ -138,7 +145,13 @@ fun ProfileScreen(
                 TextField(
                     value = name,
                     onValueChange = setName,
-                    label = { Text("Click to Enter Your First and Last Name", fontSize = 15.sp, fontWeight = FontWeight.SemiBold) },
+                    label = {
+                        Text(
+                            "Click to Enter Your First and Last Name",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
                     textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color(0xffede4e1)
@@ -147,7 +160,6 @@ fun ProfileScreen(
                         .width(500.dp)
                         .height(55.dp)
                 )
-
             }
         }
 
@@ -180,23 +192,165 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                TextField(
-                    value = name,
-                    onValueChange = setName,
-                    label = { Text("Click to Choose Your Date of Birth", fontSize = 15.sp, fontWeight = FontWeight.SemiBold) },
-                    textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color(0xffede4e1)
-                    ),
-                    modifier = Modifier
-                        .width(500.dp)
-                        .height(55.dp)
-                )
+                // Month
+                Box {
+                    Button(
+                        onClick = { setExpandedMonth(true) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xffede4e1)
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .height(55.dp)
+                            .width(150.dp)
+                    ) {
+                        Text(
+                            text = selectedMonth.ifEmpty { "Month" },
+                            fontSize = if (selectedMonth.isEmpty()) 15.sp else 22.sp,
+                            fontWeight = if (selectedMonth.isEmpty()) FontWeight.SemiBold else FontWeight.Bold,
+                            color = if (selectedMonth.isEmpty()) Color.DarkGray else Color.Black
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expandedMonth,
+                        onDismissRequest = { setExpandedMonth(false) }
+                    ) {
+                        months.forEach { month ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = month,
+                                        fontSize = if (month == selectedMonth) 22.sp else 15.sp,
+                                        fontWeight = if (month == selectedMonth) FontWeight.Bold else FontWeight.SemiBold,
+                                        color = if (month == selectedMonth) Color.Black else Color.DarkGray
+                                    )
+                                },
+                                onClick = {
+                                    setSelectedMonth(month)
+                                    setExpandedMonth(false)
+                                }
+                            )
+                        }
+                    }
+                }
 
+                // Day
+                Box {
+                    Button(
+                        onClick = { setExpandedDay(true) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xffede4e1)
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .height(55.dp)
+                            .width(90.dp)
+                    ) {
+                        Text(
+                            text = selectedDay.ifEmpty { "Day" },
+                            fontSize = if (selectedDay.isEmpty()) 15.sp else 22.sp,
+                            fontWeight = if (selectedDay.isEmpty()) FontWeight.SemiBold else FontWeight.Bold,
+                            color = if (selectedDay.isEmpty()) Color.DarkGray else Color.Black
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expandedDay,
+                        onDismissRequest = { setExpandedDay(false) }
+                    ) {
+                        days.forEach { day ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = day,
+                                        fontSize = if (day == selectedDay) 22.sp else 15.sp,
+                                        fontWeight = if (day == selectedDay) FontWeight.Bold else FontWeight.SemiBold,
+                                        color = if (day == selectedDay) Color.Black else Color.DarkGray
+                                    )
+                                },
+                                onClick = {
+                                    setSelectedDay(day)
+                                    setExpandedDay(false)
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Year
+                Box {
+                    Button(
+                        onClick = { setExpandedYear(true) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xffede4e1)
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .height(55.dp)
+                            .width(120.dp)
+                    ) {
+                        Text(
+                            text = selectedYear.ifEmpty { "Year" },
+                            fontSize = if (selectedYear.isEmpty()) 15.sp else 22.sp,
+                            fontWeight = if (selectedYear.isEmpty()) FontWeight.SemiBold else FontWeight.Bold,
+                            color = if (selectedYear.isEmpty()) Color.DarkGray else Color.Black
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expandedYear,
+                        onDismissRequest = { setExpandedYear(false) }
+                    ) {
+                        years.forEach { year ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = year,
+                                        fontSize = if (year == selectedYear) 22.sp else 15.sp,
+                                        fontWeight = if (year == selectedYear) FontWeight.Bold else FontWeight.SemiBold,
+                                        color = if (year == selectedYear) Color.Black else Color.DarkGray
+                                    )
+                                },
+                                onClick = {
+                                    setSelectedYear(year)
+                                    setExpandedYear(false)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Save Profile Button
+                Button(
+                    onClick = {
+                        viewModel.saveProfileData(
+                            userId,
+                            name,
+                            birthday,
+                            age,
+                            gender,
+                            weight,
+                            height,
+                            address
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp)
+                        .height(60.dp)
+                ) {
+                    Text("Save Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
+    }
+
+
+
 
 
 //        // Age Input
@@ -268,21 +422,21 @@ fun ProfileScreen(
 //                .padding(vertical = 12.dp) // Added padding for better spacing
 //        )
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Save Profile Button
-        Button(
-            onClick = {
-                viewModel.saveProfileData(userId, name, birthday, age, gender, weight, height, address)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp)
-                .height(60.dp)
-        ) {
-            Text("Save Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-    }
-}
+//        Spacer(modifier = Modifier.height(32.dp))
+//
+//        // Save Profile Button
+//        Button(
+//            onClick = {
+//                viewModel.saveProfileData(userId, name, birthday, age, gender, weight, height, address)
+//            },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(horizontal = 32.dp)
+//                .height(60.dp)
+//        ) {
+//            Text("Save Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+//        }
+//
+//        Spacer(modifier = Modifier.height(32.dp))
+//    }
+//}
