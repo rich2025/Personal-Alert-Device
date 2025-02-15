@@ -50,6 +50,10 @@ dependencies {
     // Firestore
     implementation ("com.google.firebase:firebase-firestore-ktx:24.4.0")
 
+    implementation ("com.google.firebase:firebase-firestore-ktx")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
     //using this for debugging
     implementation ("com.jakewharton.timber:timber:5.0.1")
 

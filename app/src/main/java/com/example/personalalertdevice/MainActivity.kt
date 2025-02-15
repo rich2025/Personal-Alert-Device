@@ -27,8 +27,27 @@ import com.example.personalalertdevice.Profile.ProfileScreenMain
 import com.example.personalalertdevice.Profile.ProfileScreen
 import com.example.personalalertdevice.Profile.ProfileViewModel
 import com.example.personalalertdevice.Profile.ProfileViewModelFactory
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Header
+
+import java.text.SimpleDateFormat
+import java.util.*
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.tasks.await
+import retrofit2.http.Path
+import java.nio.charset.StandardCharsets
+import java.text.ParseException
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class MainActivity : ComponentActivity() {
 
@@ -39,6 +58,10 @@ class MainActivity : ComponentActivity() {
 
     private var userName: String = "User"
     private var profilePictureUrl: String? = null
+
+    private val firestore: FirebaseFirestore by lazy {
+        FirebaseFirestore.getInstance()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,9 +84,11 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
+            startPolling()
             val navController = rememberNavController()
             val contactsViewModel = viewModel<ContactsViewModel>()
-            val profilePictureViewModel: ProfilePictureViewModel = viewModel(factory = ProfilePictureViewModelFactory(firestore))
+            val profilePictureViewModel: ProfilePictureViewModel =
+                viewModel(factory = ProfilePictureViewModelFactory(firestore))
             val profileImageUrl = profilePictureViewModel.profileImageUrl.value
             val startDestination = if (googleAuthClient.isSignedIn()) {
                 "MainScreen"
@@ -92,7 +117,10 @@ class MainActivity : ComponentActivity() {
                     lifecycleScope.launch {
                         val result = userRepository.saveUserToFirestore()
                         if (result.isFailure) {
-                            Log.e("FirestoreError", "Failed to save user data: ${result.exceptionOrNull()}")
+                            Log.e(
+                                "FirestoreError",
+                                "Failed to save user data: ${result.exceptionOrNull()}"
+                            )
                         }
                     }
                 }
@@ -137,5 +165,124 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        lifecycleScope.launch {
+            fetchAndUploadData()
+        }
+    }
+
+    // Adafruit IO data
+    data class AdafruitData(
+        val id: String,
+        val value: String,
+        val feed_id: Int,
+        val created_at: String
+    )
+
+    interface AdafruitService {
+        @GET("feeds/{feedName}/data")
+        suspend fun getData(
+            @Path("feedName") feedName: String,
+            @Header("X-AIO-Key") apiKey: String
+        ): List<AdafruitData>
+    }
+
+    object RetrofitInstance {
+        private const val BASE_URL = "x"
+
+        val api: AdafruitService by lazy {
+            Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(AdafruitService::class.java)
+        }
+    }
+
+    private fun startPolling() {
+        CoroutineScope(Dispatchers.IO).launch {
+            while (true) {
+                fetchAndUploadData()
+                delay(3000)
+            }
+        }
+    }
+
+    private suspend fun fetchAndUploadData() {
+        try {
+            val apiKey = "x"
+            val feedName = "x"
+
+            val data = RetrofitInstance.api.getData(feedName, apiKey)
+
+            if (data.isNullOrEmpty()) {
+                Log.e("Adafruit", "No data found or data is empty!")
+                return
+            }
+
+            val mostRecentItem = data.first()
+
+            val utcDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+            utcDateFormat.timeZone = TimeZone.getTimeZone("UTC")
+            val utcDate = try {
+                utcDateFormat.parse(mostRecentItem.created_at)
+            } catch (e: ParseException) {
+                Log.e("Adafruit", "Error parsing date: ${e.message}")
+                return
+            }
+
+            val estTimeZone = TimeZone.getTimeZone("America/New_York")
+            val estDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+            estDateFormat.timeZone = estTimeZone
+            val formattedDate = estDateFormat.format(utcDate)
+
+            val utf8Value = hexToUtf8(mostRecentItem.value)
+
+            uploadToFirestore(
+                AdafruitData(
+                    id = mostRecentItem.id,
+                    value = utf8Value,
+                    feed_id = mostRecentItem.feed_id,
+                    created_at = formattedDate
+                )
+            )
+        } catch (e: Exception) {
+            Log.e("Adafruit", "Failed to fetch and upload data: ${e.message}")
+        }
+    }
+
+    private fun uploadToFirestore(latestData: AdafruitData) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+        if (userId.isEmpty()) {
+            Log.e("Adafruit", "User not authenticated!")
+            return
+        }
+
+        val firestore = FirebaseFirestore.getInstance()
+        val documentRef = firestore.collection("Users").document(userId)
+
+        val dataMap = hashMapOf(
+            "id" to latestData.id,
+            "value" to latestData.value,
+            "created_at" to latestData.created_at
+        )
+
+        documentRef.set(mapOf("imu data" to dataMap), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("Adafruit", "Data uploaded successfully to user document!")
+            }
+            .addOnFailureListener { e ->
+                Log.e("Adafruit", "Failed to upload data: ${e.message}")
+            }
+    }
+
+    private fun hexToUtf8(hexString: String): String {
+        val byteArray = ByteArray(hexString.length / 2)
+        for (i in hexString.indices step 2) {
+            byteArray[i / 2] = ((hexString[i].toString() + hexString[i + 1]).toInt(16) and 0xFF).toByte()
+        }
+        return String(byteArray, Charsets.UTF_8)
     }
 }
+
+
