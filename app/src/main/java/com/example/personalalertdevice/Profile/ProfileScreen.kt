@@ -1,5 +1,6 @@
 package com.example.personalalertdevice.Profile
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Text
@@ -34,6 +35,7 @@ import androidx.compose.ui.text.TextStyle
 import com.google.firebase.firestore.FirebaseFirestore
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.LaunchedEffect
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,10 +54,14 @@ fun ProfileScreen(
     val (age, setAge) = remember { mutableStateOf("") }
     val (gender, setGender) = remember { mutableStateOf("") }
     val (weight, setWeight) = remember { mutableStateOf("") }
+
+    val (heightFeet, setHeightFeet) = remember { mutableStateOf("") }
+    val (heightInches, setHeightInches) = remember { mutableStateOf("") }
     val (height, setHeight) = remember { mutableStateOf("") }
     val genders = listOf("Male", "Female", "Other")
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
     val (address, setAddress) = remember { mutableStateOf("") }
+
 
     val (selectedMonth, setSelectedMonth) = remember { mutableStateOf("") }
     val (expandedMonth, setExpandedMonth) = remember { mutableStateOf(false) }
@@ -71,7 +77,20 @@ fun ProfileScreen(
         "July", "August", "September", "October", "November", "December"
     )
     val days = (1..31).map { it.toString() }
-    val years = (1900..2025).map { it.toString() }
+    val years = (1920..2025).map { it.toString() }
+
+    LaunchedEffect(selectedMonth, selectedDay, selectedYear) {
+        if (selectedMonth.isNotEmpty() || selectedDay.isNotEmpty() || selectedYear.isNotEmpty()) {
+            setBirthday("$selectedMonth $selectedDay, $selectedYear")
+        }
+        if (heightFeet.isNotEmpty() && heightInches.isNotEmpty()) {
+            setHeight("$heightFeet' $heightInches\"")
+        } else if (heightFeet.isNotEmpty()) {
+            setHeight("$heightFeet'")
+        } else if (heightInches.isNotEmpty()) {
+            setHeight("$heightInches\"")
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -321,12 +340,167 @@ fun ProfileScreen(
                 }
             }
 
+            // GENDER INPUT
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Gender",
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .width(500.dp)
+                        .padding(bottom = 4.dp)
+                        .drawBehind {
+                            val strokeWidth = 2f
+                            val y = size.height - strokeWidth
+                            drawLine(
+                                color = Color.Black,
+                                start = Offset(0f, y),
+                                end = Offset(size.width, y),
+                                strokeWidth = strokeWidth
+                            )
+                        }
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf("Male", "Female", "Other").forEach { option ->
+                        Button(
+                            onClick = { setGender(option) },
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xffede4e1)
+                            ),
+                            modifier = Modifier
+                                .width(120.dp)
+                                .height(55.dp)
+                                .then(
+                                    if (gender == option) Modifier.border(
+                                        width = 2.dp,
+                                        color = Color.Black,
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) else Modifier
+                                )
+                        ) {
+                            Text(
+                                text = option,
+                                fontSize = if (gender == option) 22.sp else 15.sp,
+                                fontWeight = if (gender == option) FontWeight.Bold else FontWeight.SemiBold,
+                                color = if (gender == option) Color.Black else Color.DarkGray
+                            )
+                        }
+                    }
+                }
+            }
 
-                Spacer(modifier = Modifier.height(32.dp))
+            // WEIGHT AND HEIGHT INPUT
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Weight and Height",
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .width(500.dp)
+                        .padding(bottom = 4.dp)
+                        .drawBehind {
+                            val strokeWidth = 2f
+                            val y = size.height - strokeWidth
+                            drawLine(
+                                color = Color.Black,
+                                start = Offset(0f, y),
+                                end = Offset(size.width, y),
+                                strokeWidth = strokeWidth
+                            )
+                        }
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    // Weight
+                    TextField(
+                        value = weight,
+                        onValueChange = setWeight,
+                        label = {
+                            Text(
+                                "Weight (lbs)",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        },
+                        textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = Color(0xffede4e1)
+                        ),
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(55.dp)
+                    )
+
+                    // Height in feet
+                    TextField(
+                        value = heightFeet,
+                        onValueChange = setHeightFeet,
+                        label = {
+                            Text(
+                                "Height (ft)",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        },
+                        textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = Color(0xffede4e1)
+                        ),
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(55.dp)
+                    )
+
+                    // Height in inches
+                    TextField(
+                        value = heightInches,
+                        onValueChange = setHeightInches,
+                        label = {
+                            Text(
+                                "Height (in)",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        },
+                        textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = Color(0xffede4e1)
+                        ),
+                        modifier = Modifier
+                            .width(110.dp)
+                            .height(55.dp)
+                    )
+                }
+            }
+
+
+
+
+            Spacer(modifier = Modifier.height(32.dp))
 
                 // Save Profile Button
                 Button(
                     onClick = {
+                        setHeight("$heightFeet' $heightInches\"")
+                        setBirthday("$selectedMonth $selectedDay, $selectedYear")
+
                         viewModel.saveProfileData(
                             userId,
                             name,
@@ -340,10 +514,10 @@ fun ProfileScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 32.dp)
                         .height(60.dp)
+                        .width(150.dp)
                 ) {
-                    Text("Save Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    Text("Double Click to Save Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
