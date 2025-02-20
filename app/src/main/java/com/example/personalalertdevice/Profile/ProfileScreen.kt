@@ -36,6 +36,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.LaunchedEffect
+import java.util.Calendar
+import java.time.Month
+import java.time.format.DateTimeFormatter
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,18 +82,46 @@ fun ProfileScreen(
     val days = (1..31).map { it.toString() }
     val years = (1920..2025).map { it.toString() }
 
+    fun calculateAge() {
+        if (selectedMonth.isNotEmpty() && selectedDay.isNotEmpty() && selectedYear.isNotEmpty()) {
+            try {
+                val birthCalendar = Calendar.getInstance().apply {
+                    set(Calendar.YEAR, selectedYear.toInt())
+                    set(Calendar.MONTH, Month.valueOf(selectedMonth.uppercase()).ordinal)
+                    set(Calendar.DAY_OF_MONTH, selectedDay.toInt())
+                }
+
+                val currentCalendar = Calendar.getInstance()
+                var calculatedAge = currentCalendar.get(Calendar.YEAR) - birthCalendar.get(Calendar.YEAR)
+
+                if (currentCalendar.get(Calendar.MONTH) < birthCalendar.get(Calendar.MONTH) ||
+                    (currentCalendar.get(Calendar.MONTH) == birthCalendar.get(Calendar.MONTH) &&
+                            currentCalendar.get(Calendar.DAY_OF_MONTH) < birthCalendar.get(Calendar.DAY_OF_MONTH))) {
+                    calculatedAge -= 1
+                }
+
+                setAge(calculatedAge.toString())
+            } catch (e: Exception) {
+                setAge("")
+            }
+        }
+    }
+
     LaunchedEffect(selectedMonth, selectedDay, selectedYear) {
+        calculateAge()
         if (selectedMonth.isNotEmpty() || selectedDay.isNotEmpty() || selectedYear.isNotEmpty()) {
             setBirthday("$selectedMonth $selectedDay, $selectedYear")
         }
-        if (heightFeet.isNotEmpty() && heightInches.isNotEmpty()) {
+    }
+
+    LaunchedEffect(heightFeet, heightInches) {
+        if (heightFeet.isNotEmpty() || heightInches.isNotEmpty()) {
             setHeight("$heightFeet' $heightInches\"")
-        } else if (heightFeet.isNotEmpty()) {
-            setHeight("$heightFeet'")
-        } else if (heightInches.isNotEmpty()) {
-            setHeight("$heightInches\"")
         }
     }
+
+
+
 
     Column(
         modifier = Modifier
@@ -517,7 +548,7 @@ fun ProfileScreen(
                         .height(60.dp)
                         .width(150.dp)
                 ) {
-                    Text("Double Click to Save Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    Text("Click to Save Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
