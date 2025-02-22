@@ -43,6 +43,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 import retrofit2.http.Path
+import java.io.IOException
+import java.net.UnknownHostException
 import java.nio.charset.StandardCharsets
 import java.text.ParseException
 import java.time.Instant
@@ -189,6 +191,7 @@ class MainActivity : ComponentActivity() {
     object RetrofitInstance {
         private const val BASE_URL = "x"
 
+
         val api: AdafruitService by lazy {
             Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -245,9 +248,14 @@ class MainActivity : ComponentActivity() {
                     created_at = formattedDate
                 )
             )
+        } catch (e: UnknownHostException) {
+            Log.e("Adafruit", "DNS Resolution Failed: ${e.message}")
+        } catch (e: IOException) {
+            Log.e("Adafruit", "Network Error: ${e.message}")
         } catch (e: Exception) {
-            Log.e("Adafruit", "Failed to fetch and upload data: ${e.message}")
+            Log.e("Adafruit", "General Error: ${e.message}")
         }
+
     }
 
     private fun uploadToFirestore(latestData: AdafruitData) {
@@ -267,7 +275,7 @@ class MainActivity : ComponentActivity() {
             "created_at" to latestData.created_at
         )
 
-        documentRef.set(mapOf("imu data" to dataMap), SetOptions.merge())
+        documentRef.set(mapOf("send help history" to dataMap), SetOptions.merge())
             .addOnSuccessListener {
                 Log.d("Adafruit", "Data uploaded successfully to user document!")
             }
