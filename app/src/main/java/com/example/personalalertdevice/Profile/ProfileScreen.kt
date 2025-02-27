@@ -82,6 +82,61 @@ fun ProfileScreen(
     val days = (1..31).map { it.toString() }
     val years = (1920..2025).map { it.toString() }
 
+    LaunchedEffect(userId) {
+        viewModel.loadProfileData(userId)
+    }
+
+    val profileData = viewModel.profileData.value
+    LaunchedEffect(profileData) {
+        profileData?.let { data ->
+            setName(data["full name"] ?: "")
+            val birthdayStr = data["birthday"] ?: ""
+            if (birthdayStr.isNotEmpty()) {
+                val parts = birthdayStr.split(" ")
+                if (parts.size == 3) {
+                    setSelectedMonth(parts[0])
+                    setSelectedDay(parts[1].replace(",", ""))
+                    setSelectedYear(parts[2])
+                    setExpandedMonth(false)
+                    setExpandedDay(false)
+                    setExpandedYear(false)
+                } else {
+                    setSelectedMonth("")
+                    setSelectedDay("")
+                    setSelectedYear("")
+                    setExpandedMonth(false)
+                    setExpandedDay(false)
+                    setExpandedYear(false)
+                }
+            } else {
+                setSelectedMonth("")
+                setSelectedDay("")
+                setSelectedYear("")
+                setExpandedMonth(false)
+                setExpandedDay(false)
+                setExpandedYear(false)
+            }
+            setAge(data["age"] ?: "")
+            setGender(data["gender"] ?: "")
+            setWeight(data["weight"] ?: "")
+            val heightStr = data["height"] ?: ""
+            if (heightStr.isNotEmpty() && heightStr.contains("'")) {
+                val parts = heightStr.split("'")
+                if (parts.size == 2) {
+                    setHeightFeet(parts[0].trim())
+                    setHeightInches(parts[1].replace("\"", "").trim())
+                } else {
+                    setHeightFeet("")
+                    setHeightInches("")
+                }
+            } else {
+                setHeightFeet("")
+                setHeightInches("")
+            }
+            setAddress(data["address"] ?: "")
+        }
+    }
+
     fun calculateAge() {
         if (selectedMonth.isNotEmpty() && selectedDay.isNotEmpty() && selectedYear.isNotEmpty()) {
             try {
@@ -119,8 +174,6 @@ fun ProfileScreen(
             setHeight("$heightFeet' $heightInches\"")
         }
     }
-
-
 
 
     Column(
@@ -198,11 +251,11 @@ fun ProfileScreen(
                     label = {
                         Text(
                             "Click to Enter Your First and Last Name",
-                            fontSize = 15.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold
                         )
                     },
-                    textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                    textStyle = TextStyle(fontSize = 19.sp, fontWeight = FontWeight.Bold),
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color(0xffede4e1)
                     ),
