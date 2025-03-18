@@ -64,7 +64,11 @@ fun ProfileScreen(
     val genders = listOf("Male", "Female", "Other")
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
     val (address, setAddress) = remember { mutableStateOf("") }
-
+    val (addressLine1, setAddressLine1) = remember { mutableStateOf("") }
+    val (city, setCity) = remember { mutableStateOf("") }
+    val (selectedState, setSelectedState) = remember { mutableStateOf("") }
+    val (expandedState, setExpandedState) = remember { mutableStateOf(false) }
+    val (zip, setZip) = remember { mutableStateOf("") }
 
     val (selectedMonth, setSelectedMonth) = remember { mutableStateOf("") }
     val (expandedMonth, setExpandedMonth) = remember { mutableStateOf(false) }
@@ -79,6 +83,17 @@ fun ProfileScreen(
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     )
+
+    val states = listOf(
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
+        "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky",
+        "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi",
+        "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
+        "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
+        "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
+        "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+    )
+
     val days = (1..31).map { it.toString() }
     val years = (1920..2025).map { it.toString() }
 
@@ -574,7 +589,144 @@ fun ProfileScreen(
                 }
             }
 
-
+//// ADDRESS
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//            ) {
+//                Text(
+//                    text = "Home Address",
+//                    fontSize = 25.sp,
+//                    fontWeight = FontWeight.Bold,
+//                    modifier = Modifier
+//                        .width(500.dp)
+//                        .padding(bottom = 4.dp)
+//                        .drawBehind {
+//                            val strokeWidth = 2f
+//                            val y = size.height - strokeWidth
+//                            drawLine(
+//                                color = Color.Black,
+//                                start = Offset(0f, y),
+//                                end = Offset(size.width, y),
+//                                strokeWidth = strokeWidth
+//                            )
+//                        }
+//                )
+//
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(vertical = 12.dp),
+//                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+//                ) {
+//                    TextField(
+//                        value = addressLine1,
+//                        onValueChange = setAddressLine1,
+//                        label = {
+//                            Text(
+//                                "Click to Enter Your Home Address",
+//                                fontSize = 14.sp,
+//                                fontWeight = FontWeight.SemiBold
+//                            )
+//                        },
+//                        textStyle = TextStyle(fontSize = 19.sp, fontWeight = FontWeight.Bold),
+//                        colors = TextFieldDefaults.textFieldColors(
+//                            containerColor = Color(0xffede4e1)
+//                        ),
+//                        modifier = Modifier
+//                            .width(500.dp)
+//                            .height(55.dp)
+//                    )
+//                }
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(vertical = 12.dp),
+//                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+//                ) {
+//                    // City Field
+//                    TextField(
+//                        value = city,
+//                        onValueChange = setCity,
+//                        label = {
+//                            Text(
+//                                "City",
+//                                fontSize = 14.sp,
+//                                fontWeight = FontWeight.SemiBold
+//                            )
+//                        },
+//                        textStyle = TextStyle(fontSize = 19.sp, fontWeight = FontWeight.Bold),
+//                        colors = TextFieldDefaults.textFieldColors(
+//                            containerColor = Color(0xffede4e1)
+//                        ),
+//                        modifier = Modifier
+//                            .width(150.dp)
+//                            .height(55.dp)
+//                    )
+//
+//                    // State Dropdown
+//                    Box {
+//                        Button(
+//                            onClick = { setExpandedState(true) },
+//                            colors = ButtonDefaults.buttonColors(
+//                                containerColor = Color(0xffede4e1)
+//                            ),
+//                            shape = RoundedCornerShape(8.dp),
+//                            modifier = Modifier
+//                                .height(55.dp)
+//                                .width(150.dp)
+//                        ) {
+//                            Text(
+//                                text = selectedState.ifEmpty { "State" },
+//                                fontSize = if (selectedState.isEmpty()) 15.sp else 22.sp,
+//                                fontWeight = if (selectedState.isEmpty()) FontWeight.SemiBold else FontWeight.Bold,
+//                                color = if (selectedState.isEmpty()) Color.DarkGray else Color.Black
+//                            )
+//                        }
+//                        DropdownMenu(
+//                            expanded = expandedState,
+//                            onDismissRequest = { setExpandedState(false) }
+//                        ) {
+//                            states.forEach { state ->
+//                                DropdownMenuItem(
+//                                    text = {
+//                                        Text(
+//                                            text = state,
+//                                            fontSize = if (state == selectedState) 22.sp else 15.sp,
+//                                            fontWeight = if (state == selectedState) FontWeight.Bold else FontWeight.SemiBold,
+//                                            color = if (state == selectedState) Color.Black else Color.DarkGray
+//                                        )
+//                                    },
+//                                    onClick = {
+//                                        setSelectedState(state)
+//                                        setExpandedState(false)
+//                                    }
+//                                )
+//                            }
+//                        }
+//                    }
+//
+//                    // Zip Code Field
+//                    TextField(
+//                        value = zip,
+//                        onValueChange = setZip,
+//                        label = {
+//                            Text(
+//                                "Zip Code",
+//                                fontSize = 14.sp,
+//                                fontWeight = FontWeight.SemiBold
+//                            )
+//                        },
+//                        textStyle = TextStyle(fontSize = 19.sp, fontWeight = FontWeight.Bold),
+//                        colors = TextFieldDefaults.textFieldColors(
+//                            containerColor = Color(0xffede4e1)
+//                        ),
+//                        modifier = Modifier
+//                            .width(150.dp)
+//                            .height(55.dp)
+//                    )
+//                }
+//            }
 
 
             Spacer(modifier = Modifier.height(32.dp))

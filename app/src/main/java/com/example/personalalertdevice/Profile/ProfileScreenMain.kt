@@ -136,12 +136,20 @@ fun ProfileScreenMain(
         }
     }
 
-    val name = "Richard Yang"
-    val age = "21"
-    val gender = "Male"
-    val weight = "150 lb"
-    val height = "5'7"
-    val address = "22 Euston St 1"
+    val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(firestore))
+
+    LaunchedEffect(userId) {
+        profileViewModel.loadProfileData(userId)
+    }
+
+    val profileData = profileViewModel.profileData.value
+
+    val name = profileData?.get("full name") ?: ""
+    val age = profileData?.get("age") ?: ""
+    val gender = profileData?.get("gender") ?: ""
+    val weight = profileData?.get("weight") ?: ""
+    val height = profileData?.get("height") ?: ""
+    val address = profileData?.get("address") ?: "22 Euston St 1"
 
 
     Column(
