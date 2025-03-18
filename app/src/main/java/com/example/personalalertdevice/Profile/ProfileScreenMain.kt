@@ -149,7 +149,7 @@ fun ProfileScreenMain(
     val gender = profileData?.get("gender") ?: ""
     val weight = profileData?.get("weight") ?: ""
     val height = profileData?.get("height") ?: ""
-    val address = profileData?.get("address") ?: "22 Euston St 1"
+    val address = profileData?.get("address") ?: ""
 
 
     Column(

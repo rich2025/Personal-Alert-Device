@@ -148,7 +148,7 @@ fun ProfileScreen(
                 setHeightFeet("")
                 setHeightInches("")
             }
-            setAddress(data["address"] ?: "")
+            setAddress("8 St Mary's St, Boston")
         }
     }
 
