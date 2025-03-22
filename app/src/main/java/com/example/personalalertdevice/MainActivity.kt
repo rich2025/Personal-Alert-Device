@@ -360,12 +360,12 @@ class MainActivity : ComponentActivity() {
 
         val vitalsData = hashMapOf(
             "id" to id,
-            "heart_rate" to heartRate,
+            "heart rate" to heartRate,
             "temperature" to temperature,
-            "timestamp" to timestamp
+            "created at" to timestamp
         )
 
-        documentRef.set(mapOf("vitals_history" to vitalsData), SetOptions.merge())
+        documentRef.set(mapOf("vitals history" to vitalsData), SetOptions.merge())
             .addOnSuccessListener {
                 Log.d("Adafruit", "Vitals data uploaded successfully!")
             }

@@ -1,5 +1,6 @@
 package com.example.personalalertdevice.Health
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +23,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,10 +37,55 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.personalalertdevice.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
 
 @Composable
 fun VitalsScreen(navController: NavController) {
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    val firestore = FirebaseFirestore.getInstance()
+
+    // Declare mutable state for body temperature and error message
+    val bodyTemperature = remember { mutableStateOf("Loading...") }
+    val heartRateBPM = remember { mutableStateOf("Loading...") }
+    val errorMessage = remember { mutableStateOf<String?>(null) }
+
+    // Firestore listener variable
+    val listener = remember(userId) {
+        firestore.collection("Users").document(userId)
+            .addSnapshotListener { documentSnapshot, e ->
+                if (e != null) {
+                    Log.e("VitalsScreen", "Error fetching data: ${e.message}")
+                    bodyTemperature.value = "Error"
+                    heartRateBPM.value = "Error"
+                    errorMessage.value = e.message
+                    return@addSnapshotListener
+                }
+
+                documentSnapshot?.let { document ->
+                    val vitalsHistory = document.get("vitals history") as? Map<*, *>
+                    val temperature = vitalsHistory?.get("temperature")?.toString() ?: "N/A"
+                    val heartRate = vitalsHistory?.get("heart rate")?.toString() ?: "N/A"
+                    val celsius = temperature.toDoubleOrNull()
+
+                    if (celsius != null) {
+                        val fahrenheit = (celsius * 9 / 5) + 32
+                        bodyTemperature.value = "%.2f°F".format(fahrenheit)
+                    } else {
+                        bodyTemperature.value = "N/A"
+                    }
+
+                    if (heartRate != "N/A") {
+                        heartRateBPM.value = "$heartRate bpm"
+                    } else {
+                        heartRateBPM.value = "N/A"
+                    }
+                }
+            }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,7 +127,8 @@ fun VitalsScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(40.dp))
 
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(start = 0.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(40.dp)
@@ -85,17 +136,16 @@ fun VitalsScreen(navController: NavController) {
             // Heart Rate
             VitalsSection(
                 title = "Heart Rate",
-                icon = painterResource(id = R.drawable.heart),  // need to update icons
-                current = "85 bpm",     // placeholder variables, get from firestore later
+                icon = painterResource(id = R.drawable.heart),
+                current = heartRateBPM.value,  // Placeholder, replace with Firestore data if needed
                 avg = "75 bpm",
                 highLow = "95 bpm / 60 bpm"
             )
 
-            // Body Temperature
             VitalsSection(
-                title = "Body Temperature",
+                title = "Skin Body Temperature",
                 icon = painterResource(id = R.drawable.temp),
-                current = "98.6°F",
+                current = bodyTemperature.value,
                 avg = "98.4°F",
                 highLow = "99.1°F / 97.8°F"
             )
