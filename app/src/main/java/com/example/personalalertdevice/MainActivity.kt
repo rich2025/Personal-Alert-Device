@@ -44,6 +44,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 import retrofit2.http.Path
 import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 import java.net.UnknownHostException
 import java.nio.charset.StandardCharsets
 import java.text.ParseException
@@ -205,6 +207,7 @@ class MainActivity : ComponentActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             while (true) {
                 fetchAndUploadData()
+                fetchAndUploadVitalsData()
                 delay(3000)
             }
         }
@@ -256,6 +259,16 @@ class MainActivity : ComponentActivity() {
             Log.e("Adafruit", "General Error: ${e.message}")
         }
 
+        try {
+            val url = URL("https://io.adafruit.com")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.connect()
+            Log.d("Network", "Response Code: ${connection.responseCode}")
+        } catch (e: Exception) {
+            Log.e("Network Error", "Failed to connect: ${e.message}")
+        }
+
+
     }
 
     private fun uploadToFirestore(latestData: AdafruitData) {
@@ -283,6 +296,84 @@ class MainActivity : ComponentActivity() {
                 Log.e("Adafruit", "Failed to upload data: ${e.message}")
             }
     }
+
+    private suspend fun fetchAndUploadVitalsData() {
+        try {
+            val apiKey = "x"
+            val feedName = "x"
+
+            val data = RetrofitInstance.api.getData(feedName, apiKey)
+
+            if (data.isNullOrEmpty()) {
+                Log.e("Adafruit", "No Vitals data found or data is empty!")
+                return
+            }
+
+            val mostRecentItem = data.first()
+
+            val utcDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+            utcDateFormat.timeZone = TimeZone.getTimeZone("UTC")
+            val utcDate = try {
+                utcDateFormat.parse(mostRecentItem.created_at)
+            } catch (e: ParseException) {
+                Log.e("Adafruit", "Error parsing date: ${e.message}")
+                return
+            }
+
+            val estTimeZone = TimeZone.getTimeZone("America/New_York")
+            val estDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+            estDateFormat.timeZone = estTimeZone
+            val formattedDate = estDateFormat.format(utcDate)
+
+            val utf8Value = hexToUtf8(mostRecentItem.value)
+            val values = utf8Value.split(",")
+
+            if (values.size < 2) {
+                Log.e("Adafruit", "Invalid Vitals data format!")
+                return
+            }
+
+            val heartRate = values[0]
+            val temperature = values[1]
+
+            uploadVitalsToFirestore(
+                mostRecentItem.id,
+                heartRate,
+                temperature,
+                formattedDate
+            )
+        } catch (e: Exception) {
+            Log.e("Adafruit", "Error fetching Vitals data: ${e.message}")
+        }
+    }
+
+    private fun uploadVitalsToFirestore(id: String, heartRate: String, temperature: String, timestamp: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+        if (userId.isEmpty()) {
+            Log.e("Adafruit", "User not authenticated!")
+            return
+        }
+
+        val firestore = FirebaseFirestore.getInstance()
+        val documentRef = firestore.collection("Users").document(userId)
+
+        val vitalsData = hashMapOf(
+            "id" to id,
+            "heart_rate" to heartRate,
+            "temperature" to temperature,
+            "timestamp" to timestamp
+        )
+
+        documentRef.set(mapOf("vitals_history" to vitalsData), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("Adafruit", "Vitals data uploaded successfully!")
+            }
+            .addOnFailureListener { e ->
+                Log.e("Adafruit", "Failed to upload vitals data: ${e.message}")
+            }
+    }
+
 
     private fun hexToUtf8(hexString: String): String {
         val byteArray = ByteArray(hexString.length / 2)
