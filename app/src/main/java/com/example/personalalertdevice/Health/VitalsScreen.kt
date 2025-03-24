@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -124,14 +125,14 @@ fun VitalsScreen(navController: NavController) {
             }
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 0.dp),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(40.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             // Heart Rate
             VitalsSection(
@@ -174,26 +175,30 @@ fun VitalsSection(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
             .background(
-                color = Color(0xFFffd9d4),
+                color = Color.White,
                 shape = RoundedCornerShape(4.dp)
             )
             .border(
-                width = 3.dp,
+                width = 2.dp,
                 color = Color.Gray,
                 shape = RoundedCornerShape(4.dp)
             )
             .padding(10.dp)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
             Text(
                 text = title,
                 fontSize = 35.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
+            )
+            Divider(
+                color = Color.Gray,
+                thickness = 2.dp,
+                modifier = Modifier.fillMaxWidth().padding(vertical = 1.dp)
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -205,22 +210,22 @@ fun VitalsSection(
                     contentDescription = "$title Icon",
                     modifier = Modifier
                         .size(60.dp)
-                        .padding(end = 0.dp, bottom = 10.dp)
+                        .padding(start = 10.dp, end = 0.dp, bottom = 5.dp)
                 )
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(50.dp))
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Row {
                         Text(
                             text = "Current: ",
-                            fontSize = 20.sp,
+                            fontSize = 25.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = Color(0xFF1d2026)
                         )
                         Text(
                             text = current,
-                            fontSize = 20.sp,
+                            fontSize = 25.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.DarkGray
                         )
@@ -228,13 +233,13 @@ fun VitalsSection(
                     Row {
                         Text(
                             text = "24-HR Avg: ",
-                            fontSize = 20.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = Color(0xFF1d2026)
                         )
                         Text(
                             text = avg,
-                            fontSize = 20.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.DarkGray
                         )
@@ -242,13 +247,13 @@ fun VitalsSection(
                     Row {
                         Text(
                             text = "24-HR Hi/Lo: ",
-                            fontSize = 20.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = Color(0xFF1d2026)
                         )
                         Text(
                             text = highLow,
-                            fontSize = 20.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.DarkGray
                         )

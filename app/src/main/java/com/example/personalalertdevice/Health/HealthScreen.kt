@@ -22,13 +22,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun HealthScreen(navController: NavController) {
-    val coordinate = LatLng(42.34926382071209, -71.10649196894487) // PLACEHOLDER COORDINATES, DYNAMIC
-    val cameraPositionState = rememberCameraPositionState {
-        position = com.google.android.gms.maps.model.CameraPosition.Builder()
-            .target(coordinate)
-            .zoom(15f)
-            .build()
-    }
+
 
     Column(
         modifier = Modifier
@@ -66,28 +60,6 @@ fun HealthScreen(navController: NavController) {
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Google Maps Location
-        Box(
-            modifier = Modifier
-                .size(500.dp)
-                .padding(16.dp)
-                .border(2.dp, Color.DarkGray, RoundedCornerShape(8.dp))
-        ) {
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState
-            ) {
-                Marker(
-                    state = MarkerState(position = coordinate),
-                    title = "My Location",
-                    snippet = "This is your most recently recorded location."
-                )
-            }
-        }
-
 
         Column(
             modifier = Modifier

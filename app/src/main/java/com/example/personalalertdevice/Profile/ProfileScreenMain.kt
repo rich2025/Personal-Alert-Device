@@ -12,6 +12,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -63,6 +64,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.example.personalalertdevice.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import com.yalantis.ucrop.UCrop
 import java.io.File
 import java.util.*
@@ -272,6 +278,31 @@ fun ProfileScreenMain(
                         color = Color.White
                     )
                 }
+            }
+        }
+        val coordinate = LatLng(42.34926382071209, -71.10649196894487) // PLACEHOLDER COORDINATES, DYNAMIC
+        val cameraPositionState = rememberCameraPositionState {
+            position = com.google.android.gms.maps.model.CameraPosition.Builder()
+                .target(coordinate)
+                .zoom(15f)
+                .build()
+        }
+        // Google Maps Location
+        Box(
+            modifier = Modifier
+                .height(400.dp)
+                .width(450.dp)
+                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
+        ) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState
+            ) {
+                Marker(
+                    state = MarkerState(position = coordinate),
+                    title = "My Home Address",
+                    snippet = "8 St Mary's St, Boston, MA 02215"
+                )
             }
         }
     }
