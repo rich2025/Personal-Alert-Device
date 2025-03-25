@@ -198,7 +198,7 @@ fun ProfileScreenMain(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .padding(top = 20.dp)
+                .padding(top = 10.dp)
                 .size(250.dp)
                 .clip(CircleShape)
                 .background(Color.LightGray)

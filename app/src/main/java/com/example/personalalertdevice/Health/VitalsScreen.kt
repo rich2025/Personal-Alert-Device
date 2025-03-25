@@ -25,7 +25,9 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -50,8 +52,13 @@ fun VitalsScreen(navController: NavController) {
 
     // Declare mutable state for body temperature and error message
     val bodyTemperature = remember { mutableStateOf("Loading...") }
+    val temperatureHistory = remember { mutableStateListOf<Float>() }
     val heartRateBPM = remember { mutableStateOf("Loading...") }
     val errorMessage = remember { mutableStateOf<String?>(null) }
+
+    val avgTemperature = remember { derivedStateOf { temperatureHistory.averageOrNull()?.let { "%.2f°F".format(it) } ?: "N/A" } }
+    val highTemperature = remember { derivedStateOf { temperatureHistory.maxOrNull()?.let { "%.2f°F".format(it) } ?: "N/A" } }
+    val lowTemperature = remember { derivedStateOf { temperatureHistory.minOrNull()?.let { "%.2f°F".format(it) } ?: "N/A" } }
 
     // Firestore listener variable
     val listener = remember(userId) {
@@ -74,6 +81,12 @@ fun VitalsScreen(navController: NavController) {
                     if (celsius != null) {
                         val fahrenheit = (celsius * 9 / 5) + 32
                         bodyTemperature.value = "%.2f°F".format(fahrenheit)
+
+                        // Maintain last 10 readings (28800 for 24 hrs, around every 3 sec per entry)
+                        if (temperatureHistory.size >= 10) {
+                            temperatureHistory.removeAt(0) // Remove oldest entry
+                        }
+                        temperatureHistory.add(fahrenheit.toFloat())
                     } else {
                         bodyTemperature.value = "N/A"
                     }
@@ -147,8 +160,8 @@ fun VitalsScreen(navController: NavController) {
                 title = "Skin Body Temperature",
                 icon = painterResource(id = R.drawable.temp),
                 current = bodyTemperature.value,
-                avg = "98.4°F",
-                highLow = "99.1°F / 97.8°F"
+                avg = avgTemperature.value,
+                highLow = "${highTemperature.value} / ${lowTemperature.value}"
             )
 
             // Blood Oxygen
@@ -162,6 +175,8 @@ fun VitalsScreen(navController: NavController) {
         }
     }
 }
+
+fun List<Float>.averageOrNull(): Float? = if (isNotEmpty()) average().toFloat() else null
 
 // Composable for each vital sign section
 @Composable

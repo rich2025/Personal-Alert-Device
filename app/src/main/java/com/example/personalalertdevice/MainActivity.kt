@@ -208,6 +208,7 @@ class MainActivity : ComponentActivity() {
             while (true) {
                 fetchAndUploadData()
                 fetchAndUploadVitalsData()
+                fetchAndUploadConnectionStatus()
                 delay(3000)
             }
         }
@@ -285,7 +286,7 @@ class MainActivity : ComponentActivity() {
         val dataMap = hashMapOf(
             "id" to latestData.id,
             "value" to latestData.value,
-            "created_at" to latestData.created_at
+            "created at" to latestData.created_at
         )
 
         documentRef.set(mapOf("send help history" to dataMap), SetOptions.merge())
@@ -371,6 +372,72 @@ class MainActivity : ComponentActivity() {
             }
             .addOnFailureListener { e ->
                 Log.e("Adafruit", "Failed to upload vitals data: ${e.message}")
+            }
+    }
+
+    private suspend fun fetchAndUploadConnectionStatus() {
+        try {
+            val apiKey = "z"
+            val feedName = "z"
+
+            val data = RetrofitInstance.api.getData(feedName, apiKey)
+
+            if (data.isNullOrEmpty()) {
+                Log.e("Adafruit", "No connection status data found or data is empty!")
+                return
+            }
+
+            val mostRecentItem = data.first()
+
+            val utcDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+            utcDateFormat.timeZone = TimeZone.getTimeZone("UTC")
+            val utcDate = try {
+                utcDateFormat.parse(mostRecentItem.created_at)
+            } catch (e: ParseException) {
+                Log.e("Adafruit", "Error parsing date: ${e.message}")
+                return
+            }
+
+            val estTimeZone = TimeZone.getTimeZone("America/New_York")
+            val estDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+            estDateFormat.timeZone = estTimeZone
+            val formattedDate = estDateFormat.format(utcDate)
+
+            val utf8Value = hexToUtf8(mostRecentItem.value)
+
+            val status = utf8Value
+
+            uploadConnectionStatusToFirestore(
+                status,
+                formattedDate
+            )
+        } catch (e: Exception) {
+            Log.e("Adafruit", "Error fetching connection status data: ${e.message}")
+        }
+    }
+
+    private fun uploadConnectionStatusToFirestore(status: String, timestamp: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+        if (userId.isEmpty()) {
+            Log.e("Adafruit", "User not authenticated!")
+            return
+        }
+
+        val firestore = FirebaseFirestore.getInstance()
+        val documentRef = firestore.collection("Users").document(userId)
+
+        val connectionStatus = hashMapOf(
+            "device status" to status,
+            "created at" to timestamp
+        )
+
+        documentRef.set(mapOf("device connection status" to connectionStatus), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("Adafruit", "Connection status data uploaded successfully!")
+            }
+            .addOnFailureListener { e ->
+                Log.e("Adafruit", "Failed to upload connection status data: ${e.message}")
             }
     }
 

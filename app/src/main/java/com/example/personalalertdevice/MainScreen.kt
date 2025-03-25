@@ -243,7 +243,7 @@ fun MainScreen(
                                 tint = Color.White
                             )
                             Text(
-                                text = "How To",
+                                text = "Device",
                                 style = MaterialTheme.typography.headlineLarge.copy(
                                     fontSize = 37.sp,
                                     fontWeight = FontWeight.Bold

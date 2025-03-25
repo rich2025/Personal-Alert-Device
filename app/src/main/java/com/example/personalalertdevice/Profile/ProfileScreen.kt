@@ -751,7 +751,8 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp)
-                        .width(150.dp)
+                        .width(150.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF558f4f))
                 ) {
                     Text("Click to Save Profile", fontSize = 22.sp, fontWeight = FontWeight.Bold)
                 }
