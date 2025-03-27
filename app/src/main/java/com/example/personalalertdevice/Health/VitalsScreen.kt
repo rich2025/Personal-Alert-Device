@@ -42,59 +42,87 @@ import androidx.navigation.NavController
 import com.example.personalalertdevice.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
-
 
 @Composable
 fun VitalsScreen(navController: NavController) {
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     val firestore = FirebaseFirestore.getInstance()
 
-    // Declare mutable state for body temperature and error message
     val bodyTemperature = remember { mutableStateOf("Loading...") }
     val temperatureHistory = remember { mutableStateListOf<Float>() }
     val heartRateBPM = remember { mutableStateOf("Loading...") }
+    val deviceStatus = remember { mutableStateOf("loading") }
     val errorMessage = remember { mutableStateOf<String?>(null) }
 
-    val avgTemperature = remember { derivedStateOf { temperatureHistory.averageOrNull()?.let { "%.2f°F".format(it) } ?: "N/A" } }
-    val highTemperature = remember { derivedStateOf { temperatureHistory.maxOrNull()?.let { "%.2f°F".format(it) } ?: "N/A" } }
-    val lowTemperature = remember { derivedStateOf { temperatureHistory.minOrNull()?.let { "%.2f°F".format(it) } ?: "N/A" } }
+    val avgTemperature = remember { derivedStateOf {
+        temperatureHistory.averageOrNull()?.let { "%.2f°F".format(it) } ?: "N/A"
+    } }
+    val highTemperature = remember { derivedStateOf {
+        temperatureHistory.maxOrNull()?.let { "%.2f°F".format(it) } ?: "N/A"
+    } }
+    val lowTemperature = remember { derivedStateOf {
+        temperatureHistory.minOrNull()?.let { "%.2f°F".format(it) } ?: "N/A"
+    } }
 
-    // Firestore listener variable
-    val listener = remember(userId) {
-        firestore.collection("Users").document(userId)
-            .addSnapshotListener { documentSnapshot, e ->
-                if (e != null) {
-                    Log.e("VitalsScreen", "Error fetching data: ${e.message}")
+    // Real-time Firestore listener
+    LaunchedEffect(userId) {
+        firestore.collection("Users")
+            .document(userId)
+            .addSnapshotListener { documentSnapshot, error ->
+                if (error != null) {
+                    Log.e("VitalsScreen", "Error fetching data: ${error.message}")
                     bodyTemperature.value = "Error"
                     heartRateBPM.value = "Error"
-                    errorMessage.value = e.message
+                    deviceStatus.value = "error"
+                    errorMessage.value = error.message
                     return@addSnapshotListener
                 }
 
                 documentSnapshot?.let { document ->
-                    val vitalsHistory = document.get("vitals history") as? Map<*, *>
-                    val temperature = vitalsHistory?.get("temperature")?.toString() ?: "N/A"
-                    val heartRate = vitalsHistory?.get("heart rate")?.toString() ?: "N/A"
-                    val celsius = temperature.toDoubleOrNull()
+                    // Get the connection status map
+                    val connectionStatusMap = document.get("device connection status") as? Map<*, *>
 
-                    if (celsius != null) {
-                        val fahrenheit = (celsius * 9 / 5) + 32
-                        bodyTemperature.value = "%.2f°F".format(fahrenheit)
+                    // Extract device status from the map
+                    val status = connectionStatusMap?.get("device status")?.toString()?.lowercase() ?: "unknown"
+                    deviceStatus.value = status
 
-                        // Maintain last 10 readings (28800 for 24 hrs, around every 3 sec per entry)
-                        if (temperatureHistory.size >= 10) {
-                            temperatureHistory.removeAt(0) // Remove oldest entry
+                    when (status) {
+                        "disconnected" -> {
+                            bodyTemperature.value = "Disconnected"
+                            heartRateBPM.value = "Disconnected"
+                            errorMessage.value = "Device disconnected"
+                            temperatureHistory.clear()
                         }
-                        temperatureHistory.add(fahrenheit.toFloat())
-                    } else {
-                        bodyTemperature.value = "N/A"
-                    }
+                        "connected" -> {
+                            // Fetch vitals history only if connected
+                            val vitalsHistory = document.get("vitals history") as? Map<*, *>
+                            val temperature = vitalsHistory?.get("temperature")?.toString() ?: "N/A"
+                            val heartRate = vitalsHistory?.get("heart rate")?.toString() ?: "N/A"
+                            val celsius = temperature.toDoubleOrNull()
 
-                    if (heartRate != "N/A") {
-                        heartRateBPM.value = "$heartRate bpm"
-                    } else {
-                        heartRateBPM.value = "N/A"
+                            // Process temperature
+                            if (celsius != null) {
+                                val fahrenheit = (celsius * 9 / 5) + 32
+                                bodyTemperature.value = "%.2f°F".format(fahrenheit)
+
+                                // Maintain last 10 readings
+                                if (temperatureHistory.size >= 10) {
+                                    temperatureHistory.removeAt(0)
+                                }
+                                temperatureHistory.add(fahrenheit.toFloat())
+                            } else {
+                                bodyTemperature.value = "N/A"
+                            }
+
+                            // Update heart rate
+                            heartRateBPM.value = if (heartRate != "N/A") "$heartRate bpm" else "N/A"
+                            errorMessage.value = null
+                        }
+                        else -> {
+                            bodyTemperature.value = "Unknown"
+                            heartRateBPM.value = "Unknown"
+                            errorMessage.value = "Device status not available"
+                        }
                     }
                 }
             }
@@ -138,7 +166,32 @@ fun VitalsScreen(navController: NavController) {
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Show connection status with improved display
+        val statusText = when (deviceStatus.value) {
+            "connected" -> "CONNECTED"
+            "disconnected" -> "DISCONNECTED"
+            "loading" -> "LOADING..."
+            "error" -> "ERROR"
+            else -> "UNKNOWN STATUS"
+        }
+
+        val statusColor = when (deviceStatus.value) {
+            "connected" -> Color(0xFF4CAF50) // Green
+            "disconnected" -> Color(0xFFF44336) // Red
+            "loading" -> Color(0xFF2196F3) // Blue
+            "error" -> Color(0xFFFF9800) // Orange
+            else -> Color(0xFF9E9E9E) // Gray
+        }
+
+        Text(
+            text = "Device Status: $statusText",
+            color = statusColor,
+            fontWeight = FontWeight.Bold,
+            fontSize = 25.sp,
+            modifier = Modifier.padding(bottom = 15.dp)
+        )
 
         Column(
             modifier = Modifier
@@ -147,38 +200,36 @@ fun VitalsScreen(navController: NavController) {
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Heart Rate
+            // Determine values based on connection status
+            val showInvalidData = deviceStatus.value != "connected"
+
             VitalsSection(
                 title = "Heart Rate",
                 icon = painterResource(id = R.drawable.heart),
-                current = heartRateBPM.value,  // Placeholder, replace with Firestore data if needed
-                avg = "75 bpm",
-                highLow = "95 bpm / 60 bpm"
+                current = if (showInvalidData) "Invalid" else heartRateBPM.value,
+                avg = if (showInvalidData) "Invalid" else "75 bpm",
+                highLow = if (showInvalidData) "Invalid" else "95 bpm / 60 bpm"
             )
 
             VitalsSection(
                 title = "Skin Body Temperature",
                 icon = painterResource(id = R.drawable.temp),
-                current = bodyTemperature.value,
-                avg = avgTemperature.value,
-                highLow = "${highTemperature.value} / ${lowTemperature.value}"
+                current = if (showInvalidData) "Invalid" else bodyTemperature.value,
+                avg = if (showInvalidData) "Invalid" else avgTemperature.value,
+                highLow = if (showInvalidData) "Invalid" else "${highTemperature.value} / ${lowTemperature.value}"
             )
 
-            // Blood Oxygen
             VitalsSection(
                 title = "Blood Oxygen",
                 icon = painterResource(id = R.drawable.bo2),
-                current = "98%",
-                avg = "97%",
-                highLow = "99% / 95%"
+                current = if (showInvalidData) "Invalid" else "98%",
+                avg = if (showInvalidData) "Invalid" else "97%",
+                highLow = if (showInvalidData) "Invalid" else "99% / 95%"
             )
         }
     }
 }
 
-fun List<Float>.averageOrNull(): Float? = if (isNotEmpty()) average().toFloat() else null
-
-// Composable for each vital sign section
 @Composable
 fun VitalsSection(
     title: String,
@@ -242,7 +293,13 @@ fun VitalsSection(
                             text = current,
                             fontSize = 25.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.DarkGray
+                            color = when {
+                                current.equals("Invalid", ignoreCase = true) -> Color.Red
+                                current.equals("Unknown", ignoreCase = true) -> Color(0xFFFF9800)
+                                current.equals("Error", ignoreCase = true) -> Color(0xFFF44336)
+                                current.equals("Loading...", ignoreCase = true) -> Color(0xFF2196F3)
+                                else -> Color.DarkGray
+                            }
                         )
                     }
                     Row {
@@ -256,7 +313,7 @@ fun VitalsSection(
                             text = avg,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.DarkGray
+                            color = if (avg == "N/A") Color.Gray else Color.DarkGray
                         )
                     }
                     Row {
@@ -270,7 +327,7 @@ fun VitalsSection(
                             text = highLow,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.DarkGray
+                            color = if (highLow == "N/A") Color.Gray else Color.DarkGray
                         )
                     }
                 }
@@ -279,7 +336,4 @@ fun VitalsSection(
     }
 }
 
-
-
-
-
+fun List<Float>.averageOrNull(): Float? = if (isNotEmpty()) average().toFloat() else null
