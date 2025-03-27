@@ -83,7 +83,7 @@ fun ContactsScreen(navController: NavController, viewModel: ContactsViewModel) {
             ) {
                 items(contacts) { contact ->
                     Text(
-                        text = contact,
+                        text = contact.name,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.Black,

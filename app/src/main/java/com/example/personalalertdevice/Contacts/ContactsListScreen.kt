@@ -214,14 +214,12 @@ fun ContactsListScreen(navController: NavController, viewModel: ContactsViewMode
                 items(contactsList) { contact ->
                     ContactItem(
                         contact = contact,
-                        isSelected = viewModel.designatedContacts.contains(contact.name),
+                        isSelected = viewModel.designatedContacts.any { it.name == contact.name }, // Missing comma fixed
                         onClick = { selectedContact ->
-                            if (viewModel.designatedContacts.contains(selectedContact.name)) {
-                                // Remove contact using ViewModel
-                                viewModel.removeContact(selectedContact.name)
+                            if (viewModel.designatedContacts.any { it.id == selectedContact.id }) {
+                                viewModel.removeContact(selectedContact)
                             } else {
-                                // Add contact using ViewModel
-                                viewModel.addContact(selectedContact.name)
+                                viewModel.addContact(selectedContact)
                             }
                             Log.d("ContactsListScreen", "Designated Contacts List: ${viewModel.designatedContacts}")
                         }

@@ -8,7 +8,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ContactsViewModel : ViewModel() {
-    val designatedContacts = mutableStateListOf<String>() // Mutable state for UI updates
+    val designatedContacts = mutableStateListOf<Contact>() // Store Contact objects
     private val firestore = FirebaseFirestore.getInstance()
     private var userId: String? = null
     private var userDocRef = firestore.collection("Users").document("default")
@@ -17,52 +17,34 @@ class ContactsViewModel : ViewModel() {
         fetchUserIdAndLoadContacts()
     }
 
-    // Function to check user authentication and load designated contacts into firestore initially
     private fun fetchUserIdAndLoadContacts() {
         val auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
 
-        // Load designated contacts if user authenticated
         if (currentUser != null) {
             userId = currentUser.uid
             userDocRef = firestore.collection("Users").document(userId!!)
             loadDesignatedContacts()
-        } else {
-            // Listen for authentication state changes
-            auth.addAuthStateListener { updatedAuth ->
-                val updatedUser = updatedAuth.currentUser
-                if (updatedUser != null) {
-                    userId = updatedUser.uid
-                    userDocRef = firestore.collection("Users").document(userId!!)
-                    loadDesignatedContacts()
-                } else {
-                    Log.e("ContactsViewModel", "User is not authenticated.")
-                }
-            }
         }
     }
 
     private fun loadDesignatedContacts() {
-
         if (userId == null) {
             Log.e("ContactsViewModel", "Unable to load contacts.")
             return
         }
+
         userDocRef.get()
             .addOnSuccessListener { document ->
-
-                //reuploadDesignatedContacts()
-                Log.d("ContactsViewModel", "Designated contacts on app initialization: $designatedContacts")
-
                 if (document != null && document.contains("designated contacts")) {
-                    val contacts = document["designated contacts"] as? List<String> ?: emptyList()
+                    val contactsList = document["designated contacts"] as? List<Map<String, String>> ?: emptyList()
 
-                    // Update the designatedContacts list and log the current contacts
                     designatedContacts.clear()
-                    designatedContacts.addAll(contacts)
+                    designatedContacts.addAll(
+                        contactsList.map { Contact(it["id"] ?: "", it["name"] ?: "Unknown", it["phoneNumber"] ?: "No Number") }
+                    )
+
                     Log.d("Firestore", "Loaded designated contacts: $designatedContacts")
-                } else {
-                    Log.d("Firestore", "No designated contacts found.")
                 }
             }
             .addOnFailureListener { e ->
@@ -70,55 +52,36 @@ class ContactsViewModel : ViewModel() {
             }
     }
 
-//    private fun reuploadDesignatedContacts() {
-//        userDocRef.update("designated contacts", FieldValue.arrayUnion(*designatedContacts.toTypedArray()))
-//            .addOnSuccessListener {
-//                Log.d("Firestore", "Re-uploaded designated contacts to Firestore: $designatedContacts")
-//            }
-//            .addOnFailureListener { e ->
-//                Log.e("Firestore", "Failed to re-upload designated contacts: $e")
-//            }
-//    }
+    // Add Contact with Phone Number
+    fun addContact(contact: Contact) {
+        if (designatedContacts.any { it.id == contact.id }) return
 
+        designatedContacts.add(contact)
 
-    // Update Firestore with the latest list of designated contacts
-    private fun updateFirestoreContacts(contacts: List<String>) {
-        userDocRef.update("designated contacts", FieldValue.arrayUnion(*contacts.toTypedArray()))
+        val contactMap = mapOf("id" to contact.id, "name" to contact.name, "phone number" to contact.phoneNumber)
+        userDocRef.update("designated contacts", FieldValue.arrayUnion(contactMap))
             .addOnSuccessListener {
-                Log.d("Firestore", "Successfully updated Firestore with designated contacts: $contacts")
+                Log.d("Firestore", "Added contact: $contact")
             }
             .addOnFailureListener { e ->
-                Log.e("Firestore", "Failed to update Firestore with designated contacts: $e")
+                Log.e("Firestore", "Failed to add contact: $e")
             }
     }
 
-    // Add designated contact to both the ViewModel and Firestore
-    fun addContact(contact: String) {
-        if (!designatedContacts.contains(contact)) {
-            designatedContacts.add(contact)
-            userDocRef.update("designated contacts", FieldValue.arrayUnion(contact))
-                .addOnSuccessListener {
-                    Log.d("Firestore", "Added contact: $contact")
-                }
-                .addOnFailureListener { e ->
-                    Log.e("Firestore", "Failed to add contact: $e")
-                }
-        }
-    }
+    // Remove Contact
+    fun removeContact(contact: Contact) {
+        designatedContacts.removeAll { it.id == contact.id }
 
-    // Remove designated contact from ViewModel and Firestore
-    fun removeContact(contact: String) {
-        if (designatedContacts.contains(contact)) {
-            designatedContacts.remove(contact)
-            userDocRef.update("designated contacts", FieldValue.arrayRemove(contact))
-                .addOnSuccessListener {
-                    Log.d("Firestore", "Removed contact: $contact")
-                }
-                .addOnFailureListener { e ->
-                    Log.e("Firestore", "Failed to remove contact: $e")
-                }
-        }
+        val contactMap = mapOf("id" to contact.id, "name" to contact.name, "phoneNumber" to contact.phoneNumber)
+        userDocRef.update("designatedContacts", FieldValue.arrayRemove(contactMap))
+            .addOnSuccessListener {
+                Log.d("Firestore", "Removed contact: $contact")
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Failed to remove contact: $e")
+            }
     }
 }
+
 
 
