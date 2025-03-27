@@ -27,6 +27,7 @@ import com.example.personalalertdevice.Profile.ProfileScreenMain
 import com.example.personalalertdevice.Profile.ProfileScreen
 import com.example.personalalertdevice.Profile.ProfileViewModel
 import com.example.personalalertdevice.Profile.ProfileViewModelFactory
+import com.google.firebase.firestore.FieldValue
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -71,7 +72,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // initialize FirebaseFirestore
+        // initialize Firebase Firestore
         val firestore = FirebaseFirestore.getInstance()
 
         //use custom factory to create ProfileViewModel
@@ -191,7 +192,7 @@ class MainActivity : ComponentActivity() {
     }
 
     object RetrofitInstance {
-        private const val BASE_URL = "x"
+        private const val BASE_URL = "https://io.adafruit.com/api/v2/rich2025/"
 
 
         val api: AdafruitService by lazy {
@@ -203,6 +204,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // check adafruit IO for updates every 3 seconds
     private fun startPolling() {
         CoroutineScope(Dispatchers.IO).launch {
             while (true) {
@@ -214,6 +216,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // SPEECH RECOGNITION FEED
     private suspend fun fetchAndUploadData() {
         try {
             val apiKey = "x"
@@ -261,7 +264,7 @@ class MainActivity : ComponentActivity() {
         }
 
         try {
-            val url = URL("https://io.adafruit.com")
+            val url = URL("x")
             val connection = url.openConnection() as HttpURLConnection
             connection.connect()
             Log.d("Network", "Response Code: ${connection.responseCode}")
@@ -298,6 +301,7 @@ class MainActivity : ComponentActivity() {
             }
     }
 
+    // VITALS DATA FROM ADAFRUIT IO
     private suspend fun fetchAndUploadVitalsData() {
         try {
             val apiKey = "x"
@@ -375,10 +379,11 @@ class MainActivity : ComponentActivity() {
             }
     }
 
+    // CONNECTION STATUS DATA FROM ADAFRUIT
     private suspend fun fetchAndUploadConnectionStatus() {
         try {
-            val apiKey = "z"
-            val feedName = "z"
+            val apiKey = "x"
+            val feedName = "x"
 
             val data = RetrofitInstance.api.getData(feedName, apiKey)
 
@@ -416,28 +421,51 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun uploadConnectionStatusToFirestore(status: String, timestamp: String) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    //  variable to track last status check time
+    private var lastStatusCheckTime: Long = 0
 
-        if (userId.isEmpty()) {
+    private fun uploadConnectionStatusToFirestore(status: String, timestamp: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
             Log.e("Adafruit", "User not authenticated!")
             return
         }
 
+        // Check if 5 seconds have passed since last status check
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastStatusCheckTime < 5000) {
+            Log.d("Adafruit", "Skipping status check - less than 5 seconds since last check")
+            return
+        }
+        lastStatusCheckTime = currentTime
+
         val firestore = FirebaseFirestore.getInstance()
         val documentRef = firestore.collection("Users").document(userId)
 
-        val connectionStatus = hashMapOf(
-            "device status" to status,
-            "created at" to timestamp
-        )
+        // do only every 5 seconds
+        //check connection status
+        documentRef.get()
+            .addOnSuccessListener { document ->
+                val lastTimestamp = document.getString("device connection status.created at")
 
-        documentRef.set(mapOf("device connection status" to connectionStatus), SetOptions.merge())
-            .addOnSuccessListener {
-                Log.d("Adafruit", "Connection status data uploaded successfully!")
+                // if timestamp is new → "connected", else → "disconnected"
+                val newStatus = if (lastTimestamp != timestamp) "connected" else "disconnected"
+
+                val connectionStatus = hashMapOf(
+                    "device status" to newStatus,
+                    "created at" to timestamp,
+                    "last_checked" to FieldValue.serverTimestamp() // debug
+                )
+
+                documentRef.set(mapOf("device connection status" to connectionStatus), SetOptions.merge())
+                    .addOnSuccessListener {
+                        Log.d("Adafruit", "Status: $newStatus (Timestamp: $timestamp) [Checked at ${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())}]")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Adafruit", "Failed to update status", e)
+                    }
             }
             .addOnFailureListener { e ->
-                Log.e("Adafruit", "Failed to upload connection status data: ${e.message}")
+                Log.e("Adafruit", "Failed to fetch previous timestamp", e)
             }
     }
 
