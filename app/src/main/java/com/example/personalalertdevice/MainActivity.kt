@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.personalalertdevice.Contacts.ContactsListScreen
 import com.example.personalalertdevice.Contacts.ContactsScreen
 import com.example.personalalertdevice.Health.HealthScreen
+import com.example.personalalertdevice.Health.HistoryScreen
 import com.example.personalalertdevice.Health.VitalsScreen
 import com.example.personalalertdevice.Profile.ProfilePictureViewModel
 import com.example.personalalertdevice.Profile.ProfilePictureViewModelFactory
@@ -165,6 +166,7 @@ class MainActivity : ComponentActivity() {
                 composable("HowToScreen") { HowToScreen(navController) }
                 composable("HelpScreen") { HelpScreen(navController) }
                 composable("VitalsScreen") { VitalsScreen(navController) }
+                composable("HistoryScreen") { HistoryScreen(navController) }
                 composable("ContactsListScreen") {
                     ContactsListScreen(navController, contactsViewModel)
                 }
@@ -192,7 +194,7 @@ class MainActivity : ComponentActivity() {
     }
 
     object RetrofitInstance {
-        private const val BASE_URL = "https://io.adafruit.com/api/v2/rich2025/"
+        private const val BASE_URL = "x"
 
 
         val api: AdafruitService by lazy {
@@ -204,7 +206,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // check adafruit IO for updates every 3 seconds
     private fun startPolling() {
         CoroutineScope(Dispatchers.IO).launch {
             while (true) {
@@ -216,7 +217,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // SPEECH RECOGNITION FEED
     private suspend fun fetchAndUploadData() {
         try {
             val apiKey = "x"
@@ -301,7 +301,6 @@ class MainActivity : ComponentActivity() {
             }
     }
 
-    // VITALS DATA FROM ADAFRUIT IO
     private suspend fun fetchAndUploadVitalsData() {
         try {
             val apiKey = "x"
@@ -379,7 +378,6 @@ class MainActivity : ComponentActivity() {
             }
     }
 
-    // CONNECTION STATUS DATA FROM ADAFRUIT
     private suspend fun fetchAndUploadConnectionStatus() {
         try {
             val apiKey = "x"
@@ -421,7 +419,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    //  variable to track last status check time
+    // Class-level variable to track last status check time
     private var lastStatusCheckTime: Long = 0
 
     private fun uploadConnectionStatusToFirestore(status: String, timestamp: String) {
