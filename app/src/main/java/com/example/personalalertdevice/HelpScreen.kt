@@ -160,6 +160,7 @@ fun HelpScreen(navController: NavController) {
             }
 
         Spacer(modifier = Modifier.height(20.dp))
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -167,6 +168,25 @@ fun HelpScreen(navController: NavController) {
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Column(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .offset(x = (-40).dp, y = (-0).dp)
+            ) {
+                Text(
+                    text = name,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(
+                    text = "$age years old",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                )
+            }
             if (uploadedProfilePictureUrl != null) {
                 AsyncImage(
                     model = uploadedProfilePictureUrl.value,
