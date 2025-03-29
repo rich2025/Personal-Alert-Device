@@ -21,6 +21,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.ui.draw.clip
@@ -29,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.example.personalalertdevice.Profile.ProfilePictureViewModel
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
 // Composable for main screen
@@ -42,6 +44,31 @@ fun MainScreen(
 ) {
     LaunchedEffect(userId) {
         viewModel.loadProfileImage(userId)
+    }
+
+    // check device connection status and change border color accordingly
+    var deviceStatus by remember { mutableStateOf("disconnected") }
+    val borderColor = if (deviceStatus == "disconnected") Color.Red else Color.Green
+
+    LaunchedEffect(userId) {
+        val db = FirebaseFirestore.getInstance()
+        while (true) {
+            db.collection("Users").document(userId)
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    if (snapshot.exists()) {
+                        val statusMap = snapshot.get("device connection status") as? Map<*, *>
+                        val status = statusMap?.get("device status") as? String
+                        if (status == "connected" || status == "disconnected") {
+                            deviceStatus = status
+                        }
+                    }
+                }
+                .addOnFailureListener {
+                    deviceStatus = "disconnected"
+                }
+            delay(3000)
+        }
     }
 
     val uploadedProfilePictureUrl = viewModel.profileImageUrl.value
@@ -231,7 +258,9 @@ fun MainScreen(
                         onClick = {
                             navController.navigate("HowToScreen")
                         },
-                        modifier = Modifier.size(175.dp),
+                        modifier = Modifier
+                            .size(175.dp)
+                            .border(4.dp, borderColor, RoundedCornerShape(20.dp)),
                         shape = RoundedCornerShape(20.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFd7c0ed))
                     ) {
