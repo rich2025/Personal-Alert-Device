@@ -99,6 +99,23 @@ fun HealthScreen(navController: NavController) {
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
+
+            }
+            // Medical Info Button
+            Button(
+                onClick = {  },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8f42ed)),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = "Medical Info",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
             }
         }
     }
