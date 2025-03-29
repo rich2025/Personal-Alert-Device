@@ -283,7 +283,7 @@ fun MainScreen(
                     }
                 }
                 HoldButtonWithProgress(
-                    onCompleted = { },
+                    onCompleted = { navController.navigate("HelpScreen") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(80.dp)

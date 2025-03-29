@@ -86,7 +86,7 @@ fun HealthScreen(navController: NavController) {
 
             // History Button
             Button(
-                onClick = { },
+                onClick = { navController.navigate("HistoryScreen") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(80.dp),
