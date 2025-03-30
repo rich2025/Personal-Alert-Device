@@ -51,6 +51,7 @@ fun MedicalInfoScreen(navController: NavController) {
     val medicalViewModel: MedicalViewModel = viewModel(factory = MedicalViewModelFactory(firestore))
 
     val (allergies, setAllergies) = remember { mutableStateOf("") }
+    val (medications, setMedications) = remember { mutableStateOf("") }
 
     val medicalData = medicalViewModel.medicalData.value
 
@@ -61,6 +62,7 @@ fun MedicalInfoScreen(navController: NavController) {
     LaunchedEffect(medicalData) {
         medicalData?.let { data ->
             setAllergies(data["allergies"] ?: "")
+            setMedications(data["medications"] ?: "")
         }
     }
 
@@ -74,8 +76,8 @@ fun MedicalInfoScreen(navController: NavController) {
         // Return Button
         Button(
             onClick = {
-                navController.navigate("HealthScreen")
-                medicalViewModel.saveMedicalData(userId, allergies) // Using the correct ViewModel instance
+                navController.popBackStack()
+                medicalViewModel.saveMedicalData(userId, allergies, medications)
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
             shape = RoundedCornerShape(8.dp),
@@ -97,7 +99,7 @@ fun MedicalInfoScreen(navController: NavController) {
                     color = Color.Black
                 )
                 Text(
-                    text = "Health Screen",
+                    text = "Previous Screen",
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -141,6 +143,55 @@ fun MedicalInfoScreen(navController: NavController) {
                     label = {
                         Text(
                             "List All Medically Relevant Allergies",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
+                    textStyle = TextStyle(fontSize = 19.sp, fontWeight = FontWeight.Bold),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color(0xffede4e1)
+                    ),
+                    modifier = Modifier
+                        .width(500.dp)
+                        .height(55.dp)
+                )
+            }
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+        ) {
+            Text(
+                text = "Medications",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .width(500.dp)
+                    .padding(bottom = 4.dp)
+                    .drawBehind {
+                        val strokeWidth = 2f
+                        val y = size.height - strokeWidth
+                        drawLine(
+                            color = Color.Black,
+                            start = Offset(0f, y),
+                            end = Offset(size.width, y),
+                            strokeWidth = strokeWidth
+                        )
+                    }
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                TextField(
+                    value = medications,
+                    onValueChange = setMedications,
+                    label = {
+                        Text(
+                            "List All Currently Taken Medications",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold
                         )

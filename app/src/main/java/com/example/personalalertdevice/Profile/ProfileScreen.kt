@@ -728,6 +728,20 @@ fun ProfileScreen(
 //                }
 //            }
 
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Medical Info Button
+            Button(
+                onClick = { navController.navigate("MedicalInfoScreen")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .width(150.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8f42ed))
+            ) {
+                Text("Medical Information Screen", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
