@@ -4,26 +4,65 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.personalalertdevice.Profile.ProfileViewModel
+import com.example.personalalertdevice.Profile.ProfileViewModelFactory
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MedicalInfoScreen(navController: NavController) {
+
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    val firestore = FirebaseFirestore.getInstance()
+
+    val medicalViewModel: MedicalViewModel = viewModel(factory = MedicalViewModelFactory(firestore))
+
+    val (allergies, setAllergies) = remember { mutableStateOf("") }
+
+    val medicalData = medicalViewModel.medicalData.value
+
+    LaunchedEffect(userId) {
+        medicalViewModel.loadMedicalData(userId)
+    }
+
+    LaunchedEffect(medicalData) {
+        medicalData?.let { data ->
+            setAllergies(data["allergies"] ?: "")
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -34,7 +73,10 @@ fun MedicalInfoScreen(navController: NavController) {
     ) {
         // Return Button
         Button(
-            onClick = { navController.navigate("HealthScreen") },
+            onClick = {
+                navController.navigate("HealthScreen")
+                medicalViewModel.saveMedicalData(userId, allergies) // Using the correct ViewModel instance
+            },
             colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
@@ -59,6 +101,57 @@ fun MedicalInfoScreen(navController: NavController) {
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(15.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+        ) {
+            Text(
+                text = "Allergies",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .width(500.dp)
+                    .padding(bottom = 4.dp)
+                    .drawBehind {
+                        val strokeWidth = 2f
+                        val y = size.height - strokeWidth
+                        drawLine(
+                            color = Color.Black,
+                            start = Offset(0f, y),
+                            end = Offset(size.width, y),
+                            strokeWidth = strokeWidth
+                        )
+                    }
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                TextField(
+                    value = allergies,
+                    onValueChange = setAllergies,
+                    label = {
+                        Text(
+                            "List All Medically Relevant Allergies",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
+                    textStyle = TextStyle(fontSize = 19.sp, fontWeight = FontWeight.Bold),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color(0xffede4e1)
+                    ),
+                    modifier = Modifier
+                        .width(500.dp)
+                        .height(55.dp)
                 )
             }
         }
