@@ -1,5 +1,6 @@
 package com.example.personalalertdevice.Health
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
@@ -52,6 +53,7 @@ fun MedicalInfoScreen(navController: NavController) {
 
     val (allergies, setAllergies) = remember { mutableStateOf("") }
     val (medications, setMedications) = remember { mutableStateOf("") }
+    val (donor, setDonor) = remember { mutableStateOf("") }
 
     val medicalData = medicalViewModel.medicalData.value
 
@@ -63,6 +65,7 @@ fun MedicalInfoScreen(navController: NavController) {
         medicalData?.let { data ->
             setAllergies(data["allergies"] ?: "")
             setMedications(data["medications"] ?: "")
+            setDonor(data["donor"] ?: "")
         }
     }
 
@@ -77,7 +80,7 @@ fun MedicalInfoScreen(navController: NavController) {
         Button(
             onClick = {
                 navController.popBackStack()
-                medicalViewModel.saveMedicalData(userId, allergies, medications)
+                medicalViewModel.saveMedicalData(userId, allergies, medications, donor)
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
             shape = RoundedCornerShape(8.dp),
@@ -108,6 +111,7 @@ fun MedicalInfoScreen(navController: NavController) {
         }
         Spacer(modifier = Modifier.height(15.dp))
 
+        // ALLERGIES
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -157,6 +161,8 @@ fun MedicalInfoScreen(navController: NavController) {
                 )
             }
         }
+
+        // MEDICATIONS
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -204,6 +210,62 @@ fun MedicalInfoScreen(navController: NavController) {
                         .width(500.dp)
                         .height(55.dp)
                 )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Organ Donor Status",
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .width(500.dp)
+                        .padding(bottom = 4.dp)
+                        .drawBehind {
+                            val strokeWidth = 2f
+                            val y = size.height - strokeWidth
+                            drawLine(
+                                color = Color.Black,
+                                start = Offset(0f, y),
+                                end = Offset(size.width, y),
+                                strokeWidth = strokeWidth
+                            )
+                        }
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf("Yes", "No").forEach { option ->
+                        Button(
+                            onClick = { setDonor(option) },
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xffede4e1)
+                            ),
+                            modifier = Modifier
+                                .width(120.dp)
+                                .height(55.dp)
+                                .then(
+                                    if (donor == option) Modifier.border(
+                                        width = 2.dp,
+                                        color = Color.Black,
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) else Modifier
+                                )
+                        ) {
+                            Text(
+                                text = option,
+                                fontSize = if (donor == option) 22.sp else 15.sp,
+                                fontWeight = if (donor == option) FontWeight.Bold else FontWeight.SemiBold,
+                                color = if (donor == option) Color.Black else Color.DarkGray
+                            )
+                        }
+                    }
+                }
             }
         }
     }

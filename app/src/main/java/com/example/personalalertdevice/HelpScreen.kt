@@ -77,6 +77,7 @@ fun HelpScreen(navController: NavController) {
 
     val allergies = medicalData?.get("allergies") ?: ""
     val medications = medicalData?.get("medications") ?: ""
+    val donor = medicalData?.get("donor") ?: ""
 
     // Fetch the profile image from Firestore
     LaunchedEffect(userId) {
@@ -196,7 +197,7 @@ fun HelpScreen(navController: NavController) {
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Text(
-                    text = "Organ Donor", // Add (Not an) in front from medical info screen
+                    if (donor == "Yes") "ORGAN DONOR" else "NOT ORGAN DONOR", // Add (Not an) in front from medical info screen
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -266,7 +267,7 @@ fun HelpScreen(navController: NavController) {
                             .padding(end = 130.dp)
                     )
                 }
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(7.dp))
 
                 // Weight
                 Row(
@@ -290,7 +291,7 @@ fun HelpScreen(navController: NavController) {
                             .padding(end = 130.dp)
                     )
                 }
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(7.dp))
 
                 // Gender
                 Row(
@@ -317,7 +318,7 @@ fun HelpScreen(navController: NavController) {
             }
             }
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(7.dp))
         Column {
             Text(
                 text = "Medical Information",
@@ -368,7 +369,7 @@ fun HelpScreen(navController: NavController) {
                                 .align(Alignment.CenterVertically)
                         )
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(7.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
