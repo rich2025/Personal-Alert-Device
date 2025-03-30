@@ -203,7 +203,7 @@ class MainActivity : ComponentActivity() {
     }
 
     object RetrofitInstance {
-        private const val BASE_URL = "https://io.adafruit.com/api/v2/rich2025/"
+        private const val BASE_URL = "x"
 
 
         val api: AdafruitService by lazy {
@@ -228,8 +228,8 @@ class MainActivity : ComponentActivity() {
 
     private suspend fun fetchAndUploadData() {
         try {
-            val apiKey = "aio_gLwU865hAPjLXF16Pan4OSY0ThfU"
-            val feedName = "lightbluearduino"
+            val apiKey = "x"
+            val feedName = "x"
 
             val data = RetrofitInstance.api.getData(feedName, apiKey)
 
@@ -312,8 +312,8 @@ class MainActivity : ComponentActivity() {
 
     private suspend fun fetchAndUploadVitalsData() {
         try {
-            val apiKey = "aio_gLwU865hAPjLXF16Pan4OSY0ThfU"
-            val feedName = "vitals"
+            val apiKey = "x"
+            val feedName = "x"
 
             val data = RetrofitInstance.api.getData(feedName, apiKey)
 
@@ -389,8 +389,8 @@ class MainActivity : ComponentActivity() {
 
     private suspend fun fetchAndUploadConnectionStatus() {
         try {
-            val apiKey = "aio_gLwU865hAPjLXF16Pan4OSY0ThfU"
-            val feedName = "connectionstatus"
+            val apiKey = "x"
+            val feedName = "x"
 
             val data = RetrofitInstance.api.getData(feedName, apiKey)
 
