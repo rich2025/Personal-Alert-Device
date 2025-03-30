@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.personalalertdevice.Health.MedicalViewModel
+import com.example.personalalertdevice.Health.MedicalViewModelFactory
 import com.example.personalalertdevice.Profile.ProfileViewModel
 import com.example.personalalertdevice.Profile.ProfileViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
@@ -56,11 +58,15 @@ fun HelpScreen(navController: NavController) {
     // fetch profile information from viewmodel
     val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(firestore))
 
+    val medicalViewModel: MedicalViewModel = viewModel(factory = MedicalViewModelFactory(firestore))
+
     LaunchedEffect(userId) {
         profileViewModel.loadProfileData(userId)
+        medicalViewModel.loadMedicalData(userId)
     }
 
     val profileData = profileViewModel.profileData.value
+    val medicalData = medicalViewModel.medicalData.value
 
     val name = profileData?.get("full name") ?: ""
     val age = profileData?.get("age") ?: ""
@@ -68,6 +74,9 @@ fun HelpScreen(navController: NavController) {
     val weight = profileData?.get("weight") ?: ""
     val height = profileData?.get("height") ?: ""
     val address = profileData?.get("address") ?: ""
+
+    val allergies = medicalData?.get("allergies") ?: ""
+    val medications = medicalData?.get("medications") ?: ""
 
     // Fetch the profile image from Firestore
     LaunchedEffect(userId) {
@@ -208,7 +217,7 @@ fun HelpScreen(navController: NavController) {
         Column {
             Text(
                 text = "Personal Information",
-                fontSize = 25.sp,
+                fontSize = 27.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Color.Red,
                 modifier = Modifier
@@ -242,7 +251,7 @@ fun HelpScreen(navController: NavController) {
                 ) {
                     Text(
                         text = "Height",
-                        fontSize = 20.sp,
+                        fontSize = 22.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.align(Alignment.CenterVertically)
@@ -266,7 +275,7 @@ fun HelpScreen(navController: NavController) {
                 ) {
                     Text(
                         text = "Weight",
-                        fontSize = 20.sp,
+                        fontSize = 22.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.align(Alignment.CenterVertically)
@@ -290,7 +299,7 @@ fun HelpScreen(navController: NavController) {
                 ) {
                     Text(
                         text = "Gender",
-                        fontSize = 20.sp,
+                        fontSize = 22.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.align(Alignment.CenterVertically)
@@ -312,7 +321,7 @@ fun HelpScreen(navController: NavController) {
         Column {
             Text(
                 text = "Medical Information",
-                fontSize = 25.sp,
+                fontSize = 27.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Color.Red,
                 modifier = Modifier
@@ -323,7 +332,7 @@ fun HelpScreen(navController: NavController) {
                 color = Color.Gray,
                 thickness = 2.dp,
                 modifier = Modifier
-                    .width(300.dp)
+                    .width(500.dp)
                     .padding(vertical = 1.dp)
                     .padding(horizontal = 10.dp)
                     .align(Alignment.Start)
@@ -345,19 +354,18 @@ fun HelpScreen(navController: NavController) {
                     ) {
                         Text(
                             text = "Allergies",
-                            fontSize = 20.sp,
+                            fontSize = 22.sp,
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.align(Alignment.CenterVertically)
                         )
                         Text(
-                            text = height,
+                            text = allergies,
                             fontSize = 20.sp,
                             color = Color.White,
                             fontWeight = FontWeight.Normal,
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
-                                .padding(end = 130.dp)
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
@@ -367,43 +375,19 @@ fun HelpScreen(navController: NavController) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Weight",
-                            fontSize = 20.sp,
+                            text = "Medications",
+                            fontSize = 22.sp,
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.align(Alignment.CenterVertically)
                         )
                         Text(
-                            text = "$weight lbs",
+                            text = medications,
                             fontSize = 20.sp,
                             color = Color.White,
                             fontWeight = FontWeight.Normal,
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
-                                .padding(end = 130.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Gender",
-                            fontSize = 20.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        )
-                        Text(
-                            text = gender,
-                            fontSize = 20.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .padding(end = 130.dp)
                         )
                     }
                 }
