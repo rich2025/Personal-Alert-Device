@@ -22,6 +22,9 @@ import com.example.personalalertdevice.Contacts.ContactsScreen
 import com.example.personalalertdevice.Health.HealthScreen
 import com.example.personalalertdevice.Health.HistoryScreen
 import com.example.personalalertdevice.Health.VitalsScreen
+import com.example.personalalertdevice.Health.MedicalInfoScreen
+import com.example.personalalertdevice.Health.MedicalViewModel
+import com.example.personalalertdevice.Health.MedicalViewModelFactory
 import com.example.personalalertdevice.Profile.ProfilePictureViewModel
 import com.example.personalalertdevice.Profile.ProfilePictureViewModelFactory
 import com.example.personalalertdevice.Profile.ProfileScreenMain
@@ -58,6 +61,7 @@ import java.time.format.DateTimeFormatter
 class MainActivity : ComponentActivity() {
 
     private lateinit var profileViewModel: ProfileViewModel
+    private lateinit var medicalViewModel: MedicalViewModel
     private lateinit var googleAuthClient: GoogleAuthClient
     private val userRepository = UserRepository()
     private val firebaseAuth: FirebaseAuth by lazy { Firebase.auth }
@@ -87,6 +91,10 @@ class MainActivity : ComponentActivity() {
         userName = savedUserName
         profilePictureUrl = savedProfilePictureUrl
 
+        val factoryMedical = MedicalViewModelFactory(firestore)
+        medicalViewModel = ViewModelProvider(this, factoryMedical).get(MedicalViewModel::class.java)
+
+        googleAuthClient = GoogleAuthClient(this)
 
 
         setContent {
@@ -167,6 +175,7 @@ class MainActivity : ComponentActivity() {
                 composable("HelpScreen") { HelpScreen(navController) }
                 composable("VitalsScreen") { VitalsScreen(navController) }
                 composable("HistoryScreen") { HistoryScreen(navController) }
+                composable("MedicalInfoScreen") { MedicalInfoScreen(navController) }
                 composable("ContactsListScreen") {
                     ContactsListScreen(navController, contactsViewModel)
                 }
@@ -303,7 +312,7 @@ class MainActivity : ComponentActivity() {
 
     private suspend fun fetchAndUploadVitalsData() {
         try {
-            val apiKey = "x"
+            val apiKey = "x
             val feedName = "x"
 
             val data = RetrofitInstance.api.getData(feedName, apiKey)
@@ -476,5 +485,3 @@ class MainActivity : ComponentActivity() {
         return String(byteArray, Charsets.UTF_8)
     }
 }
-
-

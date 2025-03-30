@@ -308,5 +308,106 @@ fun HelpScreen(navController: NavController) {
             }
             }
         }
+        Spacer(modifier = Modifier.height(20.dp))
+        Column {
+            Text(
+                text = "Medical Information",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.Red,
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(horizontal = 20.dp)
+            )
+            Divider(
+                color = Color.Gray,
+                thickness = 2.dp,
+                modifier = Modifier
+                    .width(300.dp)
+                    .padding(vertical = 1.dp)
+                    .padding(horizontal = 10.dp)
+                    .align(Alignment.Start)
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 5.dp, vertical = 3.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Allergies",
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                        Text(
+                            text = height,
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(end = 130.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Weight",
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                        Text(
+                            text = "$weight lbs",
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(end = 130.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Gender",
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                        Text(
+                            text = gender,
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(end = 130.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
