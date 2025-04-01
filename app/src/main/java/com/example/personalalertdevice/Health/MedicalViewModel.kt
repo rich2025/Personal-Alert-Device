@@ -13,11 +13,12 @@ class MedicalViewModel(private val firestore: FirebaseFirestore) : ViewModel() {
     val medicalData: State<Map<String, String>?> get() = _medicalData
 
     // Save medical data to Firestore
-    fun saveMedicalData(userId: String, allergies: String, medications: String, donor: String) {
+    fun saveMedicalData(userId: String, allergies: String, medications: String, donor: String, conditions: String) {
         val MedicalData = hashMapOf(
             "allergies" to allergies,
             "medications" to medications,
-            "donor" to donor
+            "donor" to donor,
+            "conditions" to conditions
         )
 
         firestore.collection("Users")
