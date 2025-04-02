@@ -41,8 +41,7 @@ class ContactsViewModel : ViewModel() {
 
                     designatedContacts.clear()
                     designatedContacts.addAll(
-                        contactsList.map { Contact(it["id"] ?: "", it["name"] ?: "Unknown", it["phoneNumber"] ?: "No Number") }
-                    )
+                        contactsList.map { Contact(it["id"] ?: "", it["name"] ?: "Unknown", it["phone number"] ?: "No Number") }                    )
 
                     Log.d("Firestore", "Loaded designated contacts: $designatedContacts")
                 }

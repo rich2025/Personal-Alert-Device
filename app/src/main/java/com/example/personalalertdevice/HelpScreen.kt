@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -45,7 +46,7 @@ import com.example.personalalertdevice.Profile.ProfileViewModel
 import com.example.personalalertdevice.Profile.ProfileViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-
+import com.example.personalalertdevice.Contacts.ContactsViewModel
 
 @Composable
 fun HelpScreen(navController: NavController) {
@@ -59,6 +60,9 @@ fun HelpScreen(navController: NavController) {
     val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(firestore))
 
     val medicalViewModel: MedicalViewModel = viewModel(factory = MedicalViewModelFactory(firestore))
+
+    val contactsViewModel: ContactsViewModel = viewModel()
+    val contacts = contactsViewModel.designatedContacts
 
     LaunchedEffect(userId) {
         profileViewModel.loadProfileData(userId)
@@ -215,7 +219,7 @@ fun HelpScreen(navController: NavController) {
                 )
             }
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(15.dp))
         Column {
             Text(
                 text = "Personal Information",
@@ -415,6 +419,63 @@ fun HelpScreen(navController: NavController) {
                                 .align(Alignment.CenterVertically)
                         )
                     }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(7.dp))
+        Column {
+            Text(
+                text = "Designated Contacts",
+                fontSize = 27.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.Red,
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(horizontal = 20.dp)
+            )
+            Divider(
+                color = Color.Gray,
+                thickness = 2.dp,
+                modifier = Modifier
+                    .width(500.dp)
+                    .padding(vertical = 1.dp)
+                    .padding(horizontal = 10.dp)
+                    .align(Alignment.Start)
+            )
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .padding(horizontal = 20.dp)
+            ) {
+                val contactsList = contacts
+                items(count = contactsList.size) { index ->
+                    val contact = contactsList[index]
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = contact.name,
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = contact.phoneNumber,
+                            fontSize = 20.sp,
+                            color = Color.White
+                        )
+                    }
+                    Divider(
+                        color = Color.Gray,
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                 }
             }
         }
