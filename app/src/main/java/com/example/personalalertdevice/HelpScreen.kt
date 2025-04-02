@@ -78,6 +78,7 @@ fun HelpScreen(navController: NavController) {
     val allergies = medicalData?.get("allergies") ?: ""
     val medications = medicalData?.get("medications") ?: ""
     val donor = medicalData?.get("donor") ?: ""
+    val conditions = medicalData?.get("conditions") ?: ""
 
     // Fetch the profile image from Firestore
     LaunchedEffect(userId) {
@@ -384,6 +385,29 @@ fun HelpScreen(navController: NavController) {
                         )
                         Text(
                             text = medications,
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(7.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Conditions",
+                            fontSize = 22.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                        Text(
+                            text = conditions,
                             fontSize = 20.sp,
                             color = Color.White,
                             fontWeight = FontWeight.Normal,
