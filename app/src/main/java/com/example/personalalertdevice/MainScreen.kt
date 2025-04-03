@@ -1,5 +1,6 @@
 package com.example.personalalertdevice
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -29,9 +30,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.example.personalalertdevice.Profile.ProfilePictureViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 // Composable for main screen
 @Composable
@@ -283,7 +289,10 @@ fun MainScreen(
                     }
                 }
                 HoldButtonWithProgress(
-                    onCompleted = { navController.navigate("HelpScreen") },
+                    onCompleted = {
+                        navController.navigate("HelpScreen")
+                        addEmergencyRequestToHistory()
+                                  },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(80.dp)
@@ -368,4 +377,39 @@ fun MainScreen(
             }
         }
     }
+
+private fun addEmergencyRequestToHistory() {
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+    val firestore = FirebaseFirestore.getInstance()
+    val documentRef = firestore.collection("Users").document(userId)
+
+    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+    val timestamp = sdf.format(Date())
+
+    documentRef.get()
+        .addOnSuccessListener { document ->
+            val heartRate = document.getString("vitals history.heart rate") ?: "Unknown"
+            val temperature = document.getString("vitals history.temperature") ?: "Unknown"
+
+            val emergencyData = hashMapOf(
+                "timestamp" to timestamp,
+                "created_at" to FieldValue.serverTimestamp(),
+                "trigger" to "app",
+                "heart_rate" to heartRate,
+                "temperature" to temperature
+            )
+
+            documentRef.collection(timestamp).add(emergencyData)
+                .addOnSuccessListener {
+                    Log.d("Emergency", "Emergency request added to history successfully")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("Emergency", "Failed to add emergency request to history: ${e.message}")
+                }
+        }
+        .addOnFailureListener { e ->
+            Log.e("Emergency", "Failed to retrieve vitals data: ${e.message}")
+        }
+}
 
