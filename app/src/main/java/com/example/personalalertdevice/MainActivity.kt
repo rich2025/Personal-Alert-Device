@@ -57,6 +57,7 @@ import java.text.ParseException
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import androidx.navigation.NavHostController
 
 class MainActivity : ComponentActivity() {
 
@@ -68,6 +69,12 @@ class MainActivity : ComponentActivity() {
 
     private var userName: String = "User"
     private var profilePictureUrl: String? = null
+
+    // Variable to store the last help request timestamp
+    private var lastHelpRequestTimestamp: String? = null
+
+    // Store NavController reference
+    private var navControllerRef: NavHostController? = null
 
     private val firestore: FirebaseFirestore by lazy {
         FirebaseFirestore.getInstance()
@@ -100,6 +107,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             startPolling()
             val navController = rememberNavController()
+            // Store NavController reference for use in other functions
+            navControllerRef = navController
+
             val contactsViewModel = viewModel<ContactsViewModel>()
             val profilePictureViewModel: ProfilePictureViewModel =
                 viewModel(factory = ProfilePictureViewModelFactory(firestore))
@@ -264,6 +274,9 @@ class MainActivity : ComponentActivity() {
                     created_at = formattedDate
                 )
             )
+
+            checkForNewHelpRequest(utf8Value, formattedDate)
+
         } catch (e: UnknownHostException) {
             Log.e("Adafruit", "DNS Resolution Failed: ${e.message}")
         } catch (e: IOException) {
@@ -273,15 +286,73 @@ class MainActivity : ComponentActivity() {
         }
 
         try {
-            val url = URL("https://io.adafruit.com")
+            val url = URL("x")
             val connection = url.openConnection() as HttpURLConnection
             connection.connect()
             Log.d("Network", "Response Code: ${connection.responseCode}")
         } catch (e: Exception) {
             Log.e("Network Error", "Failed to connect: ${e.message}")
         }
+    }
 
+    private fun checkForNewHelpRequest(message: String, timestamp: String) {
+        if (message.lowercase().contains("help") && timestamp != lastHelpRequestTimestamp) {
+            lastHelpRequestTimestamp = timestamp
 
+            // calculate if the request is within the last 5 seconds
+            try {
+                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+                val requestDate = sdf.parse(timestamp)
+                val currentTime = Date()
+
+                val diffInMillis = currentTime.time - requestDate.time
+                val diffInSeconds = diffInMillis / 1000
+
+                if (diffInSeconds <= 5) {
+                    addEmergencyRequestToHistory(timestamp)
+
+                    runOnUiThread {
+                        navControllerRef?.navigate("HelpScreen")
+                        Log.d("Emergency", "Navigating to help screen due to recent emergency request")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("Emergency", "Error processing emergency request: ${e.message}")
+            }
+        }
+    }
+
+    private fun addEmergencyRequestToHistory(timestamp: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        val firestore = FirebaseFirestore.getInstance()
+        val documentRef = firestore.collection("Users").document(userId)
+
+        documentRef.get()
+            .addOnSuccessListener { document ->
+                val heartRate = document.getString("vitals history.heart rate") ?: "Unknown"
+                val temperature = document.getString("vitals history.temperature") ?: "Unknown"
+
+                val emergencyData = hashMapOf(
+                    "timestamp" to timestamp,
+                    "created_at" to FieldValue.serverTimestamp(),
+                    "trigger" to "speech",
+                    "heart_rate" to heartRate,
+                    "temperature" to temperature
+                )
+
+                // timestamp as collection name
+                documentRef.collection(timestamp).add(emergencyData)
+                    .addOnSuccessListener {
+                        Log.d("Emergency", "Emergency request added to history successfully")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Emergency", "Failed to add emergency request to history: ${e.message}")
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Emergency", "Failed to retrieve vitals data: ${e.message}")
+            }
     }
 
     private fun uploadToFirestore(latestData: AdafruitData) {
@@ -428,7 +499,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Class-level variable to track last status check time
     private var lastStatusCheckTime: Long = 0
 
     private fun uploadConnectionStatusToFirestore(status: String, timestamp: String) {
