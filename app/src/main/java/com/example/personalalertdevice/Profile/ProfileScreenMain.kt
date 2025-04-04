@@ -242,7 +242,7 @@ fun ProfileScreenMain(
                     ProfileLabelValue(label = "Name", value = name)
                     ProfileLabelValue(label = "Age", value = age)
                     ProfileLabelValue(label = "Gender", value = gender)
-                    ProfileLabelValue(label = "Weight", value = weight)
+                    ProfileLabelValue(label = "Weight", value = "$weight lbs")
                     ProfileLabelValue(label = "Height", value = height)
                     ProfileLabelValue(label = "Address", value = address)
                 }
