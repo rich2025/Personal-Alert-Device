@@ -1,5 +1,6 @@
 package com.example.personalalertdevice
 
+import android.bluetooth.BluetoothHidDevice
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -28,16 +29,44 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.personalalertdevice.Contacts.ContactsViewModel
+import com.example.personalalertdevice.Health.MedicalViewModel
+import com.example.personalalertdevice.Health.MedicalViewModelFactory
+import com.example.personalalertdevice.MainActivity.AdafruitData
+import com.example.personalalertdevice.MainActivity.AdafruitService
 import com.example.personalalertdevice.Profile.ProfilePictureViewModel
+import com.example.personalalertdevice.Profile.ProfileViewModel
+import com.example.personalalertdevice.Profile.ProfileViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.Header
+import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.Response
+import java.util.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+
 
 // Composable for main screen
 @Composable
@@ -78,6 +107,34 @@ fun MainScreen(
     }
 
     val uploadedProfilePictureUrl = viewModel.profileImageUrl.value
+
+//    val firestore = FirebaseFirestore.getInstance()
+//    val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(firestore))
+//
+//    val medicalViewModel: MedicalViewModel = viewModel(factory = MedicalViewModelFactory(firestore))
+//
+//    val contactsViewModel: ContactsViewModel = viewModel()
+//    val contacts = contactsViewModel.designatedContacts
+//
+//    LaunchedEffect(userId) {
+//        profileViewModel.loadProfileData(userId)
+//        medicalViewModel.loadMedicalData(userId)
+//    }
+//
+//    val profileData = profileViewModel.profileData.value
+//    val medicalData = medicalViewModel.medicalData.value
+//
+//    val name = profileData?.get("full name") ?: ""
+//    val age = profileData?.get("age") ?: ""
+//    val gender = profileData?.get("gender") ?: ""
+//    val weight = profileData?.get("weight") ?: ""
+//    val height = profileData?.get("height") ?: ""
+//    val address = profileData?.get("address") ?: ""
+//
+//    val allergies = medicalData?.get("allergies") ?: ""
+//    val medications = medicalData?.get("medications") ?: ""
+//    val donor = medicalData?.get("donor") ?: ""
+//    val conditions = medicalData?.get("conditions") ?: ""
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -391,18 +448,25 @@ private fun addEmergencyRequestToHistory() {
         .addOnSuccessListener { document ->
             val heartRate = document.getString("vitals history.heart rate") ?: "Unknown"
             val temperature = document.getString("vitals history.temperature") ?: "Unknown"
+            val name = document.getString("full name") ?: "Unknown"
+            val address = document.getString("address") ?: "Unknown"
 
             val emergencyData = hashMapOf(
                 "timestamp" to timestamp,
                 "created_at" to FieldValue.serverTimestamp(),
                 "trigger" to "app",
                 "heart_rate" to heartRate,
-                "temperature" to temperature
+                "temperature" to temperature,
+                "name" to name,
+                "address" to address
             )
 
             documentRef.collection(timestamp).add(emergencyData)
                 .addOnSuccessListener {
                     Log.d("Emergency", "Emergency request added to history successfully")
+                    CoroutineScope(Dispatchers.IO).launch {
+                        uploadEmergencyViaWebhook(heartRate, temperature, timestamp, name, address)
+                    }
                 }
                 .addOnFailureListener { e ->
                     Log.e("Emergency", "Failed to add emergency request to history: ${e.message}")
@@ -413,3 +477,41 @@ private fun addEmergencyRequestToHistory() {
         }
 }
 
+// use twilio for multiple sms messages
+private suspend fun uploadEmergencyViaWebhook(
+    heartRate: String,
+    temperature: String,
+    timestamp: String,
+    name: String,
+    address: String
+) {
+    val client = OkHttpClient()
+
+    val formattedData = """
+    ${name} has triggered an emergency help request at ${timestamp}.
+    
+    Address: ${address}
+    Trigger Method: app
+    Current Heart Rate: ${heartRate} bpm
+    Current Temperature: ${temperature} °C
+""".trimIndent()
+
+    val jsonPayload = JSONObject(mapOf("value" to formattedData)).toString()
+
+    val request = Request.Builder()
+        .url("https://io.adafruit.com/api/v2/webhooks/feed/eAZQrm3D9uiVxvT2KzU7fde5XSTX")
+        .addHeader("Content-Type", "application/json")
+        .post(jsonPayload.toRequestBody("application/json".toMediaType()))
+        .build()
+
+    try {
+        val response = client.newCall(request).execute()
+        if (response.isSuccessful) {
+            Log.d("Webhook", "Webhook triggered successfully!")
+        } else {
+            Log.e("Webhook", "Webhook failed (${response.code}): ${response.body?.string()}")
+        }
+    } catch (e: Exception) {
+        Log.e("Webhook", "Error triggering webhook: ${e.message}")
+    }
+}
