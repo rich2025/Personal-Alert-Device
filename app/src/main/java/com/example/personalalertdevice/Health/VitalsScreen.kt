@@ -51,6 +51,9 @@ fun VitalsScreen(navController: NavController) {
     val bodyTemperature = remember { mutableStateOf("Loading...") }
     val temperatureHistory = remember { mutableStateListOf<Float>() }
     val heartRateBPM = remember { mutableStateOf("Loading...") }
+    val heartRateBPMHistory = remember { mutableStateListOf<Float>() }
+    val spO2 = remember { mutableStateOf("Loading...") }
+    val spO2History = remember { mutableStateListOf<Float>() }
     val deviceStatus = remember { mutableStateOf("loading") }
     val errorMessage = remember { mutableStateOf<String?>(null) }
 
@@ -64,6 +67,26 @@ fun VitalsScreen(navController: NavController) {
         temperatureHistory.minOrNull()?.let { "%.2f°F".format(it) } ?: "N/A"
     } }
 
+    val avgBPM = remember { derivedStateOf {
+        heartRateBPMHistory.averageOrNull()?.let { "%.0f bpm".format(it) } ?: "N/A"
+    } }
+    val highBPM = remember { derivedStateOf {
+        heartRateBPMHistory.maxOrNull()?.let { "%.0f bpm".format(it) } ?: "N/A"
+    } }
+    val lowBPM = remember { derivedStateOf {
+        heartRateBPMHistory.minOrNull()?.let { "%.0f bpm".format(it) } ?: "N/A"
+    } }
+
+    val avgSPO2 = remember { derivedStateOf {
+        spO2History.averageOrNull()?.let { "%.0f%%".format(it) } ?: "N/A"
+    } }
+    val highSPO2 = remember { derivedStateOf {
+        spO2History.maxOrNull()?.let { "%.0f%%".format(it) } ?: "N/A"
+    } }
+    val lowSPO2 = remember { derivedStateOf {
+        spO2History.minOrNull()?.let { "%.0f%%".format(it) } ?: "N/A"
+    } }
+
     // Real-time Firestore listener
     LaunchedEffect(userId) {
         firestore.collection("Users")
@@ -73,16 +96,16 @@ fun VitalsScreen(navController: NavController) {
                     Log.e("VitalsScreen", "Error fetching data: ${error.message}")
                     bodyTemperature.value = "Error"
                     heartRateBPM.value = "Error"
+                    spO2.value = "Error"
                     deviceStatus.value = "error"
                     errorMessage.value = error.message
                     return@addSnapshotListener
                 }
 
                 documentSnapshot?.let { document ->
-                    // Get the connection status map
+
                     val connectionStatusMap = document.get("device connection status") as? Map<*, *>
 
-                    // Extract device status from the map
                     val status = connectionStatusMap?.get("device status")?.toString()?.lowercase() ?: "unknown"
                     deviceStatus.value = status
 
@@ -90,22 +113,25 @@ fun VitalsScreen(navController: NavController) {
                         "disconnected" -> {
                             bodyTemperature.value = "Disconnected"
                             heartRateBPM.value = "Disconnected"
+                            spO2.value = "Disconnected"
                             errorMessage.value = "Device disconnected"
                             temperatureHistory.clear()
+                            heartRateBPMHistory.clear()
+                            spO2History.clear()
                         }
                         "connected" -> {
                             // Fetch vitals history only if connected
                             val vitalsHistory = document.get("vitals history") as? Map<*, *>
                             val temperature = vitalsHistory?.get("temperature")?.toString() ?: "N/A"
                             val heartRate = vitalsHistory?.get("heart rate")?.toString() ?: "N/A"
+                            val bloodoxygen = vitalsHistory?.get("spo2")?.toString() ?: "N/A"
                             val celsius = temperature.toDoubleOrNull()
 
-                            // Process temperature
+                            // temperature
                             if (celsius != null) {
                                 val fahrenheit = (celsius * 9 / 5) + 32
                                 bodyTemperature.value = "%.2f°F".format(fahrenheit)
 
-                                // Maintain last 10 readings
                                 if (temperatureHistory.size >= 10) {
                                     temperatureHistory.removeAt(0)
                                 }
@@ -114,13 +140,38 @@ fun VitalsScreen(navController: NavController) {
                                 bodyTemperature.value = "N/A"
                             }
 
-                            // Update heart rate
-                            heartRateBPM.value = if (heartRate != "N/A") "$heartRate bpm" else "N/A"
+                            // heart rate
+                            val heartRateValue = heartRate.toFloatOrNull()
+                            if (heartRateValue != null) {
+                                heartRateBPM.value = "%.0f bpm".format(heartRateValue)
+
+                                if (heartRateBPMHistory.size >= 10) {
+                                    heartRateBPMHistory.removeAt(0)
+                                }
+                                heartRateBPMHistory.add(heartRateValue)
+                            } else {
+                                heartRateBPM.value = "N/A"
+                            }
+
+                            // SpO2
+                            val spo2Value = bloodoxygen.toFloatOrNull()
+                            if (spo2Value != null) {
+                                spO2.value = "%.0f%%".format(spo2Value)
+
+                                if (spO2History.size >= 10) {
+                                    spO2History.removeAt(0)
+                                }
+                                spO2History.add(spo2Value)
+                            } else {
+                                spO2.value = "N/A"
+                            }
+
                             errorMessage.value = null
                         }
                         else -> {
                             bodyTemperature.value = "Unknown"
                             heartRateBPM.value = "Unknown"
+                            spO2.value = "Unknown"
                             errorMessage.value = "Device status not available"
                         }
                     }
@@ -168,7 +219,6 @@ fun VitalsScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Show connection status with improved display
         val statusText = when (deviceStatus.value) {
             "connected" -> "CONNECTED"
             "disconnected" -> "DISCONNECTED"
@@ -207,8 +257,8 @@ fun VitalsScreen(navController: NavController) {
                 title = "Heart Rate",
                 icon = painterResource(id = R.drawable.heart),
                 current = if (showInvalidData) "Invalid" else heartRateBPM.value,
-                avg = if (showInvalidData) "Invalid" else "75 bpm",
-                highLow = if (showInvalidData) "Invalid" else "95 bpm / 60 bpm"
+                avg = if (showInvalidData) "Invalid" else avgBPM.value,
+                highLow = if (showInvalidData) "Invalid" else "${highBPM.value} / ${lowBPM.value}"
             )
 
             VitalsSection(
@@ -222,9 +272,9 @@ fun VitalsScreen(navController: NavController) {
             VitalsSection(
                 title = "Blood Oxygen",
                 icon = painterResource(id = R.drawable.bo2),
-                current = if (showInvalidData) "Invalid" else "98%",
-                avg = if (showInvalidData) "Invalid" else "97%",
-                highLow = if (showInvalidData) "Invalid" else "99% / 95%"
+                current = if (showInvalidData) "Invalid" else spO2.value,
+                avg = if (showInvalidData) "Invalid" else avgSPO2.value,
+                highLow = if (showInvalidData) "Invalid" else "${highSPO2.value} / ${lowSPO2.value}"
             )
         }
     }
