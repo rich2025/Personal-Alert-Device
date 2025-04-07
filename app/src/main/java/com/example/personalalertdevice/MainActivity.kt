@@ -36,10 +36,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
-
+import retrofit2.http.Path
 import java.text.SimpleDateFormat
 import java.util.*
-
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
@@ -47,7 +46,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
-import retrofit2.http.Path
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -103,7 +101,6 @@ class MainActivity : ComponentActivity() {
 
         googleAuthClient = GoogleAuthClient(this)
 
-
         setContent {
             startPolling()
             val navController = rememberNavController()
@@ -149,7 +146,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-
 
             NavHost(navController = navController, startDestination = startDestination) {
                 val userId = firebaseAuth.currentUser?.uid ?: ""
@@ -215,7 +211,6 @@ class MainActivity : ComponentActivity() {
     object RetrofitInstance {
         private const val BASE_URL = "x"
 
-
         val api: AdafruitService by lazy {
             Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -230,6 +225,7 @@ class MainActivity : ComponentActivity() {
             while (true) {
                 fetchAndUploadData()
                 fetchAndUploadVitalsData()
+                fetchAndUploadBatteryData()
                 fetchAndUploadConnectionStatus()
                 delay(3000)
             }
@@ -286,13 +282,81 @@ class MainActivity : ComponentActivity() {
         }
 
         try {
-            val url = URL("x")
+            val url = URL("https://io.adafruit.com")
             val connection = url.openConnection() as HttpURLConnection
             connection.connect()
             Log.d("Network", "Response Code: ${connection.responseCode}")
         } catch (e: Exception) {
             Log.e("Network Error", "Failed to connect: ${e.message}")
         }
+    }
+
+    private suspend fun fetchAndUploadBatteryData() {
+        try {
+            val apiKey = "x"
+            val feedName = "x"
+
+            val data = RetrofitInstance.api.getData(feedName, apiKey)
+
+            if (data.isNullOrEmpty()) {
+                Log.e("Adafruit", "No Battery data found or data is empty!")
+                return
+            }
+
+            val mostRecentItem = data.first()
+
+            val utcDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+            utcDateFormat.timeZone = TimeZone.getTimeZone("UTC")
+            val utcDate = try {
+                utcDateFormat.parse(mostRecentItem.created_at)
+            } catch (e: ParseException) {
+                Log.e("Adafruit", "Error parsing date: ${e.message}")
+                return
+            }
+
+            val estTimeZone = TimeZone.getTimeZone("America/New_York")
+            val estDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+            estDateFormat.timeZone = estTimeZone
+            val formattedDate = estDateFormat.format(utcDate)
+
+            val voltageStr = hexToUtf8(mostRecentItem.value)
+            val voltage = voltageStr.toFloatOrNull() ?: 0f
+            val batteryPercentage = ((voltage / 3.3f) * 100).coerceIn(0f, 100f).toInt()
+
+            uploadBatteryToFirestore(
+                mostRecentItem.id,
+                batteryPercentage.toString(),
+                formattedDate
+            )
+        } catch (e: Exception) {
+            Log.e("Adafruit", "Error fetching Battery data: ${e.message}")
+        }
+    }
+
+    private fun uploadBatteryToFirestore(id: String, batteryPercentage: String, timestamp: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+        if (userId.isEmpty()) {
+            Log.e("Adafruit", "User not authenticated!")
+            return
+        }
+
+        val firestore = FirebaseFirestore.getInstance()
+        val documentRef = firestore.collection("Users").document(userId)
+
+        val batteryData = hashMapOf(
+            "id" to id,
+            "percentage" to batteryPercentage,
+            "last_updated" to timestamp
+        )
+
+        documentRef.set(mapOf("battery" to batteryData), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("Adafruit", "Battery data uploaded successfully!")
+            }
+            .addOnFailureListener { e ->
+                Log.e("Adafruit", "Failed to upload battery data: ${e.message}")
+            }
     }
 
     private fun checkForNewHelpRequest(message: String, timestamp: String) {
@@ -412,17 +476,19 @@ class MainActivity : ComponentActivity() {
             val utf8Value = hexToUtf8(mostRecentItem.value)
             val values = utf8Value.split(",")
 
-            if (values.size < 2) {
+            if (values.size < 3) {
                 Log.e("Adafruit", "Invalid Vitals data format!")
                 return
             }
 
             val heartRate = values[0]
-            val temperature = values[1]
+            val spo2 = values[1]
+            val temperature = values[2]
 
             uploadVitalsToFirestore(
                 mostRecentItem.id,
                 heartRate,
+                spo2,
                 temperature,
                 formattedDate
             )
@@ -431,7 +497,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun uploadVitalsToFirestore(id: String, heartRate: String, temperature: String, timestamp: String) {
+    private fun uploadVitalsToFirestore(id: String, heartRate: String, spo2: String, temperature: String, timestamp: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
         if (userId.isEmpty()) {
@@ -445,6 +511,7 @@ class MainActivity : ComponentActivity() {
         val vitalsData = hashMapOf(
             "id" to id,
             "heart rate" to heartRate,
+            "spo2" to spo2,
             "temperature" to temperature,
             "created at" to timestamp
         )
@@ -545,7 +612,6 @@ class MainActivity : ComponentActivity() {
                 Log.e("Adafruit", "Failed to fetch previous timestamp", e)
             }
     }
-
 
     private fun hexToUtf8(hexString: String): String {
         val byteArray = ByteArray(hexString.length / 2)
