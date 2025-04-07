@@ -253,7 +253,7 @@ fun MedicalInfoScreen(navController: NavController) {
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(top = 32.dp, bottom = 16.dp, start = 9.dp)
+                .padding(top = 34.dp, bottom = 16.dp, start = 16.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
