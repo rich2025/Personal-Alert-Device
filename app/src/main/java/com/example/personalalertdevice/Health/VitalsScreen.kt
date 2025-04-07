@@ -6,8 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.Text
-import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,12 +15,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -32,10 +38,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -179,207 +188,266 @@ fun VitalsScreen(navController: NavController) {
             }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color(0xFFF5F5F5) // Light gray background
     ) {
-        // Return Button
-        Button(
-            onClick = { navController.navigate("HealthScreen") },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(top = 32.dp, bottom = 16.dp, start = 9.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back",
-                tint = Color.Black,
-                modifier = Modifier.size(45.dp)
-            )
-            Column(modifier = Modifier.padding(start = 8.dp)) {
-                Text(
-                    text = "RETURN",
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-                Text(
-                    text = "Health Screen",
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        val statusText = when (deviceStatus.value) {
-            "connected" -> "CONNECTED"
-            "disconnected" -> "DISCONNECTED"
-            "loading" -> "LOADING..."
-            "error" -> "ERROR"
-            else -> "UNKNOWN STATUS"
-        }
-
-        val statusColor = when (deviceStatus.value) {
-            "connected" -> Color(0xFF4CAF50) // Green
-            "disconnected" -> Color(0xFFF44336) // Red
-            "loading" -> Color(0xFF2196F3) // Blue
-            "error" -> Color(0xFFFF9800) // Orange
-            else -> Color(0xFF9E9E9E) // Gray
-        }
-
-        Text(
-            text = "Device Status: $statusText",
-            color = statusColor,
-            fontWeight = FontWeight.Bold,
-            fontSize = 25.sp,
-            modifier = Modifier.padding(bottom = 15.dp)
-        )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 0.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
-            // Determine values based on connection status
-            val showInvalidData = deviceStatus.value != "connected"
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = { navController.navigate("HealthScreen") },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.Black,
+                        modifier = Modifier.size(45.dp)
+                    )
+                    Column(modifier = Modifier.padding(start = 8.dp)) {
+                        Text(
+                            text = "RETURN",
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
+                        Text(
+                            text = "Health Screen",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
+                    }
+                }
 
-            VitalsSection(
-                title = "Heart Rate",
-                icon = painterResource(id = R.drawable.heart),
-                current = if (showInvalidData) "Invalid" else heartRateBPM.value,
-                avg = if (showInvalidData) "Invalid" else avgBPM.value,
-                highLow = if (showInvalidData) "Invalid" else "${highBPM.value} / ${lowBPM.value}"
-            )
+                val statusText = when (deviceStatus.value) {
+                    "connected" -> "CONNECTED"
+                    "disconnected" -> "DISCONNECTED"
+                    "loading" -> "LOADING..."
+                    "error" -> "ERROR"
+                    else -> "UNKNOWN"
+                }
 
-            VitalsSection(
-                title = "Skin Body Temperature",
-                icon = painterResource(id = R.drawable.temp),
-                current = if (showInvalidData) "Invalid" else bodyTemperature.value,
-                avg = if (showInvalidData) "Invalid" else avgTemperature.value,
-                highLow = if (showInvalidData) "Invalid" else "${highTemperature.value} / ${lowTemperature.value}"
-            )
+                val statusColor = when (deviceStatus.value) {
+                    "connected" -> Color(0xFF4CAF50) // Green
+                    "disconnected" -> Color(0xFFF44336) // Red
+                    "loading" -> Color(0xFF2196F3) // Blue
+                    "error" -> Color(0xFFFF9800) // Orange
+                    else -> Color(0xFF9E9E9E) // Gray
+                }
 
-            VitalsSection(
-                title = "Blood Oxygen",
-                icon = painterResource(id = R.drawable.bo2),
-                current = if (showInvalidData) "Invalid" else spO2.value,
-                avg = if (showInvalidData) "Invalid" else avgSPO2.value,
-                highLow = if (showInvalidData) "Invalid" else "${highSPO2.value} / ${lowSPO2.value}"
-            )
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(statusColor.copy(alpha = 0.2f))
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(10.dp)
+                                .clip(CircleShape)
+                                .background(statusColor)
+                        )
+                        Text(
+                            text = statusText,
+                            color = statusColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            }
+
+            // Vitals Cards
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Determine values based on connection status
+                val showInvalidData = deviceStatus.value != "connected"
+
+                VitalsSectionCard(
+                    title = "Heart Rate",
+                    icon = painterResource(id = R.drawable.heart),
+                    current = if (showInvalidData) "Invalid" else heartRateBPM.value,
+                    avg = if (showInvalidData) "Invalid" else avgBPM.value,
+                    highLow = if (showInvalidData) "Invalid" else "${highBPM.value} / ${lowBPM.value}",
+                    cardColor = Color(0xFFE57373).copy(alpha = 0.2f),
+                    iconTint = Color(0xFFE53935)
+                )
+
+                VitalsSectionCard(
+                    title = "Body Temperature",
+                    icon = painterResource(id = R.drawable.temp),
+                    current = if (showInvalidData) "Invalid" else bodyTemperature.value,
+                    avg = if (showInvalidData) "Invalid" else avgTemperature.value,
+                    highLow = if (showInvalidData) "Invalid" else "${highTemperature.value} / ${lowTemperature.value}",
+                    cardColor = Color(0xFFFFB74D).copy(alpha = 0.2f),
+                    iconTint = Color(0xFFFF9800)
+                )
+
+                VitalsSectionCard(
+                    title = "Blood Oxygen",
+                    icon = painterResource(id = R.drawable.bo2),
+                    current = if (showInvalidData) "Invalid" else spO2.value,
+                    avg = if (showInvalidData) "Invalid" else avgSPO2.value,
+                    highLow = if (showInvalidData) "Invalid" else "${highSPO2.value} / ${lowSPO2.value}",
+                    cardColor = Color(0xFF90CAF9).copy(alpha = 0.2f),
+                    iconTint = Color(0xFF1976D2)
+                )
+            }
         }
     }
 }
 
 @Composable
-fun VitalsSection(
+fun VitalsSectionCard(
     title: String,
     icon: Painter,
     current: String,
     avg: String,
-    highLow: String
+    highLow: String,
+    cardColor: Color,
+    iconTint: Color
 ) {
-    Box(
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        ),
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(4.dp)
-            )
-            .border(
-                width = 2.dp,
-                color = Color.Gray,
-                shape = RoundedCornerShape(4.dp)
-            )
-            .padding(10.dp)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(5.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(cardColor)
+                    .padding(12.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(Color.White)
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = icon,
+                            contentDescription = "$title Icon",
+                            modifier = Modifier.size(32.dp),
+                        )
+                    }
+
+                    Text(
+                        text = title,
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = iconTint
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
-                text = title,
-                fontSize = 35.sp,
+                text = "Current Reading",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Gray
+            )
+
+            Text(
+                text = current,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = when {
+                    current.equals("Invalid", ignoreCase = true) -> Color.Red
+                    current.equals("Unknown", ignoreCase = true) -> Color(0xFFFF9800)
+                    current.equals("Error", ignoreCase = true) -> Color(0xFFF44336)
+                    current.equals("Loading...", ignoreCase = true) -> Color(0xFF2196F3)
+                    else -> iconTint
+                },
+                modifier = Modifier.padding(vertical = 4.dp)
             )
+
             Divider(
-                color = Color.Gray,
-                thickness = 2.dp,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 1.dp)
+                color = Color(0xFFEEEEEE),
+                thickness = 1.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp)
             )
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Image(
-                    painter = icon,
-                    contentDescription = "$title Icon",
-                    modifier = Modifier
-                        .size(60.dp)
-                        .padding(start = 10.dp, end = 0.dp, bottom = 5.dp)
-                )
-                Spacer(modifier = Modifier.width(50.dp))
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Row {
-                        Text(
-                            text = "Current: ",
-                            fontSize = 25.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color(0xFF1d2026)
-                        )
-                        Text(
-                            text = current,
-                            fontSize = 25.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = when {
-                                current.equals("Invalid", ignoreCase = true) -> Color.Red
-                                current.equals("Unknown", ignoreCase = true) -> Color(0xFFFF9800)
-                                current.equals("Error", ignoreCase = true) -> Color(0xFFF44336)
-                                current.equals("Loading...", ignoreCase = true) -> Color(0xFF2196F3)
-                                else -> Color.DarkGray
-                            }
-                        )
-                    }
-                    Row {
-                        Text(
-                            text = "24-HR Avg: ",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color(0xFF1d2026)
-                        )
-                        Text(
-                            text = avg,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (avg == "N/A") Color.Gray else Color.DarkGray
-                        )
-                    }
-                    Row {
-                        Text(
-                            text = "24-HR Hi/Lo: ",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color(0xFF1d2026)
-                        )
-                        Text(
-                            text = highLow,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (highLow == "N/A") Color.Gray else Color.DarkGray
-                        )
-                    }
+                    Text(
+                        text = "24-HR Average",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Gray
+                    )
+                    Text(
+                        text = avg,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (avg == "N/A" || avg == "Invalid") Color.Gray else Color.DarkGray
+                    )
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Text(
+                        text = "24-HR High / Low",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Gray
+                    )
+                    Text(
+                        text = highLow,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (highLow == "N/A" || highLow == "Invalid") Color.Gray else Color.DarkGray
+                    )
                 }
             }
         }
