@@ -298,7 +298,7 @@ fun MedicalInfoScreen(navController: NavController) {
                             fontWeight = FontWeight.Medium
                         )
                     },
-                    textStyle = TextStyle(fontSize = 18.sp),
+                    textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Medium),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = primaryColor,
                         unfocusedBorderColor = Color.Gray,
@@ -324,7 +324,7 @@ fun MedicalInfoScreen(navController: NavController) {
                             fontWeight = FontWeight.Medium
                         )
                     },
-                    textStyle = TextStyle(fontSize = 18.sp),
+                    textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Medium),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = primaryColor,
                         unfocusedBorderColor = Color.Gray,
@@ -515,7 +515,7 @@ fun MedicalInfoScreen(navController: NavController) {
                                             Text(
                                                 text = condition.name,
                                                 fontWeight = FontWeight.Medium,
-                                                fontSize = 16.sp,
+                                                fontSize = 18.sp,
                                                 color = Color.Black,
                                                 modifier = Modifier.weight(1f)
                                             )
