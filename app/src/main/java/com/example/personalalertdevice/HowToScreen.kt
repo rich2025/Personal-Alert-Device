@@ -81,7 +81,8 @@ fun HowToScreen(navController: NavController) {
 
                         // Get battery data
                         val batteryMap = document.get("battery") as? Map<*, *>
-                        val batteryPercentage = batteryMap?.get("percentage")?.toString()?.toIntOrNull() ?: 0
+                        val batteryVoltage = batteryMap?.get("percentage")?.toString()?.toFloatOrNull() ?: 0f
+                        val batteryPercentage = ((batteryVoltage / 3.3f) * 100).toInt().coerceIn(0, 100)
                         val batteryLastUpdated = batteryMap?.get("last_updated") as? Timestamp
 
                         deviceStatus = DeviceStatus(
@@ -90,6 +91,7 @@ fun HowToScreen(navController: NavController) {
                             batteryPercentage = batteryPercentage,
                             batteryLastUpdated = batteryLastUpdated
                         )
+
                     } else {
                         loadError = "No device data found"
                     }
