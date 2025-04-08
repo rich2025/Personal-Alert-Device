@@ -391,11 +391,12 @@ class MainActivity : ComponentActivity() {
 
     private fun addEmergencyRequestToHistory(timestamp: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-
         val firestore = FirebaseFirestore.getInstance()
-        val documentRef = firestore.collection("Users").document(userId)
+        val userDocRef = firestore.collection("Users").document(userId)
 
-        documentRef.get()
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+
+        userDocRef.get()
             .addOnSuccessListener { document ->
                 val heartRate = document.getString("vitals history.heart rate") ?: "Unknown"
                 val temperature = document.getString("vitals history.temperature") ?: "Unknown"
@@ -405,29 +406,33 @@ class MainActivity : ComponentActivity() {
                 val emergencyData = hashMapOf(
                     "timestamp" to timestamp,
                     "created_at" to FieldValue.serverTimestamp(),
-                    "trigger" to "app",
+                    "trigger" to "speech",
                     "heart_rate" to heartRate,
                     "temperature" to temperature,
                     "name" to name,
                     "address" to address
                 )
 
-                // timestamp as collection name
-                documentRef.collection(timestamp).add(emergencyData)
+                val emergencyRecordsRef = userDocRef
+                    .collection("emergency_records")
+                    .document(timestamp)
+
+                emergencyRecordsRef.set(emergencyData)
                     .addOnSuccessListener {
-                        Log.d("Emergency", "Emergency request added to history successfully")
+                        Log.d("Emergency", "Emergency request added to emergency_records successfully")
                         CoroutineScope(Dispatchers.IO).launch {
                             uploadEmergencyViaWebhook(heartRate, temperature, timestamp, name, address)
                         }
                     }
                     .addOnFailureListener { e ->
-                        Log.e("Emergency", "Failed to add emergency request to history: ${e.message}")
+                        Log.e("Emergency", "Failed to add emergency request: ${e.message}")
                     }
             }
             .addOnFailureListener { e ->
-                Log.e("Emergency", "Failed to retrieve vitals data: ${e.message}")
+                Log.e("Emergency", "Failed to retrieve user data: ${e.message}")
             }
     }
+
 
     private suspend fun uploadEmergencyViaWebhook(
         heartRate: String,

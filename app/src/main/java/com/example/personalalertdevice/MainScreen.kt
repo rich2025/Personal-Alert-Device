@@ -437,14 +437,13 @@ fun MainScreen(
 
 private fun addEmergencyRequestToHistory() {
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-
     val firestore = FirebaseFirestore.getInstance()
-    val documentRef = firestore.collection("Users").document(userId)
+    val userDocRef = firestore.collection("Users").document(userId)
 
     val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
     val timestamp = sdf.format(Date())
 
-    documentRef.get()
+    userDocRef.get()
         .addOnSuccessListener { document ->
             val heartRate = document.getString("vitals history.heart rate") ?: "Unknown"
             val temperature = document.getString("vitals history.temperature") ?: "Unknown"
@@ -461,21 +460,26 @@ private fun addEmergencyRequestToHistory() {
                 "address" to address
             )
 
-            documentRef.collection(timestamp).add(emergencyData)
+            val emergencyRecordsRef = userDocRef
+                .collection("emergency_records")
+                .document(timestamp)
+
+            emergencyRecordsRef.set(emergencyData)
                 .addOnSuccessListener {
-                    Log.d("Emergency", "Emergency request added to history successfully")
+                    Log.d("Emergency", "Emergency request added to emergency_records successfully")
                     CoroutineScope(Dispatchers.IO).launch {
                         uploadEmergencyViaWebhook(heartRate, temperature, timestamp, name, address)
                     }
                 }
                 .addOnFailureListener { e ->
-                    Log.e("Emergency", "Failed to add emergency request to history: ${e.message}")
+                    Log.e("Emergency", "Failed to add emergency request: ${e.message}")
                 }
         }
         .addOnFailureListener { e ->
-            Log.e("Emergency", "Failed to retrieve vitals data: ${e.message}")
+            Log.e("Emergency", "Failed to retrieve user data: ${e.message}")
         }
 }
+
 
 // use twilio for multiple sms messages
 private suspend fun uploadEmergencyViaWebhook(
