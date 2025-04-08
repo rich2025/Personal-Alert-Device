@@ -56,6 +56,11 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import androidx.navigation.NavHostController
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
 
@@ -282,7 +287,7 @@ class MainActivity : ComponentActivity() {
         }
 
         try {
-            val url = URL("https://io.adafruit.com")
+            val url = URL("x")
             val connection = url.openConnection() as HttpURLConnection
             connection.connect()
             Log.d("Network", "Response Code: ${connection.responseCode}")
@@ -319,13 +324,11 @@ class MainActivity : ComponentActivity() {
             estDateFormat.timeZone = estTimeZone
             val formattedDate = estDateFormat.format(utcDate)
 
-            val voltageStr = hexToUtf8(mostRecentItem.value)
-            val voltage = voltageStr.toFloatOrNull() ?: 0f
-            val batteryPercentage = ((voltage / 3.3f) * 100).coerceIn(0f, 100f).toInt()
+            val batteryPercentage = hexToUtf8(mostRecentItem.value)
 
             uploadBatteryToFirestore(
                 mostRecentItem.id,
-                batteryPercentage.toString(),
+                batteryPercentage,
                 formattedDate
             )
         } catch (e: Exception) {
@@ -396,19 +399,26 @@ class MainActivity : ComponentActivity() {
             .addOnSuccessListener { document ->
                 val heartRate = document.getString("vitals history.heart rate") ?: "Unknown"
                 val temperature = document.getString("vitals history.temperature") ?: "Unknown"
+                val name = document.getString("full name") ?: "Unknown"
+                val address = document.getString("address") ?: "Unknown"
 
                 val emergencyData = hashMapOf(
                     "timestamp" to timestamp,
                     "created_at" to FieldValue.serverTimestamp(),
-                    "trigger" to "speech",
+                    "trigger" to "app",
                     "heart_rate" to heartRate,
-                    "temperature" to temperature
+                    "temperature" to temperature,
+                    "name" to name,
+                    "address" to address
                 )
 
                 // timestamp as collection name
                 documentRef.collection(timestamp).add(emergencyData)
                     .addOnSuccessListener {
                         Log.d("Emergency", "Emergency request added to history successfully")
+                        CoroutineScope(Dispatchers.IO).launch {
+                            uploadEmergencyViaWebhook(heartRate, temperature, timestamp, name, address)
+                        }
                     }
                     .addOnFailureListener { e ->
                         Log.e("Emergency", "Failed to add emergency request to history: ${e.message}")
@@ -417,6 +427,47 @@ class MainActivity : ComponentActivity() {
             .addOnFailureListener { e ->
                 Log.e("Emergency", "Failed to retrieve vitals data: ${e.message}")
             }
+    }
+
+    private suspend fun uploadEmergencyViaWebhook(
+        heartRate: String,
+        temperature: String,
+        timestamp: String,
+        name: String,
+        address: String
+    ) {
+        val client = OkHttpClient()
+
+        val temperatureInCelsius = temperature.toDoubleOrNull() ?: 0.0
+        val temperatureInFahrenheit = (temperatureInCelsius * 9 / 5) + 32
+
+        val formattedData = """
+        ${name} has triggered an emergency help request at ${timestamp}.
+    
+        Address: ${address}
+        Trigger Method: speech
+        Current Heart Rate: ${heartRate} bpm
+        Current Skin Temperature: ${temperatureInFahrenheit} °F
+""".trimIndent()
+
+        val jsonPayload = JSONObject(mapOf("value" to formattedData)).toString()
+
+        val request = Request.Builder()
+            .url("x")
+            .addHeader("Content-Type", "application/json")
+            .post(jsonPayload.toRequestBody("application/json".toMediaType()))
+            .build()
+
+        try {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                Log.d("Webhook", "Webhook triggered successfully!")
+            } else {
+                Log.e("Webhook", "Webhook failed (${response.code}): ${response.body?.string()}")
+            }
+        } catch (e: Exception) {
+            Log.e("Webhook", "Error triggering webhook: ${e.message}")
+        }
     }
 
     private fun uploadToFirestore(latestData: AdafruitData) {

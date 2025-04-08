@@ -487,19 +487,22 @@ private suspend fun uploadEmergencyViaWebhook(
 ) {
     val client = OkHttpClient()
 
+    val temperatureInCelsius = temperature.toDoubleOrNull() ?: 0.0
+    val temperatureInFahrenheit = (temperatureInCelsius * 9 / 5) + 32
+
     val formattedData = """
     ${name} has triggered an emergency help request at ${timestamp}.
     
     Address: ${address}
     Trigger Method: app
     Current Heart Rate: ${heartRate} bpm
-    Current Temperature: ${temperature} °C
+    Current Skin Temperature: ${temperatureInFahrenheit} °F
 """.trimIndent()
 
     val jsonPayload = JSONObject(mapOf("value" to formattedData)).toString()
 
     val request = Request.Builder()
-        .url("https://io.adafruit.com/api/v2/webhooks/feed/eAZQrm3D9uiVxvT2KzU7fde5XSTX")
+        .url("x")
         .addHeader("Content-Type", "application/json")
         .post(jsonPayload.toRequestBody("application/json".toMediaType()))
         .build()
