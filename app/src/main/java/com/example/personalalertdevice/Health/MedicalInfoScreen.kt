@@ -102,7 +102,7 @@ fun MedicalInfoScreen(navController: NavController) {
     var conditionSuggestions = remember { mutableStateListOf<String>() }
     val selectedConditions = remember { mutableStateListOf<MedicalCondition>() }
 
-    val primaryColor = Color(0xFF558F4F)
+    val primaryColor = Color(0xFF8f42ed)
     val secondaryColor = Color(0xFFEDE4E1)
     val accentColor = Color(0xFF3B5249)
     val cardBackgroundColor = Color(0xFFF8F4F2)
