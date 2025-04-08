@@ -232,6 +232,8 @@ class MainActivity : ComponentActivity() {
                 fetchAndUploadVitalsData()
                 fetchAndUploadBatteryData()
                 fetchAndUploadConnectionStatus()
+                fetchAndUploadDataFall()
+                fetchAndUploadDataManual()
                 delay(3000)
             }
         }
@@ -287,7 +289,125 @@ class MainActivity : ComponentActivity() {
         }
 
         try {
-            val url = URL("x")
+            val url = URL("https://io.adafruit.com")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.connect()
+            Log.d("Network", "Response Code: ${connection.responseCode}")
+        } catch (e: Exception) {
+            Log.e("Network Error", "Failed to connect: ${e.message}")
+        }
+    }
+
+    private suspend fun fetchAndUploadDataFall() {
+        try {
+            val apiKey = "x"
+            val feedName = "x"
+
+            val data = RetrofitInstance.api.getData(feedName, apiKey)
+
+            if (data.isNullOrEmpty()) {
+                Log.e("Adafruit", "No data found or data is empty!")
+                return
+            }
+
+            val mostRecentItem = data.first()
+
+            val utcDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+            utcDateFormat.timeZone = TimeZone.getTimeZone("UTC")
+            val utcDate = try {
+                utcDateFormat.parse(mostRecentItem.created_at)
+            } catch (e: ParseException) {
+                Log.e("Adafruit", "Error parsing date: ${e.message}")
+                return
+            }
+
+            val estTimeZone = TimeZone.getTimeZone("America/New_York")
+            val estDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+            estDateFormat.timeZone = estTimeZone
+            val formattedDate = estDateFormat.format(utcDate)
+
+            val utf8Value = hexToUtf8(mostRecentItem.value)
+
+            uploadToFirestoreFall(
+                AdafruitData(
+                    id = mostRecentItem.id,
+                    value = utf8Value,
+                    feed_id = mostRecentItem.feed_id,
+                    created_at = formattedDate
+                )
+            )
+
+            checkForNewHelpRequestFall(utf8Value, formattedDate)
+
+        } catch (e: UnknownHostException) {
+            Log.e("Adafruit", "DNS Resolution Failed: ${e.message}")
+        } catch (e: IOException) {
+            Log.e("Adafruit", "Network Error: ${e.message}")
+        } catch (e: Exception) {
+            Log.e("Adafruit", "General Error: ${e.message}")
+        }
+
+        try {
+            val url = URL("https://io.adafruit.com")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.connect()
+            Log.d("Network", "Response Code: ${connection.responseCode}")
+        } catch (e: Exception) {
+            Log.e("Network Error", "Failed to connect: ${e.message}")
+        }
+    }
+
+    private suspend fun fetchAndUploadDataManual() {
+        try {
+            val apiKey = "x"
+            val feedName = "x"
+
+            val data = RetrofitInstance.api.getData(feedName, apiKey)
+
+            if (data.isNullOrEmpty()) {
+                Log.e("Adafruit", "No data found or data is empty!")
+                return
+            }
+
+            val mostRecentItem = data.first()
+
+            val utcDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+            utcDateFormat.timeZone = TimeZone.getTimeZone("UTC")
+            val utcDate = try {
+                utcDateFormat.parse(mostRecentItem.created_at)
+            } catch (e: ParseException) {
+                Log.e("Adafruit", "Error parsing date: ${e.message}")
+                return
+            }
+
+            val estTimeZone = TimeZone.getTimeZone("America/New_York")
+            val estDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+            estDateFormat.timeZone = estTimeZone
+            val formattedDate = estDateFormat.format(utcDate)
+
+            val utf8Value = hexToUtf8(mostRecentItem.value)
+
+            uploadToFirestoreManual(
+                AdafruitData(
+                    id = mostRecentItem.id,
+                    value = utf8Value,
+                    feed_id = mostRecentItem.feed_id,
+                    created_at = formattedDate
+                )
+            )
+
+            checkForNewHelpRequestManual(utf8Value, formattedDate)
+
+        } catch (e: UnknownHostException) {
+            Log.e("Adafruit", "DNS Resolution Failed: ${e.message}")
+        } catch (e: IOException) {
+            Log.e("Adafruit", "Network Error: ${e.message}")
+        } catch (e: Exception) {
+            Log.e("Adafruit", "General Error: ${e.message}")
+        }
+
+        try {
+            val url = URL("https://io.adafruit.com")
             val connection = url.openConnection() as HttpURLConnection
             connection.connect()
             Log.d("Network", "Response Code: ${connection.responseCode}")
@@ -389,6 +509,60 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun checkForNewHelpRequestFall(message: String, timestamp: String) {
+        if (message.lowercase().contains("help") && timestamp != lastHelpRequestTimestamp) {
+            lastHelpRequestTimestamp = timestamp
+
+            // calculate if the request is within the last 5 seconds
+            try {
+                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+                val requestDate = sdf.parse(timestamp)
+                val currentTime = Date()
+
+                val diffInMillis = currentTime.time - requestDate.time
+                val diffInSeconds = diffInMillis / 1000
+
+                if (diffInSeconds <= 5) {
+                    addEmergencyRequestToHistoryFall(timestamp)
+
+                    runOnUiThread {
+                        navControllerRef?.navigate("HelpScreen")
+                        Log.d("Emergency", "Navigating to help screen due to recent emergency request")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("Emergency", "Error processing emergency request: ${e.message}")
+            }
+        }
+    }
+
+    private fun checkForNewHelpRequestManual(message: String, timestamp: String) {
+        if (message.lowercase().contains("help") && timestamp != lastHelpRequestTimestamp) {
+            lastHelpRequestTimestamp = timestamp
+
+            // calculate if the request is within the last 5 seconds
+            try {
+                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+                val requestDate = sdf.parse(timestamp)
+                val currentTime = Date()
+
+                val diffInMillis = currentTime.time - requestDate.time
+                val diffInSeconds = diffInMillis / 1000
+
+                if (diffInSeconds <= 5) {
+                    addEmergencyRequestToHistoryManual(timestamp)
+
+                    runOnUiThread {
+                        navControllerRef?.navigate("HelpScreen")
+                        Log.d("Emergency", "Navigating to help screen due to recent emergency request")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("Emergency", "Error processing emergency request: ${e.message}")
+            }
+        }
+    }
+
     private fun addEmergencyRequestToHistory(timestamp: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val firestore = FirebaseFirestore.getInstance()
@@ -422,6 +596,94 @@ class MainActivity : ComponentActivity() {
                         Log.d("Emergency", "Emergency request added to emergency_records successfully")
                         CoroutineScope(Dispatchers.IO).launch {
                             uploadEmergencyViaWebhook(heartRate, temperature, timestamp, name, address)
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Emergency", "Failed to add emergency request: ${e.message}")
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Emergency", "Failed to retrieve user data: ${e.message}")
+            }
+    }
+
+    private fun addEmergencyRequestToHistoryFall(timestamp: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val firestore = FirebaseFirestore.getInstance()
+        val userDocRef = firestore.collection("Users").document(userId)
+
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+
+        userDocRef.get()
+            .addOnSuccessListener { document ->
+                val heartRate = document.getString("vitals history.heart rate") ?: "Unknown"
+                val temperature = document.getString("vitals history.temperature") ?: "Unknown"
+                val name = document.getString("full name") ?: "Unknown"
+                val address = document.getString("address") ?: "Unknown"
+
+                val emergencyData = hashMapOf(
+                    "timestamp" to timestamp,
+                    "created_at" to FieldValue.serverTimestamp(),
+                    "trigger" to "fall",
+                    "heart_rate" to heartRate,
+                    "temperature" to temperature,
+                    "name" to name,
+                    "address" to address
+                )
+
+                val emergencyRecordsRef = userDocRef
+                    .collection("emergency_records")
+                    .document(timestamp)
+
+                emergencyRecordsRef.set(emergencyData)
+                    .addOnSuccessListener {
+                        Log.d("Emergency", "Emergency request added to emergency_records successfully")
+                        CoroutineScope(Dispatchers.IO).launch {
+                            uploadEmergencyViaWebhookFall(heartRate, temperature, timestamp, name, address)
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Emergency", "Failed to add emergency request: ${e.message}")
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Emergency", "Failed to retrieve user data: ${e.message}")
+            }
+    }
+
+    private fun addEmergencyRequestToHistoryManual(timestamp: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val firestore = FirebaseFirestore.getInstance()
+        val userDocRef = firestore.collection("Users").document(userId)
+
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+
+        userDocRef.get()
+            .addOnSuccessListener { document ->
+                val heartRate = document.getString("vitals history.heart rate") ?: "Unknown"
+                val temperature = document.getString("vitals history.temperature") ?: "Unknown"
+                val name = document.getString("full name") ?: "Unknown"
+                val address = document.getString("address") ?: "Unknown"
+
+                val emergencyData = hashMapOf(
+                    "timestamp" to timestamp,
+                    "created_at" to FieldValue.serverTimestamp(),
+                    "trigger" to "manual",
+                    "heart_rate" to heartRate,
+                    "temperature" to temperature,
+                    "name" to name,
+                    "address" to address
+                )
+
+                val emergencyRecordsRef = userDocRef
+                    .collection("emergency_records")
+                    .document(timestamp)
+
+                emergencyRecordsRef.set(emergencyData)
+                    .addOnSuccessListener {
+                        Log.d("Emergency", "Emergency request added to emergency_records successfully")
+                        CoroutineScope(Dispatchers.IO).launch {
+                            uploadEmergencyViaWebhookManual(heartRate, temperature, timestamp, name, address)
                         }
                     }
                     .addOnFailureListener { e ->
@@ -475,6 +737,88 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private suspend fun uploadEmergencyViaWebhookFall(
+        heartRate: String,
+        temperature: String,
+        timestamp: String,
+        name: String,
+        address: String
+    ) {
+        val client = OkHttpClient()
+
+        val temperatureInCelsius = temperature.toDoubleOrNull() ?: 0.0
+        val temperatureInFahrenheit = (temperatureInCelsius * 9 / 5) + 32
+
+        val formattedData = """
+        ${name} has triggered an emergency help request at ${timestamp}.
+    
+        Address: ${address}
+        Trigger Method: fall
+        Current Heart Rate: ${heartRate} bpm
+        Current Skin Temperature: ${temperatureInFahrenheit} °F
+""".trimIndent()
+
+        val jsonPayload = JSONObject(mapOf("value" to formattedData)).toString()
+
+        val request = Request.Builder()
+            .url("x")
+            .addHeader("Content-Type", "application/json")
+            .post(jsonPayload.toRequestBody("application/json".toMediaType()))
+            .build()
+
+        try {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                Log.d("Webhook", "Webhook triggered successfully!")
+            } else {
+                Log.e("Webhook", "Webhook failed (${response.code}): ${response.body?.string()}")
+            }
+        } catch (e: Exception) {
+            Log.e("Webhook", "Error triggering webhook: ${e.message}")
+        }
+    }
+
+    private suspend fun uploadEmergencyViaWebhookManual(
+        heartRate: String,
+        temperature: String,
+        timestamp: String,
+        name: String,
+        address: String
+    ) {
+        val client = OkHttpClient()
+
+        val temperatureInCelsius = temperature.toDoubleOrNull() ?: 0.0
+        val temperatureInFahrenheit = (temperatureInCelsius * 9 / 5) + 32
+
+        val formattedData = """
+        ${name} has triggered an emergency help request at ${timestamp}.
+    
+        Address: ${address}
+        Trigger Method: manual
+        Current Heart Rate: ${heartRate} bpm
+        Current Skin Temperature: ${temperatureInFahrenheit} °F
+""".trimIndent()
+
+        val jsonPayload = JSONObject(mapOf("value" to formattedData)).toString()
+
+        val request = Request.Builder()
+            .url("x")
+            .addHeader("Content-Type", "application/json")
+            .post(jsonPayload.toRequestBody("application/json".toMediaType()))
+            .build()
+
+        try {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                Log.d("Webhook", "Webhook triggered successfully!")
+            } else {
+                Log.e("Webhook", "Webhook failed (${response.code}): ${response.body?.string()}")
+            }
+        } catch (e: Exception) {
+            Log.e("Webhook", "Error triggering webhook: ${e.message}")
+        }
+    }
+
     private fun uploadToFirestore(latestData: AdafruitData) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
@@ -493,6 +837,58 @@ class MainActivity : ComponentActivity() {
         )
 
         documentRef.set(mapOf("send help history" to dataMap), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("Adafruit", "Data uploaded successfully to user document!")
+            }
+            .addOnFailureListener { e ->
+                Log.e("Adafruit", "Failed to upload data: ${e.message}")
+            }
+    }
+
+    private fun uploadToFirestoreFall(latestData: AdafruitData) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+        if (userId.isEmpty()) {
+            Log.e("Adafruit", "User not authenticated!")
+            return
+        }
+
+        val firestore = FirebaseFirestore.getInstance()
+        val documentRef = firestore.collection("Users").document(userId)
+
+        val dataMap = hashMapOf(
+            "id" to latestData.id,
+            "value" to latestData.value,
+            "created at" to latestData.created_at
+        )
+
+        documentRef.set(mapOf("fall detection history" to dataMap), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d("Adafruit", "Data uploaded successfully to user document!")
+            }
+            .addOnFailureListener { e ->
+                Log.e("Adafruit", "Failed to upload data: ${e.message}")
+            }
+    }
+
+    private fun uploadToFirestoreManual(latestData: AdafruitData) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+        if (userId.isEmpty()) {
+            Log.e("Adafruit", "User not authenticated!")
+            return
+        }
+
+        val firestore = FirebaseFirestore.getInstance()
+        val documentRef = firestore.collection("Users").document(userId)
+
+        val dataMap = hashMapOf(
+            "id" to latestData.id,
+            "value" to latestData.value,
+            "created at" to latestData.created_at
+        )
+
+        documentRef.set(mapOf("manual activation history" to dataMap), SetOptions.merge())
             .addOnSuccessListener {
                 Log.d("Adafruit", "Data uploaded successfully to user document!")
             }
