@@ -19,11 +19,16 @@ High-level system block diagram illustrating the interconnection of various sub-
 
 #### Hardware
 
+Both enclosures for the wearable device and charging station are complete and printed. The custom PCB with the microcontroller and any additional electrical components have been soldered and placed within the wearable enclosure. The sensor-integrated wrist-strap has been constructed and attatched to the wearable enclosure. The magnets used to connect the receiving module on the base of the wearable to the top of the charging stand are in place. The battery is soldered and powers the system efficiently. The three LEDs, button switch, and buzzer are in place and are functioning as expected.
+
 * The 3.7V 1100 mAh LiPo battery supports a lifetime of ~72 hours with a maximum charging time (wireless) of 4 hours at 300 mA charging current.
 * Wearable device based user feedback is through one of three LEDs and an internal buzzer.
 * Input to the wearable device from speech, acceleration, gyproscope (angular momentum), and button switch.
+* Additional components integrated into custom PCB
 
-### Firmware (Microcontroller)
+#### Firmware (Microcontroller)
+
+All programming to the microcontroller which governs the functionality of the wearable are in place. The wearable runs inferencing on speech over double-buffered input windows while asynchronously collecting sensor data, button inputs, advertising data over BLE, and reading IMU data for fall detection. Additionally, the controller reads battery voltage to compute battery level. Finally, button and debouncing logic is implemented to either check battery level or trigger and emergency response. The LEDs are used for battery level indication or emergency trigger indication. The buzzer is used for emergency trigger indication. The six characteristics advertised to BLE are: vitals, speech, battery, connection status, fall, and manual. 
 
 * C++ using Arduino framework targeting the Seeed Studio XIAO nRF52840 Sense controller
 * All vital sensors (pulse oximeter and thermistor) are integrated and tested individually. The pulse oximeter measures IR frequency to compute the user's heart rate and blood oxygen saturation. The voltage is measured across the thermistor and computed to temperature using the Steinhart equation.
@@ -32,7 +37,7 @@ High-level system block diagram illustrating the interconnection of various sub-
 * Fall detection using initial threshold and confirmation threshold
 * Speech recognition using machine learning model imported from Edge Impulse
 
-### Software (Frontend/Backend)
+#### Software (Frontend/Backend)
 
 * Mobile app built in Kotlin using Jetpack Compose UI framework
 * BLE scanning using LightBlue and Adafruit IO as cloud database
@@ -44,5 +49,6 @@ High-level system block diagram illustrating the interconnection of various sub-
 * User information and medical information input by the user within the app
 * The app handles emergency responses, records, and notifications
 * Display real time vitals and emergency alerts
+
 
 
