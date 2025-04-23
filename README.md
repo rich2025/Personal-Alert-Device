@@ -68,7 +68,7 @@ Sometimes, the app would crash or fail to upload data to Firestore with no appar
 #### False Alarms
 To lessen the issue of false positives for emergency detection (falls, speech requests, manual requests), an emergency warning period was introduced to allow the user adequate time to cancel the emergency request. This was implemented on the wearable where after an emergency is first triggered, a warning period of ten seconds would initiate. For these ten seconds, the red LED and buzzer blinks periodically. This provides the user visual and auditory feedback that an emergency is triggered. The request can be canceled via a singular button push, or if the button is not pushed within the warning period, then the emergency response initiated.
 
-### What to Watch Out For
+### Things to Keep in Mind
 
 While the Personal Alert Device has been carefully designed and tested, there are several important caveats and limitations that one should be aware of.
 
