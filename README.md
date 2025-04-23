@@ -19,9 +19,30 @@ High-level system block diagram illustrating the interconnection of various sub-
 
 #### Hardware
 
-* All vital sensors (pulse oximeter and thermistor) are integrated and tested individually. The pulse oximeter measures IR frequency to compute the user's heart rate and blood oxygen saturation. The voltage is measured across the thermistor and computed to temperature using the Steinhart equation.
-* The 3.7V 1100 mAh LiPo battery supports a lifetime of ~72 hours with a maximum charging time of 4 hours at 300 mA charging current.
-* System data packaged into individual characteristics 
+* The 3.7V 1100 mAh LiPo battery supports a lifetime of ~72 hours with a maximum charging time (wireless) of 4 hours at 300 mA charging current.
+* Wearable device based user feedback is through one of three LEDs and an internal buzzer.
+* Input to the wearable device from speech, acceleration, gyproscope (angular momentum), and button switch.
 
+### Firmware (Microcontroller)
+
+* C++ using Arduino framework targeting the Seeed Studio XIAO nRF52840 Sense controller
+* All vital sensors (pulse oximeter and thermistor) are integrated and tested individually. The pulse oximeter measures IR frequency to compute the user's heart rate and blood oxygen saturation. The voltage is measured across the thermistor and computed to temperature using the Steinhart equation.
+* Bluetooth 5.0/BLE communication is used to transmit real-time sensor data, emergency events, and device status to the mobile app
+* Button switch double functionality as emergency trigger and battery level indicator
+* Fall detection using initial threshold and confirmation threshold
+* Speech recognition using machine learning model imported from Edge Impulse
+
+### Software (Frontend/Backend)
+
+* Mobile app built in Kotlin using Jetpack Compose UI framework
+* BLE scanning using LightBlue and Adafruit IO as cloud database
+* Firebase for user authentication using Google SSO
+* Firestore for user information, emergency records, device status, and sensor data
+* SMS via Adafruit IO set up for emergency notifications
+* App communications to Firestore and Adafruit IO through Firebase SDK messages and webhooks
+* App collects phone information such as contacts, photos, and location using Android permissions API
+* User information and medical information input by the user within the app
+* The app handles emergency responses, records, and notifications
+* Display real time vitals and emergency alerts
 
 
