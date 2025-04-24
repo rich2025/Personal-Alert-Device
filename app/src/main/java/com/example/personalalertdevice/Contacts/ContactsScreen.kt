@@ -205,7 +205,7 @@ fun ContactsScreen(navController: NavController, viewModel: ContactsViewModel) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Manage Designated Contacts",
-                fontSize = 20.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )

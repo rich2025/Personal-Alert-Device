@@ -71,8 +71,8 @@ class ContactsViewModel : ViewModel() {
     fun removeContact(contact: Contact) {
         designatedContacts.removeAll { it.id == contact.id }
 
-        val contactMap = mapOf("id" to contact.id, "name" to contact.name, "phoneNumber" to contact.phoneNumber)
-        userDocRef.update("designatedContacts", FieldValue.arrayRemove(contactMap))
+        val contactMap = mapOf("id" to contact.id, "name" to contact.name, "phone number" to contact.phoneNumber)
+        userDocRef.update("designated contacts", FieldValue.arrayRemove(contactMap))
             .addOnSuccessListener {
                 Log.d("Firestore", "Removed contact: $contact")
             }
