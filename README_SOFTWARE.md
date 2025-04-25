@@ -99,6 +99,11 @@ Additional permissions declared in the application's manifest file (`AndroidMani
 - `android:name="com.google.android.geo.API_KEY"`
 - `android:value="redacted"`
 
+Ensure that these dependencies and permissions are properly installed. 
+
+5. Navigate to Device Manager and create a new emulated device (recommended: Medium Phone API 35)
+   - OS Version must be Android 15.0 and above
+6. Begin the device emulator
 
 
 
