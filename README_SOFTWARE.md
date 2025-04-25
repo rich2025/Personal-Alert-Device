@@ -109,9 +109,23 @@ Ensure that these dependencies and permissions are properly installed.
 
 1. Open Arduino IDE
 2. Import the new sketch `Personal_Alert_Device.ino`
-3. Install the necessary libraries:
-   * [ei-personalalertdevice-arduino-1.0.11.zip](https://github.com/rich2025/Personal-Alert-Device/blob/d2f2b531bbc02767a61a1968adb4b268a8044e4b/ei-personalalertdevice-arduino-1.0.11.zip)
-   * 
+3. Connect the device via USB-C
+4. Add Seeed Studio XIAO nRF52840 (Sense) board package to your Arduino IDE
+5. Navigate to File > Preferences, and fill "Additional Boards Manager URLs" with the url: https://files.seeedstudio.com/arduino/package_seeeduino_boards_index.json
+6. Navigate to Tools > Board > Boards Manager and install `Seeed nRF52 mbed-enabled boards`
+7. Select the board and port
+8. Install the following libraries:
+   * Edge Impulse Speech Recognition ML Model [ei-personalalertdevice-arduino-1.0.11.zip](https://github.com/rich2025/Personal-Alert-Device/blob/d2f2b531bbc02767a61a1968adb4b268a8044e4b/ei-personalalertdevice-arduino-1.0.11.zip)
+   * `Wire.h`
+   * `PDM.h`
+   * `ArduinoBLE.h`https://github.com/arduino-libraries/ArduinoBLE
+   * `Arduino_LSM6DS3.h` https://github.com/arduino-libraries/Arduino_LSM6DS3
+   * `MAX30105.h`https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
+   * `heartRate.h`
+9. Compile and upload the sketch onto the microcontroller
+
+   
+   
 
 
 
