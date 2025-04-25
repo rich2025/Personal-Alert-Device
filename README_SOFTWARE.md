@@ -30,7 +30,75 @@ Due to the computation resources required for the Android emulator, the followin
 
 To run the mobile application in Android Studio, follow the instructions below:
 
-1. 'git clone https://github.com/rich2025/Personal-Alert-Device.git'
+1. Run `git clone https://github.com/rich2025/Personal-Alert-Device.git`
+2. Launch Android Studio
+3. Click on "**Open**" and navigate to the cloned folder
+4. Wait for Gradle to sync (installing necessary dependencies)
+
+The necessary dependencies added to the app-level Gradle build file are:
+
+#### Authentication
+- `com.google.firebase:firebase-auth`
+- `com.google.firebase:firebase-auth-ktx`
+- `com.google.android.gms:play-services-auth`
+
+#### Database / Backend
+- `com.google.firebase:firebase-bom`
+- `com.google.firebase:firebase-firestore-ktx`
+- `org.jetbrains.kotlinx:kotlinx-coroutines-play-services`
+
+#### Networking
+- `com.squareup.retrofit2:retrofit`
+- `com.squareup.retrofit2:converter-gson`
+- `com.squareup.okhttp3:okhttp`
+- `com.squareup.okhttp3:logging-interceptor`
+
+#### Debugging / Logging
+- `com.jakewharton.timber:timber`
+
+#### Navigation
+- `androidx.navigation:navigation-compose`
+
+#### Maps / Location
+- `com.google.android.gms:play-services-maps`
+- `com.google.maps.android:maps-compose`
+
+#### UI / Image Handling
+- `com.google.accompanist:accompanist-coil`
+- `io.coil-kt:coil-compose`
+- `com.github.yalantis:ucrop`
+
+#### Permissions
+- `com.google.accompanist:accompanist-permissions`
+  
+Additional permissions declared in the application's manifest file (`AndroidManifest.XML`):
+
+#### Contacts
+- `android.permission.READ_CONTACTS`
+
+#### Location
+- `android.permission.ACCESS_FINE_LOCATION`
+- `android.permission.ACCESS_COARSE_LOCATION`
+
+#### Network Access
+- `android.permission.INTERNET`
+- `android.permission.ACCESS_NETWORK_STATE`
+
+#### Camera & Media Storage
+- `android.permission.CAMERA`
+- `android.permission.WRITE_EXTERNAL_STORAGE`
+- `android.permission.READ_EXTERNAL_STORAGE`
+- `android.permission.READ_MEDIA_IMAGES`
+
+#### UCrop Image Editor Activity
+- `android:name="com.yalantis.ucrop.UCropActivity"`
+- `android:screenOrientation="portrait"`
+- `android:theme="@style/Theme.AppCompat.Light.NoActionBar"`
+
+#### Google Maps API Key
+- `android:name="com.google.android.geo.API_KEY"`
+- `android:value="redacted"`
+
 
 
 
