@@ -28,6 +28,11 @@ Due to the computation resources required for the Android emulator, the followin
 
 ### Mobile Application
 
+Shown below is a complete flow chart showing the dependencies between various screens, libraries, and permissions within the mobile application.
+
+![Capture](https://github.com/user-attachments/assets/80f12ebb-a33e-4f1b-9622-9f650f7043f7)
+https://www.canva.com/design/DAGk7dr4EGk/H9p2tAtZztpfraC8wl7Fqw/edit?utm_content=DAGk7dr4EGk&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
 To run the mobile application in Android Studio, follow the instructions below:
 
 1. Run `git clone https://github.com/rich2025/Personal-Alert-Device.git`
