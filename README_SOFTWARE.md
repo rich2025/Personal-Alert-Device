@@ -40,7 +40,7 @@ To run the mobile application in Android Studio, follow the instructions below:
 3. Click on "**Open**" and navigate to the cloned folder
 4. Wait for Gradle to sync (installing necessary dependencies)
 
-The necessary dependencies added to the app-level Gradle build file are:
+The necessary dependencies added to the app-level Gradle build file (build.gradle.kts) are:
 
 #### Authentication
 - `com.google.firebase:firebase-auth`
@@ -109,6 +109,9 @@ Ensure that these dependencies and permissions are properly installed.
 5. Navigate to Device Manager and create a new emulated device (recommended: Medium Phone API 35)
    - OS Version must be Android 15.0 and above
 6. Begin the device emulator and the Personal Alert Device app will open automatically
+7. Retrieve the `google-services.json` file from `Personal-Alert-Device/app/google-services.json` and add it in the Project level app folder if not present already
+8. In Android Studio, navigate to the Gradle > Personal Alert Device > Tasks > android > signingReport to access the SHA-1 fingerprint associated with your device
+9. Add the SHA-1 finger to the app's certified fingerprints in Firebase > Project Overview > Project Settings > Your Apps
 
 ### Firmware
 
@@ -143,9 +146,16 @@ Each user's collection within Firestore will be distinuishable with their identi
 
 All API calls, webhooks, or HTTP requests are already in place within the mobile app source code. APIs, such as Android Permissions, is used to gather user data without any extraneous user input. Such data includes the user's contacts, photos, or location. Using these permissions improves the app's ease of usability. Additionally, the Android Firebase SDK is used to abstract the REST APIs employed to either store or fetch user data from Firestore. Adafriot IO serves as a midpoint between raw data sent over BLE and data read within the app.
 
-The app uses Adafruit IO feed web APIs to fetch data sent over BLE and format it into values and timestamps. These values can then be parsed to display in the app or store in Firestore. As long as the keys and URLs remain consistent, backend functionality will work automatically due to the dynamic logic within the app.
+The app uses Adafruit IO feed web APIs to fetch data sent over BLE and format it into values and timestamps. These values can then be parsed to display in the app or store in Firestore. As long as the keys and URLs remain consistent, backend functionality will work automatically due to the dynamic logic within the app after adding the new SHA-1 fingerprint to the Google Cloud project.
 
 Logic within the app ensures that new user data will be contained securely within one their specific document. Adafruit IO communications with the user's phone/emulator and the device, through BLE, is already setup with no need to download additional software. However, a steady Bluetooth and network connection is necessary.
+
+### Communications via Bluetooth
+Due to the limitations of the XIAO nRF52840 Sense, Bluetooth 5.0/BLE is the sole means of data communication out of the wearable device. Thus, for the current design iteration, a BLE scanner is needed. However, in future iterations, a Bluetooth or WiFi module will remove the need for an additional BLE scanner. 
+
+For our purposes, LightBlue is used to connect to the device. From the device's firmware, BLE characteristics will automatically be advertised consistently. All that is needed is to connect to the device within LightBlue and connect each characteristic with its respective feed in Adafruit IO. To do this, the feed name and API key for each feed is needed. These can be found within the app's `MainActivity.kt` and `MainScreen.kt` as they are also used to fetch feed data from Adafruit IO. Once connected to Adafruit IO, data will automatically begin to populate in the respective feeds, and be read from the phone.
+
+
 
    
    
