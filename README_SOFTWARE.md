@@ -115,14 +115,21 @@ Ensure that these dependencies and permissions are properly installed.
 6. Navigate to Tools > Board > Boards Manager and install `Seeed nRF52 mbed-enabled boards`
 7. Select the board and port
 8. Install the following libraries:
-   * Edge Impulse Speech Recognition ML Model [ei-personalalertdevice-arduino-1.0.11.zip](https://github.com/rich2025/Personal-Alert-Device/blob/d2f2b531bbc02767a61a1968adb4b268a8044e4b/ei-personalalertdevice-arduino-1.0.11.zip)
+   * Edge Impulse Speech Recognition ML Model\
+     [ei-personalalertdevice-arduino-1.0.11.zip](https://github.com/rich2025/Personal-Alert-Device/blob/d2f2b531bbc02767a61a1968adb4b268a8044e4b/ei-personalalertdevice-arduino-1.0.11.zip)
    * `Wire.h`
    * `PDM.h`
-   * `ArduinoBLE.h`https://github.com/arduino-libraries/ArduinoBLE
-   * `Arduino_LSM6DS3.h` https://github.com/arduino-libraries/Arduino_LSM6DS3
-   * `MAX30105.h`https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
+   * `ArduinoBLE.h`\
+     https://github.com/arduino-libraries/ArduinoBLE
+   * `Arduino_LSM6DS3.h`\
+     https://github.com/arduino-libraries/Arduino_LSM6DS3
+   * `MAX30105.h`\
+     https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
    * `heartRate.h`
 9. Compile and upload the sketch onto the microcontroller
+
+### Backend/Cloud Storage
+Cloud-based data storage and retrieval is handled in Firestore and Adafruit IO. Authentication is handled in Google Firebase. All API calls, webhooks, or HTTP requests are already in place within the mobile app source code. Thus, as long as the keys and URLs remain consistent, backend functionality will work automatically. Logic within the app ensures that new user data will be contained securely within one their specific document. Adafruit IO communications with the user's phone/emulator and the device, through BLE, is already setup with no need to download additional software. However, a steady Bluetooth and network connection is necessary.
 
    
    
