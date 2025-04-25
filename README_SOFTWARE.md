@@ -103,7 +103,15 @@ Ensure that these dependencies and permissions are properly installed.
 
 5. Navigate to Device Manager and create a new emulated device (recommended: Medium Phone API 35)
    - OS Version must be Android 15.0 and above
-6. Begin the device emulator
+6. Begin the device emulator and the Personal Alert Device app will open automatically
+
+### Firmware
+
+1. Open Arduino IDE
+2. Import the new sketch `Personal_Alert_Device.ino`
+3. Install the necessary libraries:
+   * [ei-personalalertdevice-arduino-1.0.11.zip](https://github.com/rich2025/Personal-Alert-Device/blob/d2f2b531bbc02767a61a1968adb4b268a8044e4b/ei-personalalertdevice-arduino-1.0.11.zip)
+   * 
 
 
 
