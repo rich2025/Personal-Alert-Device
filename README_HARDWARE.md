@@ -24,3 +24,10 @@ This README file is dedicated to providing all the relative information regardin
 
 ## Bill of Materials
 ![BOM](./images/BOM.png)
+
+## Information Regarding Sensors Used
+Below you will find a list of the sensors we used for our device as well as the datasheets from their respective manufactures' page.
+<br></br>
+[Seeed Studio XIAO nRF52840 Sense - TinyML/TensorFlow Lite- IMU / Microphone - Bluetooth5.0](./PDFs/microcontroller.pdf)
+We chose this microcontroller for its multi-functionality. The microcontroller mainly serves as the hub for all of our sensor code, but it also came equipped with a microphone, which we used for our ML voice recognition model, and bluetooth built in which we were able to use to send our data to our database. The price of the microcontroller was also kept in mind when sourcing parts, and this one came out to $18 USD.
+
