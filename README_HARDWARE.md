@@ -16,4 +16,11 @@ This README file is dedicated to providing all the relative information regardin
 - [PAD OnShape File](https://bu.onshape.com/documents/028d79f541c7e4d4f72e95ac/w/96d4ac62ff30451bad3e9328/e/472430a287832b7987da914a?renderMode=0&uiState=6809a08bf0e943499a3269d9)  
   The link above will direct you to the OnShape file containing all of the drawings above, as well as the actual CAD assemblies for the body, bottom, and top of the enclosure and the charging stand.
 
-## Images of Full Assembly
+## Images of the Full Assembly and PCB
+![Enclosure with exposed interior](./images/enclosure1.jpeg)
+![Enclosure fully assembled](./images/enclosure1.jpeg)
+![PCB Wiring Diagram](./images/pcbwiring.png)
+![PCB Design](./images/pcb1.png)
+
+## Bill of Materials
+![BOM](./images/BOM.png)
