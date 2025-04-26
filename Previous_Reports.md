@@ -1,10 +1,13 @@
-<p>This file contains a PDF of every report we submitted for senior design, highlighting the progress we made over the year as well as details over design choices and product development.</p>
-<li> [PAD_Users_Manual.pdf] (https://github.com/user-attachments/files/19893405/PAD_Users_Manual.docx.pdf)</li>
-<li> [Final Test Plan.pdf] (https://github.com/user-attachments/files/19893412/Final.Test.Plan.docx.pdf) </li>
-<li> [Final Test Report.pdf] (https://github.com/user-attachments/files/19893431/Final.Test.Report.docx.pdf)</li>
-<li> [Second Prototype Test Plan.pdf] (https://github.com/user-attachments/files/19893474/Second.Prototype.Test.Plan.docx.pdf)</li>
-<li> [Second Prototype Test Report.pdf] (https://github.com/user-attachments/files/19893498/Second.Prototype.Test.Report.docx.1.pdf)</li>
-<li> [Prototype Test Plan.pdf] (https://github.com/user-attachments/files/19893575/Prototype.Test.Plan.docx.pdf)</li>
-<li> [Prototype Test Report.pdf] (https://github.com/user-attachments/files/19893517/Prototype.Test.Report.docx.1.pdf)</li>
+# Previous Project Reports
+This file contains a list of all the reports we submitted over the course of our senior design semesters. The reports include testing, customer installation, the user manual, and test plans that highlighted specific features of our device we tested during project checkups. 
 
+## Files
+- [Prototype Test Report](./PDFs/Prototype_Test_Report.docx.pdf)
+- [Prototype Test Plan](./PDFs/Prototype_Test_Plan.docx.pdf)
+- [Second Prototype Test Report](./Second_Prototype_Test_Report.docx.pdf)
+- [Second Prototype Test Plan](./PDFs/Second_Prototype_Test_Plan.docx.pdf)
+- [Final Test Report](./PDFs/Final_Test_Report.docx.pdf)
+- [Final Test Plan](./PDFs/Final_Test_Plan.docx.pdf)
+- [User Manual](./PDFs/PAD_User_Manual.docx.pdf)
+- [Customer Installation](./PDFs/Team_19_Customer_Installation_Report.docx.pdf)
 
