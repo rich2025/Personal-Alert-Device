@@ -18,14 +18,26 @@ This README file is dedicated to providing all the relative information regardin
 
 ## Images of the Full Assembly and PCB
 ![Enclosure with exposed interior](./images/enclosure1.jpeg)
+
+The image above shows the enclosure with its exposed interior, we can see the microcontroller, buzzer, PCB, and some of the wiring for the sensors. For more information on sensor connections, see the image below of our wiring diagram. For more information on the sensors we used, see the Sensors and Other Hardware Equipment section at the end of this file.
+<br></br>
 ![Enclosure fully assembled](./images/enclosure1.jpeg)
+
+The image above depics the device fully assembled with all of the sensors installed, this is the most recent build of our device. Although you can't see the interior, the enclosure houses the PCB, microcontroller, a buzzer, LEDs, a button, the battery which sits beneath the PCB, and connections for the heart rate sensor and thermistor which are inside of the watch band.
+<br></br>
 ![PCB Wiring Diagram](./images/pcbwiring.png)
+
+The image above is of the PCB Wiring Diagram, it shows the layout of how each sensor is connected to our PCB.
+<br></br>
 ![PCB Design](./images/pcb1.png)
 
+The image above is a schematic of the PCB we used and designed using Easy EDA. 
+
+----
 ## Bill of Materials
 ![BOM](./images/BOM.png)
-
-## Sensors and other Hardware Equipment Used
+The image above provides a breakdown of the total price for the device, along with a list of the parts we used and the quantity of parts in the final design. 
+## Sensors and Other Hardware Equipment Used
 Below you will find a list of the sensors we used for our device as well as the datasheets from their respective manufactures' page.
 <br></br>
 [Seeed Studio XIAO nRF52840 Sense - TinyML/TensorFlow Lite- IMU / Microphone - Bluetooth5.0](./PDFs/microcontroller.pdf)
