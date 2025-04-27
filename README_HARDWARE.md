@@ -4,19 +4,7 @@ This README file is dedicated to providing all the relative information regardin
 
 ## Hardware Components
 
-| Component                        | Part Number/Model              | Vendor        | Used For                                 |
-|----------------------------------|--------------------------------|---------------|------------------------------------------|
-| Microcontroller                  | Seeed Studio XIAO nRF52840 Sense | Seeed Studio | BLE communication, onboard IMU and mic   |
-| Heart Rate Sensor                | MAX30102                       | Aliexpress    | Pulse and SpO2 monitoring         |
-| Temperature Sensor               |                       | Aliexpress    | Body temperature monitoring       |
-| Push Button                      | TSA062G60-250                  | LCSC          | Manual emergency alert                   |
-| Wireless Charging Receiver       | B08CVGYDJP                      | Amazon        | 5V power receiver       |
-| Wireless Charging Transmitter    | B08CVGYDJP                      | Amazon        | 5V powered transmission               |
-| Lithium Battery                  | 3.7V 1100mAh LiPo              | Amazon        | Main power supply                        |
-| LEDs         | C87271     | LCSC          | Battery and alert status indicators      |
-| Buzzer                       | C96079           | LCSC          | Audible emergency alert                  |
-
- 
+![HW_Components](./images/Power_system.png)  
 ## Wiring and Sensor Connections
 
 MAX30102 heart rate sensor 
