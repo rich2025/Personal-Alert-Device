@@ -4,7 +4,7 @@ This README file is dedicated to providing all the relative information regardin
 
 ## Hardware Components
 
-![HW_Components](./images/Power_system.png)  
+![HW_Components](./images/HW_components.png)  
 ## Wiring and Sensor Connections
 
 MAX30102 heart rate sensor 
