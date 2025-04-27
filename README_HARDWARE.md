@@ -25,21 +25,22 @@ The image above shows the enclosure with its exposed interior, we can see the mi
 
 The image above depics the device fully assembled with all of the sensors installed, this is the most recent build of our device. Although you can't see the interior, the enclosure houses the PCB, microcontroller, a buzzer, LEDs, a button, the battery which sits beneath the PCB, and connections for the heart rate sensor and thermistor which are inside of the watch band.
 <br></br>
-![PCB Wiring Diagram](./images/pcbwiring.png)
+![PAD Wiring Diagram](./images/pcbwiring.png)
 
 The image above is the wiring diagram for the full device. It shows how all the components are connected to the microcontroller.
 <br></br>
-![PCB Design](./images/pcb1.png)
+![PCB WD](./images/PCB_WD.png)
 
 The image above is the wiring diagram for the PCB, showing how the LEDs, the push button switch, and the buzzer are connected to the microcontroller.  
 <br></br>
-![PCB Design](./images/pcb1.png)
+![PCB Layout](./images/PCB_layout.png)
 
 This image above shows the 2-D layout of the PCB.
 <br></br>
-![PCB Design](./images/pcb1.png)
+![PCB Design](./images/PCB_3d.png)
 
 The image above is a schematic of the PCB we used and designed using Easy EDA. 
+
 
 ----
 ## Bill of Materials
