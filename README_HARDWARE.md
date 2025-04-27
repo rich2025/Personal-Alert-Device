@@ -2,6 +2,56 @@
 
 This README file is dedicated to providing all the relative information regarding the hardware for the Personal Alert Device. This includes documentation on the enclosure, charging stand, information regarding the power system, the sensors we used, and a breakdown of the cost for all the parts included in our project.
 
+## Hardware Components
+
+| Component                        | Part Number/Model              | Vendor        | Used For                                 |
+|----------------------------------|--------------------------------|---------------|------------------------------------------|
+| Microcontroller                  | Seeed Studio XIAO nRF52840 Sense | Seeed Studio | BLE communication, onboard IMU and mic   |
+| Heart Rate Sensor                | MAX30102                       | Aliexpress    | Pulse and SpO2 monitoring         |
+| Temperature Sensor               |                       | Aliexpress    | Body temperature monitoring       |
+| Push Button                      | TSA062G60-250                  | LCSC          | Manual emergency alert                   |
+| Wireless Charging Receiver       | B08CVGYDJP                      | Amazon        | 5V power receiver       |
+| Wireless Charging Transmitter    | B08CVGYDJP                      | Amazon        | 5V powered transmission               |
+| Lithium Battery                  | 3.7V 1100mAh LiPo              | Amazon        | Main power supply                        |
+| LEDs         | C87271     | LCSC          | Battery and alert status indicators      |
+| Buzzer                       | C96079           | LCSC          | Audible emergency alert                  |
+
+ 
+## Wiring and Sensor Connections
+
+MAX30102 heart rate sensor 
+- SCL: D4 (GPIO pin on XIAO)
+- SDA: D5
+- VCC: 3.3V
+- GND: GND
+  
+Temperature sensor
+- One terminal connected to D1,  a 1k ohm resistor, and to GND
+- one terminal to 3.3 V
+
+Push Button
+- One terminal to D2
+- Other terminal to GND
+
+Wireless Charging Receiver
+- 5V output: to the positive battery terminal
+- GND to the battery ground
+
+LEDs
+- Red: Positive terminal to D10, and negative terminal to 330 ohm  and to GND
+- Yellow: Positive terminal to D3, and negative terminal to 330 ohm and to GND
+- Green: Positive terminal to D1, and negative terminal to 330 ohm and to GND
+Buzzer
+- one terminal is connected to D9
+- one terminal is connected to GND
+Setup Instructions
+
+1.Solder the positive terminal of the battery to the postive terminal of the receiver module and solder the negative terminal of the battery to the negative terminal of the receiver module
+2. Solder the positive terminal of the battery to the BAT+ of the microconterller and the negative terminal of the battery to the BAT- of the microconterller
+3. Solder all buzzer, LEDS, push-button switch, and microcontroller on the PCB
+4. Connect the heart rate sensor and the thirmistor per wiring table
+5. 3D-printed enclosure the enclourser for the device and the powering system
+
 ## Relevant Files For CAD Drawings and Assemblies
 
 - [Body of Enclosure Drawing](./PDFs/Body_Drawing.pdf)  
