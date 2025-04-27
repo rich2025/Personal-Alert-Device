@@ -64,5 +64,26 @@ We chose this temperature sensor as NTC thermistor's are typically used in therm
 The fillament that we used for the 3D printed enclosure and housing stand was Bambu PLA filament. The printer that we used was the Bambu Lab X1E 3D printer which provide us with fast print times and the ability to print multiple parts at once. This was great for iterating on models whenever necessary and made the development of our housing quick and effective. 
 <br></br>
 The material we used for our watch band was nylon polymer and we chose this material as it was a great insulator. The material we chose had to have properties of an insulator since we decided to store the heart rate and thermistor along the watch band. 
+
 <br></br>
-**ADD INFO HERE ON POWER SYSTEM**
+## Power System
+
+The Personal Alert Device uses a wireless charging power system to provide a user friendly way to recharge the internal battery without requiring manual plugging. The power system consists of a transmitter module and a receiver module. Copper coils are connected to both modules: the transmitter module is powered by a 120V AC to 5V DC adapter, while the receiver coil is directly connected to the battery and embedded inside the wearable device. When the device is placed on the charging stand, power is wirelessly transferred from the transmitter to the receiver, allowing the battery to charge safely and efficiently. This wireless power system design helps protect the internal electronics from water damage and physical wear by minimizing exposed ports, and provides an easy and reliable way for elderly users to recharge the device.
+
+
+
+---
+
+## Power System Specifications
+
+| Component                  | Voltage | Current | Description                                     |
+|-----------------------------|---------|---------|-------------------------------------------------|
+| AC-DC Adapter Output        | 5V      | 300mA  | Powers the transmitter module                  |
+| Wireless Transmitter Module | 5V      | 150-300mA  | Transfers power via inductive coupling          |
+| Wireless Receiver Module    | 5V      | 150-300mA | Receives and regulates power to the battery  |
+| Lithium Battery             | 3.7V    | 150-300mA  | Powers the PAD components                      |
+| Microcontroller Operating   | 3.3V    | 50mA   | Drawn from onboard regulator                    |
+
+---
+
+
