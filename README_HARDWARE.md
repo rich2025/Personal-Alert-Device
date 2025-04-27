@@ -70,6 +70,16 @@ The material we used for our watch band was nylon polymer and we chose this mate
 
 The Personal Alert Device uses a wireless charging power system to provide a user friendly way to recharge the internal battery without requiring manual plugging. The power system consists of a transmitter module and a receiver module. Copper coils are connected to both modules: the transmitter module is powered by a 120V AC to 5V DC adapter, while the receiver coil is directly connected to the battery and embedded inside the wearable device. When the device is placed on the charging stand, power is wirelessly transferred from the transmitter to the receiver, allowing the battery to charge safely and efficiently. This wireless power system design helps protect the internal electronics from water damage and physical wear by minimizing exposed ports, and provides an easy and reliable way for elderly users to recharge the device.
 
+## Power System Images
+
+![Power System Wiring Diagram](./images/Power_system.png)  
+The image above shows the full power system wiring diagram.
+
+![Transmitter Module Setup](./IMG_4079.jpg)  
+The image above is the physical setup showing how the AC-DC adapter is connected to the transmitter module.
+
+![Receiver Module Setup](./images/IMG_4078.jpg)  
+The image above is the physical setup showing how the battery is connected to the wireless receiver module, which is both are embedded inside the wearable device.
 
 
 ---
@@ -78,7 +88,7 @@ The Personal Alert Device uses a wireless charging power system to provide a use
 
 | Component                  | Voltage | Current | Description                                     |
 |-----------------------------|---------|---------|-------------------------------------------------|
-| AC-DC Adapter Output        | 5V      | 300mA  | Powers the transmitter module                  |
+| AC-DC Adapter Output        | 120V AC     | 300mA  | Powers the transmitter module                  |
 | Wireless Transmitter Module | 5V      | 150-300mA  | Transfers power via inductive coupling          |
 | Wireless Receiver Module    | 5V      | 150-300mA | Receives and regulates power to the battery  |
 | Lithium Battery             | 3.7-4.2V    | 150-300mA  | Powers the PAD components                      |
