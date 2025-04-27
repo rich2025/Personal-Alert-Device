@@ -59,7 +59,7 @@ Setup Instructions
 
 The image above shows the enclosure with its exposed interior, we can see the microcontroller, buzzer, PCB, and some of the wiring for the sensors. For more information on sensor connections, see the image below of our wiring diagram. For more information on the sensors we used, see the Sensors and Other Hardware Equipment section at the end of this file.
 <br></br>
-![Enclosure fully assembled](./images/enclosure1.jpeg)
+![Enclosure fully assembled](./images/enclosure2.jpeg)
 
 The image above depics the device fully assembled with all of the sensors installed, this is the most recent build of our device. Although you can't see the interior, the enclosure houses the PCB, microcontroller, a buzzer, LEDs, a button, the battery which sits beneath the PCB, and connections for the heart rate sensor and thermistor which are inside of the watch band.
 <br></br>
