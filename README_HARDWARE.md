@@ -27,7 +27,15 @@ The image above depics the device fully assembled with all of the sensors instal
 <br></br>
 ![PCB Wiring Diagram](./images/pcbwiring.png)
 
-The image above is of the PCB Wiring Diagram, it shows the layout of how each sensor is connected to our PCB.
+The image above is the wiring diagram for the full device. It shows how all the components are connected to the microcontroller.
+<br></br>
+![PCB Design](./images/pcb1.png)
+
+The image above is the wiring diagram for the PCB, showing how the LEDs, the push button switch, and the buzzer are connected to the microcontroller.  
+<br></br>
+![PCB Design](./images/pcb1.png)
+
+This image above shows the 2-D layout of the PCB.
 <br></br>
 ![PCB Design](./images/pcb1.png)
 
