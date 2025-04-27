@@ -46,11 +46,11 @@ Buzzer
 - one terminal is connected to GND
 Setup Instructions
 
-1.Solder the positive terminal of the battery to the postive terminal of the receiver module and solder the negative terminal of the battery to the negative terminal of the receiver module
-2. Solder the positive terminal of the battery to the BAT+ of the microconterller and the negative terminal of the battery to the BAT- of the microconterller
-3. Solder all buzzer, LEDS, push-button switch, and microcontroller on the PCB
-4. Connect the heart rate sensor and the thirmistor per wiring table
-5. 3D-printed enclosure the enclourser for the device and the powering system
+1/Solder the positive terminal of the battery to the postive terminal of the receiver module and solder the negative terminal of the battery to the negative terminal of the receiver module
+2/Solder the positive terminal of the battery to the BAT+ of the microconterller and the negative terminal of the battery to the BAT- of the microconterller
+3/ Solder all buzzer, LEDS, push-button switch, and microcontroller on the PCB
+4/ Connect the heart rate sensor and the thirmistor per wiring table
+5/ 3D-printed enclosure the enclourser for the device and the powering system
 
 ## Relevant Files For CAD Drawings and Assemblies
 
