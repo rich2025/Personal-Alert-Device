@@ -124,6 +124,6 @@ The image above is the physical setup showing how the battery is connected to th
 
 ## Power System Specifications
 
-![Power](./images/HW_components.png)  
+![Power](./images/Power.png)  
 
 
