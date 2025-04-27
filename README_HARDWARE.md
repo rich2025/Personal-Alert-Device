@@ -124,14 +124,6 @@ The image above is the physical setup showing how the battery is connected to th
 
 ## Power System Specifications
 
-| Component                  | Voltage | Current | Description                                     |
-|-----------------------------|---------|---------|-------------------------------------------------|
-| AC-DC Adapter Output        | 120V AC     | 300mA  | Powers the transmitter module                  |
-| Wireless Transmitter Module | 5V      | 150-300mA  | Transfers power via inductive coupling          |
-| Wireless Receiver Module    | 5V      | 150-300mA | Receives and regulates power to the battery  |
-| Lithium Battery             | 3.7-4.2V    | 150-300mA  | Powers the PAD components                      |
-| Microcontroller Operating   | 3.7-4.2V  | 50mA   | Drawn from onboard regulator                    |
-
----
+![Power](./images/HW_components.png)  
 
 
