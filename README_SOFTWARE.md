@@ -113,6 +113,12 @@ Ensure that these dependencies and permissions are properly installed.
 8. In Android Studio, navigate to the Gradle > Personal Alert Device > Tasks > android > signingReport to access the SHA-1 fingerprint associated with your device
 9. Add the SHA-1 finger to the app's certified fingerprints in Firebase > Project Overview > Project Settings > Your Apps
 
+Core App files located in the `Personal-Alert-Device/app` folder.
+
+Android Manifest located in `Personal-Alert-Device/app/src/main`.
+
+Screens and Main Activity located in `Personal-Alert-Device/app/src/main/java/com/example/personalalertdevice`.
+
 ### Firmware
 
 1. Open Arduino IDE
