@@ -81,8 +81,8 @@ The Personal Alert Device uses a wireless charging power system to provide a use
 | AC-DC Adapter Output        | 5V      | 300mA  | Powers the transmitter module                  |
 | Wireless Transmitter Module | 5V      | 150-300mA  | Transfers power via inductive coupling          |
 | Wireless Receiver Module    | 5V      | 150-300mA | Receives and regulates power to the battery  |
-| Lithium Battery             | 3.7V    | 150-300mA  | Powers the PAD components                      |
-| Microcontroller Operating   | 3.3V    | 50mA   | Drawn from onboard regulator                    |
+| Lithium Battery             | 3.7-4.2V    | 150-300mA  | Powers the PAD components                      |
+| Microcontroller Operating   | 3.7-4.2V  | 50mA   | Drawn from onboard regulator                    |
 
 ---
 
