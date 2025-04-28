@@ -90,7 +90,7 @@ The app is developed for Android 14+. It is still unknown at this time how futur
 #### Housing
 The enclosure is not waterproof and any mositure ingress may cause internal damages. Additionally, the housing will break if an excessive force is placed upon it. The wrist-strap is prone to fraying. The suggestion for the next iteration's develepors is to construct the device with stronger, more robust materials.
 
-For more information regarding the system, see:
+### For more information regarding the system, see:
 
 [Software README](README_SOFTWARE.md)\
 [Hardware README](README_HARDWARE.md)
