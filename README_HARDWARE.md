@@ -123,7 +123,7 @@ The image above is the physical setup showing how the battery is connected to th
 
 The image above shows the bottom of the wearable enclosure, displaying the receiving module of the wireless charging power system.
 
-![Transmitter](./images/transmitter.jpg) 
+![trans](./images/transmitter.jpg) 
 
 The image above shows the wireless charging stand, the transmitting module of the power system.
 
