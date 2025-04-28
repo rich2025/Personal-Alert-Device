@@ -120,9 +120,11 @@ The image above is the physical setup showing how the AC-DC adapter is connected
 The image above is the physical setup showing how the battery is connected to the wireless receiver module, which is both are embedded inside the wearable device.
 
 ![Receiver](./images/receiver.jpg) 
+
 The image above shows the bottom of the wearable enclosure, displaying the receiving module of the wireless charging power system.
 
-![Transmitter](./images/transmitter.jpg)
+![Transmitter](./images/transmitter.jpg) 
+
 The image above shows the wireless charging stand, the transmitting module of the power system.
 
 ---
