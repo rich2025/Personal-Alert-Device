@@ -1,4 +1,4 @@
-Software and Firmware Report
+Software and Firmware Information
 =================
 
 ## Introduction
