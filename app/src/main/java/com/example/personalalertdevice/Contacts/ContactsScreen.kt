@@ -9,12 +9,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -25,11 +28,12 @@ fun ContactsScreen(navController: NavController, viewModel: ContactsViewModel) {
 
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        // Return Navigation Button
+        // Return Button
         Button(
             onClick = { navController.navigate("MainScreen") },
             colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
@@ -60,38 +64,122 @@ fun ContactsScreen(navController: NavController, viewModel: ContactsViewModel) {
             }
         }
 
+        // Section Title
+        Text(
+            text = "My Designated Contacts",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF32a852),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+
+        Divider(
+            color = Color(0xFF32a852),
+            thickness = 2.dp,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Designated contacts list
-        if (contacts.isEmpty()) {
-            Text(
-                text = "No designated contacts found.",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Gray,
-                modifier = Modifier.padding(16.dp)
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(horizontal = 16.dp)
-                    .border(2.dp, Color.DarkGray, RoundedCornerShape(8.dp))
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(contacts) { contact ->
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(horizontal = 16.dp)
+        ) {
+            if (contacts.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "No Contacts",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(80.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = contact.name,
+                        text = "No designated contacts found",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.LightGray, RoundedCornerShape(8.dp))
-                            .padding(20.dp)
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
                     )
+                    Text(
+                        text = "Add contacts by tapping the button below",
+                        fontSize = 16.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .border(1.dp, Color(0xFFD3D3D3), RoundedCornerShape(12.dp))
+                        .background(Color.White)
+                        .padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(contacts) { contact ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFFF5F5F5)
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .background(Color(0xFF32a852), RoundedCornerShape(24.dp)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = contact.name.first().toString(),
+                                        color = Color.White,
+                                        fontSize = 24.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                Column(
+                                    modifier = Modifier
+                                        .padding(start = 16.dp)
+                                        .weight(1f)
+                                ) {
+                                    Text(
+                                        text = contact.name,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.Black,
+                                        overflow = TextOverflow.Ellipsis,
+                                        maxLines = 1
+                                    )
+                                    Text(
+                                        text = contact.phoneNumber ?: "No phone number",
+                                        fontSize = 14.sp,
+                                        color = Color.DarkGray
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -102,23 +190,25 @@ fun ContactsScreen(navController: NavController, viewModel: ContactsViewModel) {
                 navController.navigate("ContactsListScreen")
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF32a852)),
-            shape = RoundedCornerShape(8.dp),
+            shape = RoundedCornerShape(16.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
-                .padding(horizontal = 10.dp, vertical = 20.dp)
+                .padding(16.dp)
+                .height(70.dp)
         ) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Add Contact",
+                modifier = Modifier.size(32.dp),
+                tint = Color.White
+            )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "My Designated Contacts",
-                fontSize = 40.sp,
+                text = "Manage Designated Contacts",
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
-                maxLines = 2,
-                lineHeight = 40.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                color = Color.White
             )
         }
     }
 }
-

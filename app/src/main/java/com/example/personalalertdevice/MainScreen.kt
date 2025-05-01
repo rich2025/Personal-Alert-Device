@@ -96,6 +96,26 @@ fun MainScreen(
                         val status = statusMap?.get("device status") as? String
                         if (status == "connected" || status == "disconnected") {
                             deviceStatus = status
+
+                            // Check if device is disconnected and interval has passed
+                            if (deviceStatus == "disconnected") {
+                                val currentTime = System.currentTimeMillis()
+
+                                // Only send notification if 5 minutes have passed since last one
+                                if (currentTime - lastNotificationTime >= NOTIFICATION_INTERVAL) {
+                                    snapshot.getString("full name")?.let { name ->
+                                        val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date())
+
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            sendDeviceDisconnectionWebhook(
+                                                timestamp,
+                                                name
+                                            )
+                                        }
+                                        lastNotificationTime = currentTime
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -495,6 +515,8 @@ private suspend fun uploadEmergencyViaWebhook(
     val temperatureInFahrenheit = (temperatureInCelsius * 9 / 5) + 32
 
     val formattedData = """
+    EMERGENCY ALERT!
+    
     ${name} has triggered an emergency help request at ${timestamp}.
     
     Address: ${address}
@@ -520,5 +542,49 @@ private suspend fun uploadEmergencyViaWebhook(
         }
     } catch (e: Exception) {
         Log.e("Webhook", "Error triggering webhook: ${e.message}")
+    }
+}
+
+// connections status notification
+
+private var lastNotificationTime = 0L
+private const val NOTIFICATION_INTERVAL = 5 * 60 * 1000
+
+private suspend fun sendDeviceDisconnectionWebhook(
+    timestamp: String,
+    name: String
+) {
+    val client = OkHttpClient()
+
+    val formattedData = """
+    ALERT: ${name}'s Personal Alert Device is DISCONNECTED as of ${timestamp}.
+    
+    Troubleshooting:
+    
+    1) Check device Bluetooth connection
+    
+    2) Check device power
+    
+    3) Check phone network connectivity
+    
+    """.trimIndent()
+
+    val jsonPayload = JSONObject(mapOf("value" to formattedData)).toString()
+
+    val request = Request.Builder()
+        .url("x")
+        .addHeader("Content-Type", "application/json")
+        .post(jsonPayload.toRequestBody("application/json".toMediaType()))
+        .build()
+
+    try {
+        val response = client.newCall(request).execute()
+        if (response.isSuccessful) {
+            Log.d("Webhook", "Device disconnection webhook triggered successfully!")
+        } else {
+            Log.e("Webhook", "Device disconnection webhook failed (${response.code}): ${response.body?.string()}")
+        }
+    } catch (e: Exception) {
+        Log.e("Webhook", "Error triggering device disconnection webhook: ${e.message}")
     }
 }

@@ -289,7 +289,7 @@ class MainActivity : ComponentActivity() {
         }
 
         try {
-            val url = URL("https://io.adafruit.com")
+            val url = URL("x")
             val connection = url.openConnection() as HttpURLConnection
             connection.connect()
             Log.d("Network", "Response Code: ${connection.responseCode}")
@@ -300,8 +300,8 @@ class MainActivity : ComponentActivity() {
 
     private suspend fun fetchAndUploadDataFall() {
         try {
-            val apiKey = "x"
-            val feedName = "x"
+            val apiKey = "aio_VzTH51pnpaPJ3QvylzppwWNEXThw"
+            val feedName = "fall"
 
             val data = RetrofitInstance.api.getData(feedName, apiKey)
 
@@ -360,7 +360,7 @@ class MainActivity : ComponentActivity() {
     private suspend fun fetchAndUploadDataManual() {
         try {
             val apiKey = "x"
-            val feedName = "x"
+            val feedName = "manual"
 
             val data = RetrofitInstance.api.getData(feedName, apiKey)
 
@@ -407,7 +407,7 @@ class MainActivity : ComponentActivity() {
         }
 
         try {
-            val url = URL("https://io.adafruit.com")
+            val url = URL("x")
             val connection = url.openConnection() as HttpURLConnection
             connection.connect()
             Log.d("Network", "Response Code: ${connection.responseCode}")
@@ -419,7 +419,7 @@ class MainActivity : ComponentActivity() {
     private suspend fun fetchAndUploadBatteryData() {
         try {
             val apiKey = "x"
-            val feedName = "x"
+            val feedName = "battery"
 
             val data = RetrofitInstance.api.getData(feedName, apiKey)
 
@@ -709,6 +709,8 @@ class MainActivity : ComponentActivity() {
         val temperatureInFahrenheit = (temperatureInCelsius * 9 / 5) + 32
 
         val formattedData = """
+        EMERGENCY ALERT!
+            
         ${name} has triggered an emergency help request at ${timestamp}.
     
         Address: ${address}
@@ -750,6 +752,8 @@ class MainActivity : ComponentActivity() {
         val temperatureInFahrenheit = (temperatureInCelsius * 9 / 5) + 32
 
         val formattedData = """
+        EMERGENCY ALERT!
+            
         ${name} has triggered an emergency help request at ${timestamp}.
     
         Address: ${address}
@@ -791,6 +795,8 @@ class MainActivity : ComponentActivity() {
         val temperatureInFahrenheit = (temperatureInCelsius * 9 / 5) + 32
 
         val formattedData = """
+        EMERGENCY ALERT!
+        
         ${name} has triggered an emergency help request at ${timestamp}.
     
         Address: ${address}
@@ -900,7 +906,7 @@ class MainActivity : ComponentActivity() {
     private suspend fun fetchAndUploadVitalsData() {
         try {
             val apiKey = "x"
-            val feedName = "x"
+            val feedName = "vitals"
 
             val data = RetrofitInstance.api.getData(feedName, apiKey)
 
@@ -980,7 +986,7 @@ class MainActivity : ComponentActivity() {
     private suspend fun fetchAndUploadConnectionStatus() {
         try {
             val apiKey = "x"
-            val feedName = "x"
+            val feedName = "connectionstatus"
 
             val data = RetrofitInstance.api.getData(feedName, apiKey)
 
