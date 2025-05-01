@@ -244,7 +244,7 @@ fun ProfileScreenMain(
                     ProfileLabelValue(label = "Gender", value = gender)
                     ProfileLabelValue(label = "Weight", value = "$weight lbs")
                     ProfileLabelValue(label = "Height", value = height)
-                    ProfileLabelValue(label = "Address", value = address)
+                    ProfileLabelValue(label = "Address", value = address, valueTextAlign = TextAlign.End)
                 }
             }
 
@@ -376,7 +376,7 @@ fun ProfileScreenMain(
 }
 
 @Composable
-fun ProfileLabelValue(label: String, value: String) {
+fun ProfileLabelValue(valueTextAlign: TextAlign = TextAlign.Start, label: String, value: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -390,6 +390,7 @@ fun ProfileLabelValue(label: String, value: String) {
             color = Color.Black
         )
         Text(
+            textAlign = valueTextAlign,
             text = value,
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
